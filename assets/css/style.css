@@ -13,7 +13,7 @@ body {
   width: 100%;
   /* Set the fixed height of the footer here */
   height: 60px;
-  background-color: #f5f5f5;
+  background-color: #525252;
 }
 
 h1 {
@@ -24,3 +24,8 @@ h1 {
 	background-color: rgba(0,0,0,0.1);
 }
 
+.footer-text {
+	color: white;
+	text-align: left;
+	margin-top: 20px;
+}
