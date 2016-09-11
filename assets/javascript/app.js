@@ -21,7 +21,10 @@ let game = {
 	newWord: function() {
 		$.ajax({
             url: "http://www.setgetgo.com/randomword/get.php",
-            method: "GET"
+            method: "GET",
+            data: {
+            	len: 6
+            }
         }).done(function(response){
         	game.word = response;
 			game.wordArr = [];
@@ -52,24 +55,27 @@ let game = {
 
 // On load
 $(function() {
-	$(document).on("keyup", function(event) {
-		if (game.isWord && (event.which >= 65) && (event.which <= 90)) {
-			if (game.wordArr[game.currentLetter] == String.fromCharCode(event.which)) {
+	$(document).on("keypress", function(event) {
+		if (game.isWord && (event.which >= 65) && (event.which <= 122)) {
+			if (game.wordArr[game.currentLetter] == String.fromCharCode(event.which).toUpperCase()) {
 				$("#letter_" + game.currentLetter).css("color", "red");
 				game.currentLetter++;
 				if (game.currentLetter == game.word.length) {
-					game.newWord();
+					game.isWord = false;
 					game.score += 10;
+					game.newWord();
 				}
 			} else {
 				for (let i = 0; i < game.wordArr.length; i++) {
 					$("#letter_" + i).css("color", "black");
 				}
 				game.currentLetter = 0;
+
+				game.isWord = false;
 				$("#output").css("left", -3);
 				setTimeout(function(){ $("#output").css("left", 6); }, 80);
 				setTimeout(function(){ $("#output").css("left", -6); }, 160);
-				setTimeout(function(){ $("#output").css("left", 3); }, 240);
+				setTimeout(function(){ $("#output").css("left", 3); game.isWord = true; }, 240);
 			}
 		}
 	});
