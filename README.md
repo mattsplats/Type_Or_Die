@@ -5,6 +5,8 @@
 
 
 ### Things we need:
+* Name for the game?
+ * (Matt) _"Typing game" is kinda lame ;-)_
 * Firebase authentication (user logins)
  * There are multiple providers but just github to start, since everyone has an account
  * (Matt) _Anyone who wants to play with this (read the documentation, try a login with their Firebase project) is welcome_
