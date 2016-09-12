@@ -40,3 +40,10 @@
  * (Matt) _Anyone who wants to research/test this is welcome_
 * Bootstrap theme and/or custom CSS
  * Lots of free themes out there!
+* An info page
+ * Our names
+ * Purpose of project
+ * List of APIs used
+ * etc ...
+* Navbar or similar navigation for other pages
+ * (Matt) _I'm thinking we should dynamically load content for other "pages" and just have index.html, would be nicer_
