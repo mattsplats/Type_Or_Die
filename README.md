@@ -18,6 +18,7 @@
 * A "leaderboard" / stats page
  * Would satisfy the table data requirement
  * Could have a list of past games & outcomes, and a separate leaderboard page for the top scores/scorers
+ * Have a button below the game, and have the game fade out and fade in leaderboard?  (With "back to game" button?)
 
 
 ### Things we will probably want:
