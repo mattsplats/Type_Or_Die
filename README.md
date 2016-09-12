@@ -10,6 +10,8 @@
 * Firebase authentication (user logins)
  * There are multiple providers but just github to start, since everyone has an account
  * (Matt) _Anyone who wants to play with this (read the documentation, try a login with their Firebase project) is welcome_
+* Modal popup for login, or page transition from login to game
+ * Input verification is a requirement -> could check for empty username or password
 * Testing of word source APIs
  * The more the merrier!
  * Post any details here (at the end, or wherever makes sense)
