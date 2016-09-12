@@ -38,3 +38,5 @@
  * One for all the game words, another for the rest of the page text
 * Working setup for mobile/tablet devices without a real keyboard
  * (Matt) _Anyone who wants to research/test this is welcome_
+* Bootstrap theme and/or custom CSS
+ * Lots of free themes out there!
