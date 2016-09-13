@@ -15,8 +15,6 @@
 * Testing of word source APIs
  * The more the merrier!
  * Post any details here (at the end, or wherever makes sense)
-* Function to convert a block of text to usable words
- * (Matt) _Shouldn't be too hard, believe I can use a regular expression for this.  On my to-do list_
 * A "leaderboard" / stats page
  * Would satisfy the table data requirement
  * Could have a list of past games & outcomes, and a separate leaderboard page for the top scores/scorers
