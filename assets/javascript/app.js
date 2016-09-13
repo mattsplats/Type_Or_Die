@@ -44,16 +44,11 @@ let game = {
 		const startTime = Date.now();
 
 		// Request new word
-		$.ajax({
-            url: "http://www.setgetgo.com/randomword/get.php",
-            method: "GET",
-            data: {
-            	len: 6
-            }
-        }).done(function(response){
-        	// Add request time to timeOffset
+		$.get("http://www.setgetgo.com/randomword/get.php", { len: 6 }).done(function(response){
+        	// Removes time waiting on new word from WPM calculation (so you're not penalized for time spent waiting)
 			game.timeOffset += Date.now() - startTime;
 
+			// Word.number stores the number used in the span IDs at HTML creation time (for later modification)
         	const word = {
 				str: response,
 				number: index
@@ -67,10 +62,8 @@ let game = {
 			html += "</h2>";
 			$("#out_" + index).html(html);
 
-			// Add word to activeWords
+			// Add word to activeWords, allow keyboard input
 			game.activeWords[index] = word;
-			
-			// Allow keyboard input
 			game.ready = true;
         });
 	},
@@ -81,22 +74,24 @@ let game = {
 		}
 	},
 
-	wordMiss: function(wordList) {
+	wrongKey: function(wordList) {
+		// Removes animation wait time from WPM calculation (so you're not penalized for time spent waiting)
 		const animationTime = 110;
 		game.timeOffset += animationTime;
 
+		// Game state and stats update, game.ready == false so no letters can be input while word animation is playing
 		game.ready = false;
 		game.hits += game.currentLetter;
 		game.misses++;
 		game.currentStreak = 0;
 
-		
-		for (const word of wordList) {
-			$("#out_" + word.number).css("left", -3);
-			setTimeout(function(){ $("#out_" + word.number).css("left", 6); }, 30);
-			setTimeout(function(){ $("#out_" + word.number).css("left", -6); }, 70);
-			setTimeout(function(){ $("#out_" + word.number).css("left", 3); }, 100);
-			setTimeout(function(){ $("#out_" + word.number).css("left", 0); game.ready = true; }, animationTime);
+		// Missed word animation, game.ready == true when the animation completes
+		for (let i = 0; i < wordList.length; i++) {
+			$("#out_" + wordList[i].number).css("left", -3);
+			setTimeout(function(){ $("#out_" + wordList[i].number).css("left", 6); }, 30);
+			setTimeout(function(){ $("#out_" + wordList[i].number).css("left", -6); }, 70);
+			setTimeout(function(){ $("#out_" + wordList[i].number).css("left", 3); }, 100);
+			setTimeout(function(){ $("#out_" + wordList[i].number).css("left", 0); game.ready = true; }, animationTime);
 		}
 
 		game.currentLetter = 0;
@@ -104,6 +99,7 @@ let game = {
 	},
 
 	updateStats: function() {
+		// Words per minute and accuracy calculations, based stored stats and current time
 		const wpm = (game.score / 10) / ((Date.now() - game.startTime - game.timeOffset) / 1000 / 60) || 0;
 		const acc = 100 * game.hits / (game.hits + game.misses) || 0;
 
@@ -114,7 +110,7 @@ let game = {
 	}
 };
 
-// On load block
+// Onload block
 $(function() {
 
 	// Main input processing function (on any keypress)
@@ -147,12 +143,13 @@ $(function() {
 				game.currentLetter++;
 
 				// If word is complete, replace with new word
+				// *NOTE: assumes no two words in activeWords are identical*
 				if (game.currentLetter == game.matchingWords[0].str.length) {
 					game.newWord(game.matchingWords[0].number);
 				}
 			}
 			else {
-				game.wordMiss(missedWords);
+				game.wrongKey(missedWords);
 			}
 		}
 	});
@@ -167,7 +164,7 @@ $(function() {
 		game.startTime = Date.now();
 		game.timeOffset = 0;
 		game.updateStats();
-	})
+	});
 
 	game.init();
 });
