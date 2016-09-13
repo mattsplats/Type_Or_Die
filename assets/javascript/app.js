@@ -1,8 +1,9 @@
 // Main game object
 let game = {
 	// Game state vars
-	activeWords: [],
-	matchingWords: [],
+	activeWords: [],  // Words on screen
+	matchingWords: [],  // Words still matching input string
+	sourceWords: [],  // Available word list built from API (in string format)
 	currentLetter: 0,
 	ready: false,
 
@@ -12,27 +13,62 @@ let game = {
 	longestStreak: 0,
 	hits: 0,
 	misses: 0,
-	startTime: Date.now(),
-	timeOffset: 0,
+	startTime: 0,
+	timeOffset: 0,  // Accumulates time the player is not allowed to input characters
 
 	// Methods
 	init: function() {
-		game.newWord(0);
-		game.newWord(1);
-		game.newWord(2);
-		game.updateStats();
-		setTimeout(function(){ game.timeOffset /= 3; }, 200);
+		game.getMoreWords();
+	},
+
+	getMoreWords: function() {
+		$.get("http://hipsterjesus.com/api/", { paras: 20, type: "hipster-centric", html: "false" }).done(function(response){
+			const str = response.text
+				.replace(/(\b[A-Z][a-z])/g, function f(x){  // Lowercase all words with a starting uppercase letter (beginning of sentences)
+					return x.toLowerCase();
+				})
+				.replace(/(&amp;)/g, "&")  // Replace escaped &amp; with &
+				.replace(/(3 wolf moon|brooklyn|iceland|austin|pabst|master|cleanse|echo park|marfa|portland|knausgaard|godard|la croix|four loko|pok pok|edison)/g, function f(x){  // Uppercase first letter of these words
+					let y = x[0].toUpperCase();
+					for (let i = 1; i < x.length; i++) {
+						x[i - 1] == " " ? y += x[i].toUpperCase() : y += x[i];
+					}
+					return y;
+				});
+
+			// Build initial array of matching words and phrases (checking phrases first)
+			const srcArr = str.match(/(you probably haven't heard of them|man braid|man bun|photo booth|banh mi|edison bulb|roof party|single-origin coffee|kale chips|master cleanse|everyday carry|enamel pin|green juice|direct trade|art party|four dollar toast|subway tile|jean shorts|hot chicken|echo park|fanny pack|food truck|shabby chic|craft beer|street art|next level|small batch|four loko|air plant|drinking vinegar|raw denim|copper mug|bicycle rights|tote bag|trust fund|pork belly|activated charcoal|before they sold out|coloring book|la croix|blue bottle|put a bird on it|pok pok|3 wolf moon|deep v|[^.,\n ]{3,})/gi);
+			
+			// Remove duplicates and undesired words
+			for (let i = 0; i < srcArr.length; i++) {
+				if (game.sourceWords.indexOf(srcArr[i]) == -1 && !/cornhole|fap|hell/.test(srcArr[i])) {
+					game.sourceWords.push(srcArr[i]);
+				}
+			}
+
+			console.log(game.sourceWords);
+
+			// Initial game setup when no words are present
+			if (game.activeWords.length == 0) {
+				game.newWord(0);
+				game.newWord(1);
+				game.newWord(2);
+				game.updateStats();
+				game.startTime = Date.now();
+				game.ready = true;
+			}
+		});
 	},
 
 	newWord: function(index) {
-		// Do not allow keyboard input (until ajax request completes)
-		game.ready = false;
-
 		// If word is replacing an existing word (a word was completed), increment score, update stats, reset game vars
 		if (game.activeWords[index]) {
-			game.score += 10;
+			const matchArr = game.activeWords[index].str.match(/[ -]/g);
+			const wordsCompleted = (matchArr ? matchArr.length : 0) + 1;
+			
+			game.score += wordsCompleted * 10;
 			game.hits += game.currentLetter;
-			game.currentStreak++
+			game.currentStreak += wordsCompleted;
 			if (game.currentStreak > game.longestStreak) { game.longestStreak = game.currentStreak; }
 
 			game.currentLetter = 0;
@@ -40,32 +76,27 @@ let game = {
 			game.updateStats();
 		}
 
-		// Log start time of request
-		const startTime = Date.now();
+  		// Word.number stores the number used in the span IDs at HTML creation time (for later modification)
+  		const rand = Math.floor(Math.random() * game.sourceWords.length);
+    	const word = {
+			str: game.sourceWords[rand],
+			number: index
+		};
 
-		// Request new word
-		$.get("http://www.setgetgo.com/randomword/get.php", { len: 6 }).done(function(response){
-        	// Removes time waiting on new word from WPM calculation (so you're not penalized for time spent waiting)
-			game.timeOffset += Date.now() - startTime;
+		game.sourceWords.splice(rand, 1);
+		if (game.sourceWords.length < 10) { game.getMoreWords(); }
 
-			// Word.number stores the number used in the span IDs at HTML creation time (for later modification)
-        	const word = {
-				str: response,
-				number: index
-			};
+		// Create and output series of spans for each character in the word
+		let html = "<h2>";
+		for (let i = 0; i < word.str.length; i++) {
+			html += "<span id='word_" + index + "_letter_" + i + "'>" + word.str[i] + "</span>";
+		}
+		html += "</h2>";
+		$("#out_" + index).html(html);
 
-			// Create and output series of spans for each character in the word
-			let html = "<h2>";
-			for (let i = 0; i < word.str.length; i++) {
-				html += "<span id='word_" + index + "_letter_" + i + "'>" + word.str[i] + "</span>";
-			}
-			html += "</h2>";
-			$("#out_" + index).html(html);
-
-			// Add word to activeWords, allow keyboard input
-			game.activeWords[index] = word;
-			game.ready = true;
-        });
+		// Add word to activeWords, allow keyboard input
+		game.activeWords[index] = word;
+		// game.ready = true;
 	},
 
 	resetWordHtml: function(word) {
@@ -106,7 +137,7 @@ let game = {
 		$("#score").html("<h3>Score: " + game.score + "</h3>");
 		$("#wpm").html("WPM: " + wpm.toFixed(1));
 		$("#acc").html("Accuracy: " + game.hits + " / " + (game.hits + game.misses) + " ( " + acc.toFixed(1) + "% )");
-		$("#streak").html("Perfect streak: " + game.currentStreak + "<br/>Longest streak: " + game.longestStreak);
+		$("#streak").html("Current streak: " + game.currentStreak + "<br/>Longest streak: " + game.longestStreak);
 	}
 };
 
@@ -115,8 +146,8 @@ $(function() {
 
 	// Main input processing function (on any keypress)
 	$(document).on("keypress", function(e) {
-		// If game is ready for input and keystroke is a letter
-		if (game.ready && (e.which >= 65) && (e.which <= 122)) {
+		// If game is ready for input and keystroke is on the allowed list
+		if (game.ready && /./.test(String.fromCharCode(e.which))) {
 			let missedWords = [];  // Keeps an array of all remaining possible matches that miss this cycle
 
 			// If checkWords is empty, copy all words from activeWords
