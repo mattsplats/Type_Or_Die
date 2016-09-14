@@ -3,12 +3,13 @@ let game = {
 	// Game state vars
 	activeWords: [],  // Words on screen
 	matchingWords: [],  // Words still matching input string
-	sourceWords: [],  // Available word list built from API (in string format)
+	sourceWords: [],  // Available word list built from API (strings only)
 	currentLetter: 0,
 	ready: false,
 
 	// Stats vars
 	score: 0,
+	bestWpm: 0,
 	currentStreak: 0,
 	longestStreak: 0,
 	hits: 0,
@@ -22,13 +23,16 @@ let game = {
 	},
 
 	getMoreWords: function() {
-		$.get("http://hipsterjesus.com/api/", { paras: 20, type: "hipster-centric", html: "false" }).done(function(response){
+		$.get("http://hipsterjesus.com/api/", { paras: 5, type: "hipster-centric", html: "false" }).done(function(response){
 			const str = response.text
-				.replace(/(\b[A-Z][a-z])/g, function f(x){  // Lowercase all words with a starting uppercase letter (beginning of sentences)
+				// Lowercase all words with a starting uppercase letter (beginning of sentences)
+				.replace(/(\b[A-Z][a-z])/g, function(x){  
 					return x.toLowerCase();
 				})
-				.replace(/(&amp;)/g, "&")  // Replace escaped &amp; with &
-				.replace(/(3 wolf moon|brooklyn|iceland|austin|pabst|master|cleanse|echo park|marfa|portland|knausgaard|godard|la croix|four loko|pok pok|edison)/g, function f(x){  // Uppercase first letter of these words
+				// Replace escaped &amp; with &
+				.replace(/(&amp;)/g, "&")
+				// Uppercase first letter of these words
+				.replace(/(3 wolf moon|kickstarter|helvetica|thundercats|williamsburg|brooklyn|iceland|austin|pabst|master cleanse|echo park|marfa|portland|knausgaard|godard|la croix|four loko|pok pok|edison)/g, function(x){
 					let y = x[0].toUpperCase();
 					for (let i = 1; i < x.length; i++) {
 						x[i - 1] == " " ? y += x[i].toUpperCase() : y += x[i];
@@ -39,6 +43,8 @@ let game = {
 			// Build initial array of matching words and phrases (checking phrases first)
 			const srcArr = str.match(/(you probably haven't heard of them|man braid|man bun|photo booth|banh mi|edison bulb|roof party|single-origin coffee|kale chips|master cleanse|everyday carry|enamel pin|green juice|direct trade|art party|four dollar toast|subway tile|jean shorts|hot chicken|echo park|fanny pack|food truck|shabby chic|craft beer|street art|next level|small batch|four loko|air plant|drinking vinegar|raw denim|copper mug|bicycle rights|tote bag|trust fund|pork belly|activated charcoal|before they sold out|coloring book|la croix|blue bottle|put a bird on it|pok pok|3 wolf moon|deep v|[^.,\n ]{3,})/gi);
 			
+			console.log(srcArr);
+
 			// Remove duplicates and undesired words
 			for (let i = 0; i < srcArr.length; i++) {
 				if (game.sourceWords.indexOf(srcArr[i]) == -1 && !/cornhole|fap|hell/.test(srcArr[i])) {
@@ -66,24 +72,22 @@ let game = {
 			const matchArr = game.activeWords[index].str.match(/[ -]/g);
 			const wordsCompleted = (matchArr ? matchArr.length : 0) + 1;
 			
-			game.score += wordsCompleted * 10;
+			game.score += wordsCompleted;
 			game.hits += game.currentLetter;
 			game.currentStreak += wordsCompleted;
-			if (game.currentStreak > game.longestStreak) { game.longestStreak = game.currentStreak; }
+			game.updateStats();
 
 			game.currentLetter = 0;
-			game.matchingWords = [];
-			game.updateStats();
+			game.matchingWords = [];	
 		}
 
+		// Create new word object, remove word from sourceWords, get more words if sourceWords is running low
   		// Word.number stores the number used in the span IDs at HTML creation time (for later modification)
-  		const rand = Math.floor(Math.random() * game.sourceWords.length);
     	const word = {
-			str: game.sourceWords[rand],
+			str: game.sourceWords[0],
 			number: index
 		};
-
-		game.sourceWords.splice(rand, 1);
+		game.sourceWords.splice(0, 1);
 		if (game.sourceWords.length < 10) { game.getMoreWords(); }
 
 		// Create and output series of spans for each character in the word
@@ -94,9 +98,8 @@ let game = {
 		html += "</h2>";
 		$("#out_" + index).html(html);
 
-		// Add word to activeWords, allow keyboard input
+		// Add word to activeWords
 		game.activeWords[index] = word;
-		// game.ready = true;
 	},
 
 	resetWordHtml: function(word) {
@@ -131,11 +134,14 @@ let game = {
 
 	updateStats: function() {
 		// Words per minute and accuracy calculations, based stored stats and current time
-		const wpm = (game.score / 10) / ((Date.now() - game.startTime - game.timeOffset) / 1000 / 60) || 0;
+		const wpm = game.score / ((Date.now() - game.startTime - game.timeOffset) / 1000 / 60) || 0;
 		const acc = 100 * game.hits / (game.hits + game.misses) || 0;
 
-		$("#score").html("<h3>Score: " + game.score + "</h3>");
-		$("#wpm").html("WPM: " + wpm.toFixed(1));
+		if (game.currentStreak > game.longestStreak) { game.longestStreak = game.currentStreak; }
+		if (wpm > game.bestWpm) { game.bestWpm = wpm; }
+
+		$("#score").html("<h3>Score: " + (game.score * 10) + "</h3>");
+		$("#wpm").html("WPM: " + wpm.toFixed(1) + "<br/>Best WPM: " + game.bestWpm.toFixed(1));
 		$("#acc").html("Accuracy: " + game.hits + " / " + (game.hits + game.misses) + " ( " + acc.toFixed(1) + "% )");
 		$("#streak").html("Current streak: " + game.currentStreak + "<br/>Longest streak: " + game.longestStreak);
 	}
@@ -188,8 +194,9 @@ $(function() {
 	// Clear stats button - resets all stats to zero
 	$("#clearStats").on("click", function(e){
 		game.score = 0;
+		game.bestWpm = 0;
 		game.currentStreak = 0;
-		game. longestStreak = 0;
+		game.longestStreak = 0;
 		game.hits = 0;
 		game.misses = 0;
 		game.startTime = Date.now();

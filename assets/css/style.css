@@ -1,0 +1,11 @@
+.fallingWord {
+	animation-name: move_down;
+    animation-duration: 8s;
+    animation-timing-function: linear;
+    animation-delay: 1s;
+}
+
+@keyframes move_down {
+	0%   {transform: translate3d(0, -50px, 0);}
+	100% {transform: translate3d(0, 500px, 0);}
+}
