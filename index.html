@@ -11,57 +11,69 @@
 	<!-- Optional theme -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
-  <link rel="stylesheet" href="assets/css/style.css">
+	<link href="https://fonts.googleapis.com/css?family=Bungee+Shade" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Amatica+SC" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
 <body>
 
-  <div class="container">
+	<div class="container">
 
-  	<div class="jumbotron">
-  		<h1 class="text-center">Typing Game</h1>
-  	</div>
+  			<h1 class="text-center">Typing Game</h1>
+	
+  		<div class="row">
+  			<div class="col-lg-9">
+  				<div class="panel panel-primary">
+  					<div class="panel-heading">
+  						<h3 class="panel-title">Play Here:</h3>
+  					</div>
 
-  	<div class="row">
-  		<div class="col-lg-12">
-  			<div class="panel panel-info">
-  				<div class="panel-heading">
-  					<h3 class="panel-title">Instructions:</h3>
+  					<div class="panel-body" id="game-body">
+  						<div id="output"></div> <!-- Place game in this div (output)-->
+  					</div>
   				</div>
+  			</div> 
 
-  				<div class="panel-body">
-  					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed pulvinar vel sem vitae elementum. Nunc fermentum vehicula justo sit amet interdum. Vestibulum ac condimentum eros. Sed tincidunt, felis id consequat imperdiet, ligula neque consectetur nisi, id pulvinar leo leo at nisi. Fusce id convallis enim. Mauris tempus porta nisl, eu placerat velit tempor quis. In non justo lectus. Aenean rutrum malesuada libero in pretium. Ut nibh orci, cursus sit amet magna nec, eleifend mollis mauris. Fusce id lobortis velit, eget dapibus lorem. Integer ac suscipit velit. In sed dui ligula.</p>
+  			<div class="col-lg-3">
+  				<div class="panel panel-primary">
+  					<div class="panel-heading">
+  						<h3 class="panel-title">Score:</h3>
+  					</div>
+
+  					<div class="panel-body" id="score-body">
+  						<div id="score"></div> <!-- Place score in this div (score) -->
+  					</div>
   				</div>
   			</div>
   		</div>
-  	</div>
 
-    <div class="row text-center" style="overflow: hidden; height: 400px;">
-      <div class="col-md-4">
-        <br/><div id="out_0" class="fallingWord"></div>
-      </div>
-      <div class="col-md-4">
-        <br/><div id="out_1" class="fallingWord"></div>
-      </div>
-      <div class="col-md-4">
-        <br/><div id="out_2" class="fallingWord"></div>
-      </div>
-    </div>
+      <!-- Start Instructions -->
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">Instructions:</h3>
+            </div>
+  
+            <div class="panel-body">
+              <p class="instructions">Improve your typing skills by playing our game! Random words will generate below, all you have to do is start typing. Capitalization is important as well as spaces for certain words and phrases. Keep track of your Words per Minute (WPM) and try to improve your score!</p>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End Instructions -->
+	
+	</div>
 
-    <div class="row">
-      <div class="col-lg-12">
-        <br/><br/><br/><div id="score"></div><br/>
-        <div id="wpm"></div>
-        <div id="acc"></div>
-        <div id="streak"></div><br/>
-        <button id="clearStats" class="btn btn-default">Clear Stats</button>
-        <br/><div id="test"></div>
-      </div>
-    </div>
-  </div>
+	<footer class="footer">
+  		<div class="container">
+  			<p class="text-center footer-text">&copy; Copyright 2016 Andres Daniel Matt</p>
+  		</div>
+  	</footer>
 
 	<script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-  <script src="assets/javascript/app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.3.2/firebase.js"></script>
+	<script src="assets/javascript/app.js"></script>
 
 </body>
 </html>
