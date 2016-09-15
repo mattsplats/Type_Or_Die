@@ -57,7 +57,6 @@ let game = {
 				.replace(/(&amp;)/g, "&")
 				// Uppercase first letter of these words
 				.replace(/(3 wolf moon|kickstarter|helvetica|thundercats|williamsburg|brooklyn|iceland|austin|pabst|master cleanse|echo park|marfa|portland|knausgaard|godard|la croix|four loko|pok pok|edison)/g, function(x){
-
 					let y = x[0].toUpperCase();
 					for (let i = 1; i < x.length; i++) {
 						x[i - 1] == " " ? y += x[i].toUpperCase() : y += x[i];
