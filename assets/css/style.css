@@ -1,11 +1,72 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+  background-image: url(../images/brickwall.png);
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;/
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #525252;
+}
+
+h1 {
+	font-family: 'Bungee Shade', cursive;
+  font-size: 70px;
+}
+
+.footer-text {
+	color: white;
+	text-align: left;
+	margin-top: 20px;
+}
+
+#game-body {
+  height: 500px;
+  position: relative;
+  overflow: hidden;
+}
+
+.instructions {
+  font-family: 'Amatica SC', cursive;
+  font-size: 30px;
+}
+
+/* Matt's animations */
 .fallingWord {
-	animation-name: move_down;
-    animation-duration: 8s;
-    animation-timing-function: linear;
-    animation-delay: 1s;
+  position: absolute;
+  font-family: 'Source Code Pro', monospace;
+
+  animation-name: move_down;
+  animation-duration: 7s;
+  animation-timing-function: linear;
+  animation-delay: 0s;
 }
 
 @keyframes move_down {
-	0%   {transform: translate3d(0, -50px, 0);}
-	100% {transform: translate3d(0, 500px, 0);}
+  0%   {transform: translate3d(0, -50px, 0);}
+  100% {transform: translate3d(0, 500px, 0);}
+}
+
+.wordShake {
+  animation-name: wiggle;
+  animation-duration: 0.15s;
+  animation-timing-function: linear;
+  animation-delay: 0s;
+}
+
+@keyframes wiggle {
+  0%   {transform: translate3d(-3px, 0, 0);}
+  25%  {transform: translate3d(6px, 0, 0);}
+  60%  {transform: translate3d(-6px, 0, 0);}
+  90%  {transform: translate3d(-3px, 0, 0);}
+  100% {transform: translate3d(0, 0, 0);}
 }
