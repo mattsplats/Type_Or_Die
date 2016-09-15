@@ -70,3 +70,11 @@ h1 {
   90%  {transform: translate3d(-3px, 0, 0);}
   100% {transform: translate3d(0, 0, 0);}
 }
+
+/* Matt's temp classes */
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 470px;
+}

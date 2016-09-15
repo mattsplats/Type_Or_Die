@@ -1,15 +1,5 @@
 "use strict";
 
-// Calculate width of text from DOM element or string. By Phil Freo <http://philfreo.com>
-// $.fn.textWidth = function(text, font) {
-//     if (!$.fn.textWidth.fakeEl) $.fn.textWidth.fakeEl = $('<span>').appendTo(document.body);
-//     var htmlText = text || this.val() || this.text();
-//     htmlText = $.fn.textWidth.fakeEl.text(htmlText).html(); //encode to Html
-//     htmlText = htmlText.replace(/\s/g, "&nbsp;"); //replace trailing and leading spaces
-//     $.fn.textWidth.fakeEl.html(htmlText).css('font', font || this.css('font'));
-//     return $.fn.textWidth.fakeEl.width();
-// };
-
 // Main game object
 let game = {
 	// Game state vars
@@ -25,7 +15,6 @@ let game = {
 	// Stats vars
 	score: 0,
 	wordsCompleted: 0,
-	bestWpm: 0,
 	currentStreak: 0,
 	longestStreak: 0,
 	hits: 0,
@@ -34,12 +23,13 @@ let game = {
 	timeOffset: 0,  // Accumulates time the player is not allowed to input characters
 	emptyStart: 0,  // Starts counter for time screen is empty
 
-	// Timing & word addition constants
+	// Game constants (modify for testing as needed)
+	length: 1,  // Length of a game in words (game will end when game.length words have been completed/missed)
 	speedupFactor: 1.015,  // Muliplier for the rate at which new words are added, applies after each added word
 	startingTimeout: 3600,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
-	wordLiveTime: 6700,  // Msec a word remains on screen
 	maxWords: 5,  // Most words to be shown on screen at one time
+	wordLiveTime: 6700,  // Msec a word remains on screen *(CURRENTLY UNSAFE TO MODIFY)*
 
 	// Methods
 	init: function() {
@@ -82,9 +72,16 @@ let game = {
 				game.currentTimeout = game.startingTimeout;
 				function anotherWord(){
 				    clearTimeout(timer);
-				    if (game.activeWords.length < game.maxWords) { game.newWord(); }
-				    game.currentTimeout / game.speedupFactor < game.minTimeout ? game.currentTimeout = game.minTimeout : game.currentTimeout /= game.speedupFactor;
-				    timer = setTimeout(anotherWord, game.currentTimeout);
+				    if (game.currentWord < game.length) {
+					    if (game.activeWords.length < game.maxWords) {
+					    	game.newWord();
+					    	game.currentTimeout / game.speedupFactor < game.minTimeout ? game.currentTimeout = game.minTimeout : game.currentTimeout /= game.speedupFactor;
+					    }
+					    timer = setTimeout(anotherWord, game.currentTimeout);
+					} else {
+						game.ready = false;
+						$("#output").addClass("flex").html("<h1>Thanks for playing!</h1>");
+					}
 				}
 				let timer = setTimeout(anotherWord, game.currentTimeout);
 
@@ -206,12 +203,12 @@ let game = {
 
 		if (game.score < 0) { game.score = 0; }
 		if (game.currentStreak > game.longestStreak) { game.longestStreak = game.currentStreak; }
-		if (wpm > game.bestWpm) { game.bestWpm = wpm; }
 
-		$("#score").html("<h3>Score: " + (game.score * 100) + "</h3>");
-		$("#wpm").html("WPM: " + wpm.toFixed(1) + "<br/>Best WPM: " + game.bestWpm.toFixed(1));
-		$("#acc").html("Accuracy: " + game.hits + " / " + (game.hits + game.misses) + " ( " + acc.toFixed(1) + "% )");
-		$("#streak").html("Current streak: " + game.currentStreak + "<br/>Longest streak: " + game.longestStreak);
+		$("#score").html(game.score * 100);
+		$("#wpm").html(wpm.toFixed(1));
+		$("#acc").html(game.hits + " / " + (game.hits + game.misses) + " ( " + acc.toFixed(1) + "% )");
+		$("#streak").html(game.currentStreak);
+		$("#longest").html(game.longestStreak);
 	}
 };
 
@@ -266,7 +263,6 @@ $(function() {
 	// Clear stats button - resets all stats to zero
 	$("#clearStats").on("click", function(e){
 		game.score = 0;
-		game.bestWpm = 0;
 		game.currentStreak = 0;
 		game.longestStreak = 0;
 		game.hits = 0;
@@ -276,5 +272,10 @@ $(function() {
 		game.updateStats();
 	});
 
-	game.init();
+	$("#output").addClass("flex").append($("<button>").text("Start").attr("id", "start").addClass("btn btn-primary"));
+	$("#start").on("click", function(e){
+		$("#output").removeClass("flex");
+		$("#start").remove();
+		game.init();
+	});	
 });
