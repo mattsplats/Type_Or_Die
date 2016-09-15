@@ -39,7 +39,7 @@ let game = {
 	startingTimeout: 3600,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
 	wordLiveTime: 6700,  // Msec a word remains on screen
-	maxWords: 50,  // Most words to be shown on screen at one time
+	maxWords: 5,  // Most words to be shown on screen at one time
 
 	// Methods
 	init: function() {
