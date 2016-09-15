@@ -1,0 +1,50 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+  background-image: url(../images/brickwall.png);
+}
+.footer {
+  position: absolute;
+  bottom: 0;/
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #525252;
+}
+
+h1 {
+	font-family: 'Bungee Shade', cursive;
+  font-size: 70px;
+}
+
+.footer-text {
+	color: white;
+	text-align: left;
+	margin-top: 20px;
+}
+
+#game-body {
+  height: 500px;
+}
+
+.instructions {
+  font-family: 'Amatica SC', cursive;
+  font-size: 30px;
+}
+
+/* Matt's test animation */
+.fallingWord {
+  animation-name: move_down;
+    animation-duration: 8s;
+    animation-timing-function: linear;
+    animation-delay: 1s;
+}
+
+@keyframes move_down {
+  0%   {transform: translate3d(0, -50px, 0);}
+  100% {transform: translate3d(0, 500px, 0);}
+}
