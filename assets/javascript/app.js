@@ -1,14 +1,14 @@
 "use strict";
 
 // Calculate width of text from DOM element or string. By Phil Freo <http://philfreo.com>
-$.fn.textWidth = function(text, font) {
-    if (!$.fn.textWidth.fakeEl) $.fn.textWidth.fakeEl = $('<span>').appendTo(document.body);
-    var htmlText = text || this.val() || this.text();
-    htmlText = $.fn.textWidth.fakeEl.text(htmlText).html(); //encode to Html
-    htmlText = htmlText.replace(/\s/g, "&nbsp;"); //replace trailing and leading spaces
-    $.fn.textWidth.fakeEl.html(htmlText).css('font', font || this.css('font'));
-    return $.fn.textWidth.fakeEl.width();
-};
+// $.fn.textWidth = function(text, font) {
+//     if (!$.fn.textWidth.fakeEl) $.fn.textWidth.fakeEl = $('<span>').appendTo(document.body);
+//     var htmlText = text || this.val() || this.text();
+//     htmlText = $.fn.textWidth.fakeEl.text(htmlText).html(); //encode to Html
+//     htmlText = htmlText.replace(/\s/g, "&nbsp;"); //replace trailing and leading spaces
+//     $.fn.textWidth.fakeEl.html(htmlText).css('font', font || this.css('font'));
+//     return $.fn.textWidth.fakeEl.width();
+// };
 
 // Main game object
 let game = {
@@ -36,10 +36,10 @@ let game = {
 
 	// Timing & word addition constants
 	speedupFactor: 1.015,  // Muliplier for the rate at which new words are added, applies after each added word
-	startingTimeout: 3500,  // Msec before first new word is added
+	startingTimeout: 3600,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
 	wordLiveTime: 6700,  // Msec a word remains on screen
-	maxWords: 5,  // Most words to be shown on screen at one time
+	maxWords: 50,  // Most words to be shown on screen at one time
 
 	// Methods
 	init: function() {
@@ -56,7 +56,7 @@ let game = {
 				// Replace escaped &amp; with &
 				.replace(/(&amp;)/g, "&")
 				// Uppercase first letter of these words
-				.replace(/(3 wolf moon|kickstarter|helvetica|thundercats|williamsburg|brooklyn|iceland|austin|pabst|master cleanse|echo park|marfa|portland|knausgaard|godard|la croix|four loko|pok pok|edison)/g, function(x){
+				.replace(/(3 wolf moon|lyft|etsy|kickstarter|helvetica|thundercats|williamsburg|brooklyn|iceland|austin|pabst|master cleanse|echo park|marfa|portland|knausgaard|godard|la croix|four loko|pok pok|edison)/g, function(x){
 					let y = x[0].toUpperCase();
 					for (let i = 1; i < x.length; i++) {
 						x[i - 1] == " " ? y += x[i].toUpperCase() : y += x[i];
@@ -118,9 +118,8 @@ let game = {
 		$("#output").append(html);
 
 		// Randomize y position of new word
-		let maxXPos = parseInt(/[0-9]+/.exec($("#game-body").css("width"))[0]) - $.fn.textWidth("<div class='fallingWord'>" + word.str + "</div>") - 100;
-		maxXPos = maxXPos < 0 ? 0 : maxXPos;
-		const rand = Math.floor(Math.random() * maxXPos);
+		const maxXPos = parseInt(/[0-9]+/.exec($("#game-body").css("width"))[0]) - (word.str.length * 18) - 16;
+		const rand = Math.floor(Math.random() * maxXPos) + 10;
 		$("#word_" + game.currentWord).css("left", rand);
 
 		const index = game.activeWords.length;
@@ -213,8 +212,6 @@ let game = {
 		$("#wpm").html("WPM: " + wpm.toFixed(1) + "<br/>Best WPM: " + game.bestWpm.toFixed(1));
 		$("#acc").html("Accuracy: " + game.hits + " / " + (game.hits + game.misses) + " ( " + acc.toFixed(1) + "% )");
 		$("#streak").html("Current streak: " + game.currentStreak + "<br/>Longest streak: " + game.longestStreak);
-
-		console.log(game.timeOffset);
 	}
 };
 
