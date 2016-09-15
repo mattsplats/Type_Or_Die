@@ -13,6 +13,7 @@
 
 	<link href="https://fonts.googleapis.com/css?family=Bungee+Shade" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Amatica+SC" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
 <body>
@@ -42,15 +43,11 @@
               <h3 class="panel-title">Current Score / High Score</h3>
             </div>
 
-            <div class="panel-body">
-              <table class="table table-hover" id="score-table">
-                <thead>
-                  <tr>
-
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
+            <div id="stats" class="panel-body">
+              <div id="score"></div> <div id="wpm"></div>
+              <div id="acc"></div>
+              <div id="streak"></div><br/>
+              <button id="clearStats" class="btn btn-default">Reset Stats</button>
             </div>
           </div>
         </div>

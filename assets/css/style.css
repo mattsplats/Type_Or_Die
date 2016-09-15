@@ -2,11 +2,13 @@ html {
   position: relative;
   min-height: 100%;
 }
+
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
   background-image: url(../images/brickwall.png);
 }
+
 .footer {
   position: absolute;
   bottom: 0;/
@@ -29,6 +31,8 @@ h1 {
 
 #game-body {
   height: 500px;
+  position: relative;
+  overflow: hidden;
 }
 
 .instructions {
@@ -36,15 +40,33 @@ h1 {
   font-size: 30px;
 }
 
-/* Matt's test animation */
+/* Matt's animations */
 .fallingWord {
+  position: absolute;
+  font-family: 'Source Code Pro', monospace;
+
   animation-name: move_down;
-    animation-duration: 8s;
-    animation-timing-function: linear;
-    animation-delay: 1s;
+  animation-duration: 7s;
+  animation-timing-function: linear;
+  animation-delay: 0s;
 }
 
 @keyframes move_down {
   0%   {transform: translate3d(0, -50px, 0);}
   100% {transform: translate3d(0, 500px, 0);}
+}
+
+.wordShake {
+  animation-name: wiggle;
+  animation-duration: 0.15s;
+  animation-timing-function: linear;
+  animation-delay: 0s;
+}
+
+@keyframes wiggle {
+  0%   {transform: translate3d(-3px, 0, 0);}
+  25%  {transform: translate3d(6px, 0, 0);}
+  60%  {transform: translate3d(-6px, 0, 0);}
+  90%  {transform: translate3d(-3px, 0, 0);}
+  100% {transform: translate3d(0, 0, 0);}
 }
