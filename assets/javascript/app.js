@@ -3,14 +3,20 @@
 // Main game object
 let game = {
 	// Game state vars
-	activeWords: [],  // Words on screen
-	matchingWords: [],  // Words still matching input string
-	missedWords: [],
-	sourceWords: [],  // Available word list built from API (strings only)
 	currentLetter: 0,  // Current matching letter for words remaining in matchingWords
 	currentWord: 0,  // Used only to give a unique identifier to each word
 	currentTimeout: 0,  // Time to next word
+	hipsterDone: false,
+	latinDone: false,
 	ready: false,
+
+	// Word arrays
+	activeWords: [],  // Words on screen
+	matchingWords: [],  // Words still matching input string
+	missedWords: [],
+	sourceWords: [],  // Source for adding words to game
+	hipsterWords: [],  // Available word lists for adding to game
+	latinWords: [],
 
 	// Stats vars
 	score: 0,
@@ -23,20 +29,46 @@ let game = {
 	timeOffset: 0,  // Accumulates time the player is not allowed to input characters
 	emptyStart: 0,  // Starts counter for time screen is empty
 
-	// Game constants (modify for testing as needed)
-	length: 1,  // Length of a game in words (game will end when game.length words have been completed/missed)
-	speedupFactor: 1.015,  // Muliplier for the rate at which new words are added, applies after each added word
+	// Game constants - safe to modify
+	length: 5,  // Length of a game in words (game will end when game.length words have been completed/missed)
+	speedupFactor: 1.02,  // Muliplier for the rate at which new words are added, applies after each added word
 	startingTimeout: 3600,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
 	maxWords: 5,  // Most words to be shown on screen at one time
-	wordLiveTime: 6700,  // Msec a word remains on screen *(CURRENTLY UNSAFE TO MODIFY)*
+
+	// Constants - UNSAFE TO MODIFY
+	wordLiveTime: 6700,  // Timeout until word is removed
+	wordBuffer: 10,  // Minimum buffer of source words (will trigger an XHR more if sourceWords < wordBuffer)
 
 	// Methods
 	init: function() {
-		game.getMoreWords();
+		game.getHipsterWords();
+		game.getLatinWords();
+		game.showButtons();
 	},
 
-	getMoreWords: function() {
+	showButtons: function() {
+		$("#output").addClass("flex")
+			.append($("<button>").text("Hipster Words").attr("id", "hipster").data("type", "hipster").addClass("btn btn-default startGame"))
+				.append("&nbsp;&nbsp;&nbsp;")
+			.append($("<button>").text("Latin Words").attr("id", "latin").data("type", "latin").addClass("btn btn-default startGame"));
+
+		$(".startGame").on("click", function(e){
+			if (game.hipsterDone && game.latinDone) {
+				switch ($(this).data("type")) {
+					case "hipster": game.sourceWords = game.hipsterWords.slice(); break;
+					case "latin": game.sourceWords = game.latinWords.slice(); break;
+				}
+
+				game.startAddingWords();
+
+				$("#output").removeClass("flex");
+				$("#output").empty();
+			}
+		});
+	},
+
+	getHipsterWords: function() {
 		$.get("http://hipsterjesus.com/api/", { paras: 5, type: "hipster-centric", html: "false" }).done(function(response){
 			const str = response.text
 				// Lowercase all words with a starting uppercase letter (beginning of sentences)
@@ -59,37 +91,51 @@ let game = {
 
 			// Remove duplicates and undesired words
 			for (let i = 0; i < srcArr.length; i++) {
-				if (game.sourceWords.indexOf(srcArr[i]) == -1 && !/cornhole|fap|hell|IPhone/.test(srcArr[i])) {
-					game.sourceWords.push(srcArr[i]);
+				if (game.hipsterWords.indexOf(srcArr[i]) == -1 && !/cornhole|fap|hell|IPhone/.test(srcArr[i])) {
+					game.hipsterWords.push(srcArr[i]);
 				}
 			}
 
-			// Initial game setup when no words are present
-			if (!game.ready) {
-				game.newWord();
-
-				// Add new words on timer
-				game.currentTimeout = game.startingTimeout;
-				function anotherWord(){
-				    clearTimeout(timer);
-				    if (game.currentWord < game.length) {
-					    if (game.activeWords.length < game.maxWords) {
-					    	game.newWord();
-					    	game.currentTimeout / game.speedupFactor < game.minTimeout ? game.currentTimeout = game.minTimeout : game.currentTimeout /= game.speedupFactor;
-					    }
-					    timer = setTimeout(anotherWord, game.currentTimeout);
-					} else {
-						game.ready = false;
-						$("#output").addClass("flex").html("<h1>Thanks for playing!</h1>");
-					}
-				}
-				let timer = setTimeout(anotherWord, game.currentTimeout);
-
-				game.updateStats();
-				game.startTime = Date.now();
-				game.ready = true;
-			}
+			game.hipsterDone = true;
 		});
+	},
+
+	getLatinWords: function() {
+		$.get("http://www.randomtext.me/api/lorem/p-1/100").done(function(response){ 
+			const srcText = response.text_out.match(/<p>(.*)\.<\/p>/)[1];
+			const finalText = srcText.match(/([^.,\n ]{3,})/g);
+
+			game.latinWords = finalText;
+
+			game.latinDone = true;
+		});
+	},
+
+	startAddingWords: function() {
+		game.ready = true;
+
+		game.score = 0;
+		game.currentStreak = 0;
+		game.longestStreak = 0;
+		game.hits = 0;
+		game.misses = 0;
+		game.startTime = Date.now();
+		game.timeOffset = 0;
+		game.updateStats();
+
+		let timer = setTimeout(anotherWord, 0);
+		game.currentTimeout = game.startingTimeout;
+
+		function anotherWord() {
+		    clearTimeout(timer);
+		    if (game.currentWord < game.length) {
+			    if (game.activeWords.length < game.maxWords) {
+			    	game.newWord();
+			    	game.currentTimeout / game.speedupFactor < game.minTimeout ? game.currentTimeout = game.minTimeout : game.currentTimeout /= game.speedupFactor;
+			    }
+			    timer = setTimeout(anotherWord, game.currentTimeout);
+			} else { game.endGame(); }
+		}
 	},
 
 	newWord: function() {
@@ -104,7 +150,7 @@ let game = {
 			number: game.currentWord  // Stores the number used in the div and span IDs at HTML creation time
 		};
 		game.sourceWords.splice(0, 1);
-		if (game.sourceWords.length < 10) { game.getMoreWords(); }
+		if (game.sourceWords.length < game.wordBuffer) { game.getHipsterWords(); }
 
 		// Create and output series of spans for each character in the word
 		let html = "<div id='word_" + game.currentWord + "' class='fallingWord'><div id='word_" + game.currentWord + "_wrapper'><h2>";
@@ -209,6 +255,15 @@ let game = {
 		$("#acc").html(game.hits + " / " + (game.hits + game.misses) + " ( " + acc.toFixed(1) + "% )");
 		$("#streak").html(game.currentStreak);
 		$("#longest").html(game.longestStreak);
+	},
+
+	endGame: function() {
+		game.ready = false;
+		game.currentLetter = 0;
+		game.currentWord = 0;
+
+		$("#output").addClass("flex").html("<h1>Thanks for playing!</h1><br/>");
+		game.showButtons();
 	}
 };
 
@@ -272,10 +327,5 @@ $(function() {
 		game.updateStats();
 	});
 
-	$("#output").addClass("flex").append($("<button>").text("Start").attr("id", "start").addClass("btn btn-primary"));
-	$("#start").on("click", function(e){
-		$("#output").removeClass("flex");
-		$("#start").remove();
-		game.init();
-	});	
+	game.init();
 });
