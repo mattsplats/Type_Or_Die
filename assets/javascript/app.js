@@ -30,7 +30,7 @@ let game = {
 	emptyStart: 0,  // Starts counter for time screen is empty
 
 	// Game constants - safe to modify
-	length: 5,  // Length of a game in words (game will end when game.length words have been completed/missed)
+	length: 1,  // Length of a game in words (game will end when game.length words have been completed/missed)
 	speedupFactor: 1.02,  // Muliplier for the rate at which new words are added, applies after each added word
 	startingTimeout: 3600,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
@@ -48,10 +48,10 @@ let game = {
 	},
 
 	showButtons: function() {
-		$("#output").addClass("flex")
-			.append($("<button>").text("Hipster Words").attr("id", "hipster").data("type", "hipster").addClass("btn btn-default startGame"))
-				.append("&nbsp;&nbsp;&nbsp;")
-			.append($("<button>").text("Latin Words").attr("id", "latin").data("type", "latin").addClass("btn btn-default startGame"));
+		const template = "<div><button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp; " + 
+			"<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button></div>";
+
+		$("#output").addClass("flex").append(template);
 
 		$(".startGame").on("click", function(e){
 			if (game.hipsterDone && game.latinDone) {
@@ -262,7 +262,7 @@ let game = {
 		game.currentLetter = 0;
 		game.currentWord = 0;
 
-		$("#output").addClass("flex").html("<h1>Thanks for playing!</h1><br/>");
+		$("#output").addClass("flex").html("<div class='text-center'><h1>Thanks for playing!</h1></div>");
 		game.showButtons();
 	}
 };
@@ -313,18 +313,6 @@ $(function() {
 				game.wrongKey();
 			}
 		}
-	});
-
-	// Clear stats button - resets all stats to zero
-	$("#clearStats").on("click", function(e){
-		game.score = 0;
-		game.currentStreak = 0;
-		game.longestStreak = 0;
-		game.hits = 0;
-		game.misses = 0;
-		game.startTime = Date.now();
-		game.timeOffset = 0;
-		game.updateStats();
 	});
 
 	game.init();
