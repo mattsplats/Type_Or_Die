@@ -31,6 +31,7 @@ let game = {
 	maxWords: 5,  // Most words to be shown on screen at one time
 	wordLiveTime: 6700,  // Msec a word remains on screen *(CURRENTLY UNSAFE TO MODIFY)*
 
+
 	// Methods
 	init: function() {
 		game.getMoreWords();
@@ -253,6 +254,8 @@ $(function() {
 				// *NOTE: assumes no two words in activeWords are identical*
 				if (game.currentLetter == game.matchingWords[0].str.length) {
 					game.completeWord(game.matchingWords[0]);
+					var ding = new Audio("assets/ding.mp3");
+					ding.play();
 				}
 			}
 			else {
