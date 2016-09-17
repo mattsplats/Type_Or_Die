@@ -1,6 +1,6 @@
-var user;
+let user;
 
-var config = {
+const config = {
   apiKey: "AIzaSyBY7pBTCXioihyhFQJ_DKYlqfFPOzMK14M",
   authDomain: "typing-game-e0909.firebaseapp.com",
   databaseURL: "https://typing-game-e0909.firebaseio.com",
@@ -10,7 +10,7 @@ var config = {
 
 firebase.initializeApp(config);
 
-$(document).on('click', 'button', function() {
+$("#auth").on('click', function() {
   // First, we perform the signInWithRedirect.
   // Creates the provider object.
   var auth = firebase.auth()
@@ -21,7 +21,20 @@ $(document).on('click', 'button', function() {
   auth.signInWithPopup(provider).then(function(result) {
     // The firebase.User instance:
     user = result.user;
+    console.log(user);
   }, function(error) {
     throw error;
   });
 });
+
+// $(document).on('click', 'button', function() {
+// var user = $(this).data('user')
+// var queryURL = "https://developer.github.com/v3/search/#search-users"
+
+// $.ajax({
+//                 url: queryURL,
+//                 method: 'GET'
+//             })
+//             .done(function(response) {
+//                 var results = response.data;
+//                 console.log(results)
