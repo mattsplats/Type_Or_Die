@@ -17,9 +17,9 @@ const game = {
 	missedWords: [],  // Words that do not match input string (on current keystroke)
 
 	// Constants (safe to modify)
-	length: 5,  // Length of a game in words (game will end when game.length words have been completed/missed)
+	length: 10,  // Length of a game in words (game will end when game.length words have been completed/missed)
 	speedupFactor: 1.02,  // Muliplier for the rate at which new words are added, applies after each added word
-	startingTimeout: 3600,  // Msec before first new word is added
+	startingTimeout: 3200,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
 	maxWords: 5,  // Most words to be shown on screen at one time
 

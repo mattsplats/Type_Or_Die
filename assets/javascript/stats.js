@@ -19,8 +19,7 @@ const stats = {
 	scoreMult: 100,  // Multiplier for score display
 
 	// Highscore table vars
-	scoreCount: 0,
-	numScores: 0,
+	scoreArr: [],
 	maxScores: 5,
 
 	update: function(){},
@@ -73,17 +72,30 @@ Object.defineProperty(stats, "reset", { value: function(){
 
 // stats.push
 Object.defineProperty(stats, "push", { value: function(){
-	const template = "<tr id='num_" + stats.scoreCount + "''><th class='text-center hipster-text'>" + (stats.score * stats.scoreMult) + "</th>" +
+	const template = "<tr><th class='text-center hipster-text'>" + (stats.score * stats.scoreMult) + "</th>" +
 		"<th class='text-center hipster-text'>" + stats.wpm.toFixed(1) + "</th>" +
 		"<th class='text-center hipster-text'>" + stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )" + "</th>" +
 		"<th class='text-center hipster-text'>" + stats.longestStreak + "</th>" +
 	"</tr>";
 
-	$("#highscore-stats").prepend(template);
-	stats.scoreCount++;
-	stats.numScores++;
+	const scoreObj = {
+		html: template,
+		score: stats.score,
+		wpm: stats.wpm,
+		acc: stats.acc,
+		longestStreak: stats.longestStreak
+	};
 
-	if (stats.numScores > stats.maxScores) {
-		$("#num_" + (stats.scoreCount - stats.maxScores)).remove();
+	stats.scoreArr.push(scoreObj);
+	stats.scoreArr.sort(function(a, b) {
+		if (a.score != b.score) { return b.score - a.score; }
+		else { return b.wpm - a.wpm }
+	});
+
+	if (stats.scoreArr.length > stats.maxScores) { stats.scoreArr.pop(); }
+
+	$("#highscore-stats").empty();
+	for (let i = 0; i < stats.scoreArr.length; i++) {
+		$("#highscore-stats").append(stats.scoreArr[i].html);
 	}
 }});
