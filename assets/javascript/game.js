@@ -114,6 +114,18 @@ Object.defineProperty(game, "start", { value: function() {
 // game.end
 Object.defineProperty(game, "end", { value: function() {
 	game.ready = false;
+	var userName=user.displayName
+	var wpm = stats.wordsCompleted / ((Date.now() - stats.startTime - stats.timeOffset) / 1000 / 60) || 0;
+	var acc = 100 * stats.hits / (stats.hits + stats.misses) || 0;
+	var longestStreak = stats.longestStreak
+	database.ref().push({
+    userName:userName,
+    wpm:wpm,
+    acc:acc,
+    longestStreak:longestStreak,
+});
+
+
 	
 	$("#output").addClass("flex").html("<div class='text-center'><h1>Thanks for playing!</h1></div>");
 	game.showButtons();

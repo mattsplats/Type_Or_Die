@@ -9,6 +9,11 @@ body {
   background-image: url(../images/brickwall.png);
 }
 
+.signIn{
+  font-family: 'Bungee Shade', cursive;
+  text-align: center
+}
+
 .footer {
   position: absolute;
   bottom: 0;

@@ -17,7 +17,10 @@
 <body>
 
 	<div class="container">
-    <button class = "btn btn-primary">Sign In to Play!</button>
+
+    <div class ="signIn">
+    <button class = "btn btn-lg">Sign In to Play!</button>
+    </div>
     <h1 class="text-center">Typing Game</h1>
 	
       <!-- Start Main Game Body -->
@@ -51,10 +54,10 @@
               <table class="table table-hover" id="score-table">
                 <thead>
                   <tr>
-                    <th class="text-center hipster-text">User Name:</th>
-                    <th class="text-center hipster-text">WPM:</th>
-                    <th class="text-center hipster-text">Accuracy %:</th>
-                    <th class="text-center hipster-text">Longest Streak:</th>
+                    <th class="text-center hipster-text" id="user">User Name:</th>
+                    <th class="text-center hipster-text" id="WPM">WPM:</th>
+                    <th class="text-center hipster-text" id="accuracy">Accuracy %:</th>
+                    <th class="text-center hipster-text" id="streak">Longest Streak:</th>
                   </tr>
                 </thead>
                 <tbody id="highscore-stats"></tbody>
@@ -95,6 +98,6 @@
   <script src="assets/javascript/data.js"></script>
   <script src="assets/javascript/stats.js"></script>
 	<script src="assets/javascript/app.js"></script>
-  <script src="assets/javascript/tenorajax.js"></script>
+  <script src="assets/javascript/firebase.js"></script>
 </body>
 </html>

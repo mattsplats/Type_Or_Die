@@ -9,7 +9,7 @@ var config = {
 };
 
 firebase.initializeApp(config);
-
+var database = firebase.database()
 $(document).on('click', 'button', function() {
   // First, we perform the signInWithRedirect.
   // Creates the provider object.
@@ -25,3 +25,4 @@ $(document).on('click', 'button', function() {
     throw error;
   });
 });
+
