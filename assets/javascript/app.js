@@ -24,10 +24,8 @@ $(function() {
 					$("#word_" + word.number + "_letter_" + game.currentLetter).css("color", "red");
 					if (word.str[game.currentLetter] == " ") { $("#word_" + word.number + "_letter_" + game.currentLetter).html("_"); }
 				} else {
-					// game.missedWords.push(word);
 					game.resetWord(word, i);
-					// game.matchingWords.splice(i, 1);
-					i--;  // Decrement loop counter
+					i--;  // Decrement loop counter (the current word has been removed from matchingWords: next word was @ i+1, now @ i)
 				}
 			}
 

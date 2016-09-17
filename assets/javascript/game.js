@@ -1,13 +1,14 @@
 "use strict";
 
 // Main game object declaration
-let game = {
+const game = {
 	// Game state vars
 	currentLetter: 0,  // Current matching letter for words remaining in matchingWords
 	currentWord: 0,  // Used only to give a unique identifier to each word
 	currentTimeout: 0,  // Time to next word
 	currentSource: "",  // Currently selected word source
 	ready: false,
+	over: false,
 
 	// Word arrays
 	sourceWords: [],  // Source for adding words to game
@@ -28,7 +29,7 @@ let game = {
 
 
 	// Methods
-	init: function(){},  
+	init: function(){},
 		// Initializes game - makes all necessary queries for data (XHR or Firebase db) and shows selection buttons
 		// Calls: data.get, showButtons
 		// Sets: (none)
@@ -71,7 +72,7 @@ let game = {
 	showButtons: function(){}
 		// Shows word list selector buttons, modifies #output div css, adds onClick handler for these buttons
 		// Calls: start
-		// Sets: sourceWords
+		// Sets: currentSource, sourceWords
 };
 
 
@@ -132,7 +133,7 @@ Object.defineProperty(game, "addWord", { value: function() {
 		number: game.currentWord  // Stores the number used in the div and span IDs at HTML creation time
 	};
 	game.sourceWords.splice(0, 1);
-	if (game.sourceWords.length < game.wordBuffer) { game.sourceWords = data.get(game.source); }
+	if (game.sourceWords.length < game.wordBuffer) { game.sourceWords = data.get(game.currentSource); }
 
 	// Create and output series of spans for each character in the word
 	let html = "<div id='word_" + game.currentWord + "' class='fallingWord'><div id='word_" + game.currentWord + "_wrapper'><h2>";
@@ -238,14 +239,9 @@ Object.defineProperty(game, "showButtons", { value: function() {
 
 	$(".startGame").on("click", function(e){
 		if (data.isReady()) {
-			game.source = $(this).data("type");
-			game.sourceWords = data.get(game.source);
-
-			// switch ($(this).data("type")) {
-			// 	case "hipster": game.sourceWords = data.hipsterWords.slice(); break;
-			// 	case "latin": game.sourceWords = data.latinWords.slice(); break;
-			// }
-
+			// Set source to selected word source, get words from that source
+			game.currentSource = $(this).data("type");
+			game.sourceWords = data.get(game.currentSource);
 			game.start();
 
 			$("#output").removeClass("flex");

@@ -1,9 +1,9 @@
 "use strict";
 
 // Data acquisition, processing, and storage (i.e. word lists)
-let data = {
+const data = {
 	// Word lists from APIs
-	hipsterWords: [],  // Available word lists for adding to game
+	hipsterWords: [],
 	latinWords: [],
 
 	// Methods
@@ -18,8 +18,9 @@ let data = {
 		// Sets: any or all data.Words properties
 };
 
+
 // Method definitions
-// data.ready
+// data.isReady
 Object.defineProperty(data, "isReady", { value: function() {
 	return (data.hipsterWords.length && data.latinWords.length);
 }});
@@ -73,15 +74,3 @@ Object.defineProperty(data, "get", { value: function(source) {
 		});
 	}
 }});
-
-// Object.defineProperty(
-// getLatinWords: function() {
-// 	$.get("http://www.randomtext.me/api/lorem/p-1/100").done(function(response){ 
-// 		// const srcText = response.text_out.match(/<p>(.*)\.<\/p>/)[1];
-// 		// const finalText = srcText.match(/([^.,\n ]{3,})/g);
-
-// 		// game.latinWords = finalText;
-
-// 		game.latinWords = response.text_out.match(/([^.,\n<>/ ]{3,})/g);
-// 	});
-// },

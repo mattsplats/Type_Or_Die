@@ -1,7 +1,7 @@
 "use strict";	
 
 // Stats processing and storage
-let stats = {
+const stats = {
 	score: 0,
 	wordsCompleted: 0,
 	currentStreak: 0,
