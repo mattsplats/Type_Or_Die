@@ -1,4 +1,4 @@
-"use strict";	
+"use strict";
 
 // Stats processing and storage
 const stats = {
