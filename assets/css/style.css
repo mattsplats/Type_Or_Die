@@ -2,18 +2,25 @@ html {
   position: relative;
   min-height: 100%;
 }
+
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
   background-image: url(../images/brickwall.png);
 }
+
 .footer {
   position: absolute;
-  bottom: 0;/
+  bottom: 0;
   width: 100%;
   /* Set the fixed height of the footer here */
   height: 60px;
   background-color: #525252;
+}
+
+#start {
+  font-family: 'Chewy', cursive;  
+  font-size: 25px;
 }
 
 h1 {
@@ -27,24 +34,74 @@ h1 {
 	margin-top: 20px;
 }
 
-#game-body {
-  height: 500px;
+.panel-title-text {
+  font-family: 'Chewy', cursive;
+  font-size: 22px;
 }
 
-.instructions {
+#game-body {
+  height: 500px;
+  position: relative;
+  overflow: hidden;
+}
+
+#score-bar {
+  display: flex;
+  justify-content: space-between;
+}
+
+#highscore-stats {
+  font-family: 'Amatica SC', cursive;
+  font-size: 27px;
+}
+
+#instructions {
+  font-family: 'Amatica SC', cursive;
+  font-size: 25px;
+}
+
+.hipster-text {
   font-family: 'Amatica SC', cursive;
   font-size: 30px;
 }
 
-/* Matt's test animation */
+/* Matt's animations */
 .fallingWord {
+  position: absolute;
+  font-family: 'Source Code Pro', monospace;
+
   animation-name: move_down;
-    animation-duration: 8s;
-    animation-timing-function: linear;
-    animation-delay: 1s;
+  animation-duration: 7s;
+  animation-timing-function: linear;
+  animation-delay: 0s;
 }
 
 @keyframes move_down {
-  0%   {transform: translate3d(0, -50px, 0);}
-  100% {transform: translate3d(0, 500px, 0);}
+  0%   {transform: translate3d(0, -70px, 0);}
+  100% {transform: translate3d(0, 470px, 0);}
+}
+
+.wordShake {
+  animation-name: wiggle;
+  animation-duration: 0.15s;
+  animation-timing-function: linear;
+  animation-delay: 0s;
+}
+
+@keyframes wiggle {
+  0%   {transform: translate3d(-3px, 0, 0);}
+  25%  {transform: translate3d(6px, 0, 0);}
+  60%  {transform: translate3d(-6px, 0, 0);}
+  90%  {transform: translate3d(-3px, 0, 0);}
+  100% {transform: translate3d(0, 0, 0);}
+}
+
+/* Matt's temp classes */
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  flex-wrap: wrap;
+  height: 470px;
 }
