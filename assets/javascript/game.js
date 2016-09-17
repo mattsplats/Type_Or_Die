@@ -17,7 +17,7 @@ const game = {
 	missedWords: [],  // Words that do not match input string (on current keystroke)
 
 	// Constants (safe to modify)
-	length: 10,  // Length of a game in words (game will end when game.length words have been completed/missed)
+	length: 5,  // Length of a game in words (game will end when game.length words have been completed/missed)
 	speedupFactor: 1.02,  // Muliplier for the rate at which new words are added, applies after each added word
 	startingTimeout: 3600,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
@@ -37,12 +37,12 @@ const game = {
 	start: function(){},
 		// Start adding words to output div on timer (see // Constants for timing vars)
 		// Calls: stats.reset, addWord, end, stats.update
-		// Sets: stats.startTime, ready
+		// Sets: currentLetter, currentWord, stats.startTime, ready, over
 
 	end: function(){},
 		// Shows "game over" screen and buttons to play again
-		// Calls: showButtons
-		// Sets: ready
+		// Calls: showButtons, stats.push
+		// Sets: ready, over
 
 	addWord: function(){},
 		// Places a new falling word on screen, sets a timeout to call removeWord if not completed in wordLiveTime
@@ -72,7 +72,7 @@ const game = {
 	showButtons: function(){}
 		// Shows word list selector buttons, modifies #output div css, adds onClick handler for these buttons
 		// Calls: start
-		// Sets: currentSource, sourceWords
+		// Sets: currentSource, sourceWords, over
 };
 
 
@@ -103,20 +103,25 @@ Object.defineProperty(game, "start", { value: function() {
 		    	game.currentTimeout / game.speedupFactor < game.minTimeout ? game.currentTimeout = game.minTimeout : game.currentTimeout /= game.speedupFactor;
 		    }
 		    timer = setTimeout(anotherWord, game.currentTimeout);
-		} else { game.end(); }
+		}
 	}
 
 	stats.startTime = Date.now();
 	stats.update();
+	game.over = false;
 	game.ready = true;
 }});
 
 // game.end
 Object.defineProperty(game, "end", { value: function() {
-	game.ready = false;
-	
-	$("#output").addClass("flex").html("<div class='text-center'><h1>Thanks for playing!</h1></div>");
-	game.showButtons();
+	if (!game.over) {
+		game.over = true;
+		game.ready = false;
+		
+		$("#output").addClass("flex").html("<div class='text-center'><h1>Thanks for playing!</h1></div>");
+		game.showButtons();
+		stats.push();
+	}
 }});
 
 // game.addWord
@@ -171,6 +176,8 @@ Object.defineProperty(game, "removeWord", { value: function(word) {
 			game.matchingWords.splice(game.matchingWords.indexOf(word), 1);
 		}
 	}
+
+	if (game.currentWord == game.length && game.activeWords.length == 0) { game.end(); }
 }});
 
 // game.resetWord
@@ -206,6 +213,8 @@ Object.defineProperty(game, "completeWord", { value: function(word) {
 	if (game.activeWords.length == 0) {
 		stats.emptyStart = Date.now();
 	}
+
+	if (game.currentWord == game.length && game.activeWords.length == 0) { game.end(); }
 }});
 
 // game.wrongKey
@@ -239,6 +248,8 @@ Object.defineProperty(game, "showButtons", { value: function() {
 
 	$(".startGame").on("click", function(e){
 		if (data.isReady()) {
+			game.over = false;
+
 			// Set source to selected word source, get words from that source
 			game.currentSource = $(this).data("type");
 			game.sourceWords = data.get(game.currentSource);
