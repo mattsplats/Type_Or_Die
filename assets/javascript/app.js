@@ -24,7 +24,9 @@ let game = {
 	emptyStart: 0,  // Starts counter for time screen is empty
 
 	// Game constants (modify for testing as needed)
-	length: 20,  // Length of a game in words (game will end when game.length words have been completed/missed)
+
+	length: 1,  // Length of a game in words (game will end when game.length words have been completed/missed)
+
 	speedupFactor: 1.015,  // Muliplier for the rate at which new words are added, applies after each added word
 	startingTimeout: 3600,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
