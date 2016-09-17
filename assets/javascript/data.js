@@ -21,7 +21,7 @@ let data = {
 // Method definitions
 // data.ready
 Object.defineProperty(data, "isReady", { value: function() {
-	return (data.hipsterWords && data.latinWords);
+	return (data.hipsterWords.length && data.latinWords.length);
 }});
 
 // data.get
