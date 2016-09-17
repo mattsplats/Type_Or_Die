@@ -77,8 +77,8 @@ h1 {
 }
 
 @keyframes move_down {
-  0%   {transform: translate3d(0, -50px, 0);}
-  100% {transform: translate3d(0, 500px, 0);}
+  0%   {transform: translate3d(0, -70px, 0);}
+  100% {transform: translate3d(0, 470px, 0);}
 }
 
 .wordShake {
@@ -101,5 +101,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
+  align-content: center;
+  flex-wrap: wrap;
   height: 470px;
 }
