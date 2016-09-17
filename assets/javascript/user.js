@@ -26,7 +26,7 @@ $("#auth").on('click', function() {
     
     firebase.database().ref("users/" + user.email).set({
       name: user.name,
-      email: user.email
+      email: user.email.match(/(.*)@/)
     });
 
   }, function(error) {
