@@ -24,12 +24,15 @@ let game = {
 	emptyStart: 0,  // Starts counter for time screen is empty
 
 	// Game constants (modify for testing as needed)
+
 	length: 1,  // Length of a game in words (game will end when game.length words have been completed/missed)
+
 	speedupFactor: 1.015,  // Muliplier for the rate at which new words are added, applies after each added word
 	startingTimeout: 3600,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
 	maxWords: 5,  // Most words to be shown on screen at one time
 	wordLiveTime: 6700,  // Msec a word remains on screen *(CURRENTLY UNSAFE TO MODIFY)*
+
 
 	// Methods
 	init: function() {
@@ -253,6 +256,8 @@ $(function() {
 				// *NOTE: assumes no two words in activeWords are identical*
 				if (game.currentLetter == game.matchingWords[0].str.length) {
 					game.completeWord(game.matchingWords[0]);
+					var ding = new Audio("assets/ding.mp3");
+					ding.play();
 				}
 			}
 			else {
