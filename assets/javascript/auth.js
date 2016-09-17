@@ -1,13 +1,13 @@
 let user;
 
+// Initialize Firebase
 const config = {
-  apiKey: "AIzaSyBY7pBTCXioihyhFQJ_DKYlqfFPOzMK14M",
-  authDomain: "typing-game-e0909.firebaseapp.com",
-  databaseURL: "https://typing-game-e0909.firebaseio.com",
-  storageBucket: "typing-game-e0909.appspot.com",
-  messagingSenderId: "655499981688"
+  apiKey: "AIzaSyDM9yXN5XfGo_atATfz8E9eoJpBM84o9sE",
+  authDomain: "typinggame-5649e.firebaseapp.com",
+  databaseURL: "https://typinggame-5649e.firebaseio.com",
+  storageBucket: "typinggame-5649e.appspot.com",
+  messagingSenderId: "271779327937"
 };
-
 firebase.initializeApp(config);
 
 $("#auth").on('click', function() {
@@ -15,13 +15,16 @@ $("#auth").on('click', function() {
   // Creates the provider object.
   var auth = firebase.auth()
   var provider = new firebase.auth.GoogleAuthProvider();
+
   // You can add additional scopes to the provider:
   provider.addScope('email');
+
   // Sign in with redirect:
   auth.signInWithPopup(provider).then(function(result) {
     // The firebase.User instance:
     user = result.user;
     console.log(user);
+    
   }, function(error) {
     throw error;
   });
