@@ -12,6 +12,11 @@ $(function() {
 	};
 	firebase.initializeApp(config);
 
+
+	// User signin popup
+	$("#auth").on('click', function() { user.auth(); }, function(error) { throw error; });
+
+
 	// Main input processing function (on any keypress)
 	$(document).on("keypress", function(e) {
 		// Prevent spacebar from scrolling the page
@@ -56,5 +61,6 @@ $(function() {
 		}
 	});
 
+	// Initialize game
 	game.init();
 });

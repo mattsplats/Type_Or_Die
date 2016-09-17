@@ -32,10 +32,15 @@ const stats = {
 		// Calls: (none)
 		// Sets: all stats except startTime
 
-	push: function(){}
-		// Adds current stats as new row to highscore table
-		// Calls: (none)
+	addHighScore: function(){},
+		// Adds current stats as new row to highscore table, stores data
+		// Calls: user.storeScores
 		// Sets: (none)
+
+	setHighScores: function(scores){}
+		// Shows retrieved high score data in highscore table
+		// Calls: (none)
+		// Sets: scoreArr
 };
 
 
@@ -70,8 +75,8 @@ Object.defineProperty(stats, "reset", { value: function(){
 	stats.emptyStart = 0;
 }});
 
-// stats.push
-Object.defineProperty(stats, "push", { value: function(){
+// stats.addHighScore
+Object.defineProperty(stats, "addHighScore", { value: function(){
 	const template = "<tr><th class='text-center hipster-text'>" + (stats.score * stats.scoreMult) + "</th>" +
 		"<th class='text-center hipster-text'>" + stats.wpm.toFixed(1) + "</th>" +
 		"<th class='text-center hipster-text'>" + stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )" + "</th>" +
@@ -93,6 +98,18 @@ Object.defineProperty(stats, "push", { value: function(){
 	});
 
 	if (stats.scoreArr.length > stats.maxScores) { stats.scoreArr.pop(); }
+
+	$("#highscore-stats").empty();
+	for (let i = 0; i < stats.scoreArr.length; i++) {
+		$("#highscore-stats").append(stats.scoreArr[i].html);
+	}
+
+	user.storeScores(JSON.stringify(scoreArr));
+}});
+
+// stats.setHighScores
+Object.defineProperty(stats, "setHighScores", { value: function(scores){
+	stats.scoreArr = JSON.parse(scores);
 
 	$("#highscore-stats").empty();
 	for (let i = 0; i < stats.scoreArr.length; i++) {

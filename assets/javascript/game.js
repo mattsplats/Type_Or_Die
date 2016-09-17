@@ -41,7 +41,7 @@ const game = {
 
 	end: function(){},
 		// Shows "game over" screen and buttons to play again
-		// Calls: showButtons, stats.push
+		// Calls: showButtons, stats.addHighScore
 		// Sets: ready, over
 
 	addWord: function(){},
@@ -120,7 +120,7 @@ Object.defineProperty(game, "end", { value: function() {
 		
 		$("#output").addClass("flex").html("<div class='text-center'><h1>Thanks for playing!</h1></div>");
 		game.showButtons();
-		stats.push();
+		stats.addHighScore();
 	}
 }});
 
