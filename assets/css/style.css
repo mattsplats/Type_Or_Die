@@ -18,9 +18,9 @@ body {
   background-color: #525252;
 }
 
-#start {
+.startGame {
   font-family: 'Chewy', cursive;  
-  font-size: 25px;
+  font-size: 20px;
 }
 
 h1 {
