@@ -108,8 +108,8 @@ Object.defineProperty(stats, "addHighScore", { value: function() {
 }});
 
 // stats.setHighScores
-Object.defineProperty(stats, "setHighScores", { value: function(scores) {
-	stats.scoreArr = JSON.parse(scores);
+Object.defineProperty(stats, "setHighScores", { value: function(highScores) {
+	stats.scoreArr = JSON.parse(highScores);
 
 	$("#highscore-stats").empty();
 	for (let i = 0; i < stats.scoreArr.length; i++) {

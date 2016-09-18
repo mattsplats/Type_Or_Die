@@ -48,13 +48,13 @@ Object.defineProperty(user, "auth", { value: function() {
 					email: user.email
 				});
 			} else if (hasScores) {
-				stats.setHighScores(snapshot.child(user.ID + "/scores").val());
+				stats.setHighScores(snapshot.child(user.ID + "/highScores").val());
 			}
 		});
 	}), function(error) { throw error; };
 }});
 
 // user.storeScores
-Object.defineProperty(user, "storeScores", { value: function(scores) {
-	firebase.database().ref("users/" + user.ID + "/scores").set({ scores });
+Object.defineProperty(user, "storeScores", { value: function(highScores) {
+	firebase.database().ref("users/" + user.ID).set({ highScores });
 }});
