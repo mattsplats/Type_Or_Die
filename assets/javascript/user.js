@@ -43,7 +43,7 @@ Object.defineProperty(user, "auth", { value: function() {
 			const hasScores = snapshot.child(user.ID + "/highScores").exists();
 
 			if (isNewUser) {
-				firebase.database().ref("users/" + userString).set({
+				firebase.database().ref("users/" + user.ID).set({
 					name: user.name,
 					email: user.email
 				});
