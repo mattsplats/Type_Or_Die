@@ -243,6 +243,7 @@ Object.defineProperty(game, "showButtons", { value: function() {
 	const template = "<div><button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp; " + 
 		"<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button></div>";
 
+	if (!game.over) { $("#output").empty(); }
 	$("#output").addClass("flex").append(template);
 
 	$(".startGame").on("click", function(e){
