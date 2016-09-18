@@ -60,6 +60,7 @@ $(function() {
 			}
 		}
 	});
+	
 
 	// Initialize game
 	game.init();

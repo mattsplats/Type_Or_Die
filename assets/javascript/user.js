@@ -11,7 +11,7 @@ const user = {
 	// Methods
 	auth: function(){},
 		// User sign-in: gives popup for Google login
-		// Calls: stats.setHighScores
+		// Calls: stats.setHighScores, game.showButtons
 		// Sets: name, email, id
 
 	storeScores: function(scoreArr){}
@@ -51,6 +51,8 @@ Object.defineProperty(user, "auth", { value: function() {
 				stats.setHighScores(snapshot.child(user.ID + "/highScores").val());
 			}
 		});
+
+		game.showButtons();
 	}), function(error) { throw error; };
 }});
 

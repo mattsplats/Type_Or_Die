@@ -30,8 +30,8 @@ const game = {
 
 	// Methods
 	init: function(){},
-		// Initializes game - makes all necessary queries for data (XHR or Firebase db) and shows selection buttons
-		// Calls: data.get, showButtons
+		// Initializes game - makes all necessary queries for data (XHR or Firebase db)
+		// Calls: data.get
 		// Sets: (none)
 	
 	start: function(){},
@@ -80,7 +80,6 @@ const game = {
 // game.init
 Object.defineProperty(game, "init", { value: function() {
 	data.get("all");
-	game.showButtons();
 }});
 
 // game.start
