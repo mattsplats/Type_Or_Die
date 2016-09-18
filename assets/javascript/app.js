@@ -14,7 +14,7 @@ $(function() {
 
 
 	// User signin popup
-	$("#auth").on('click', function() { user.auth(); }, function(error) { throw error; });
+	$("#auth").on('click', user.auth);
 
 
 	// Main input processing function (on any keypress)

@@ -23,22 +23,22 @@ const user = {
 
 // Method definitions
 // user.auth
-Object.defineProperty(user, "auth", { value: function(){
+Object.defineProperty(user, "auth", { value: function() {
 	// First, we perform the signInWithRedirect.
 	// Creates the provider object.
-	const auth = firebase.auth()
+	const auth = firebase.auth();
 	const provider = new firebase.auth.GoogleAuthProvider();
 
 	// You can add additional scopes to the provider:
 	provider.addScope('email');
 
 	// Sign in with redirect:
-	auth.signInWithPopup(provider).then(function(result){
+	auth.signInWithPopup(provider).then(function(result) {
 		user.name = result.user.displayName;
 		user.email = result.user.email;
 		user.ID = user.email.match(/(.*)\./)[1];
 
-		firebase.database().ref("users").once("value").then(function(snapshot){
+		firebase.database().ref("users").once("value").then(function(snapshot) {
 			const isNewUser = !snapshot.child(user.ID).exists();
 			const hasScores = snapshot.child(user.ID + "/highScores").exists();
 
@@ -51,10 +51,10 @@ Object.defineProperty(user, "auth", { value: function(){
 				stats.setHighScores(snapshot.child(user.ID + "/scores").val());
 			}
 		});
-	});
+	}), function(error) { throw error; };
 }});
 
 // user.storeScores
-Object.defineProperty(user, "storeScores", { value: function(scores){
+Object.defineProperty(user, "storeScores", { value: function(scores) {
 	firebase.database().ref("users/" + user.ID + "/scores").set({ scores });
 }});

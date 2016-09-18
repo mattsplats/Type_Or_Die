@@ -61,7 +61,7 @@ Object.defineProperty(stats, "update", { value: function() {
 }});
 
 // stats.reset
-Object.defineProperty(stats, "reset", { value: function(){
+Object.defineProperty(stats, "reset", { value: function() {
 	stats.score = 0;
 	stats.wpm = 0;
 	stats.acc = 0;
@@ -76,7 +76,7 @@ Object.defineProperty(stats, "reset", { value: function(){
 }});
 
 // stats.addHighScore
-Object.defineProperty(stats, "addHighScore", { value: function(){
+Object.defineProperty(stats, "addHighScore", { value: function() {
 	const template = "<tr><th class='text-center hipster-text'>" + (stats.score * stats.scoreMult) + "</th>" +
 		"<th class='text-center hipster-text'>" + stats.wpm.toFixed(1) + "</th>" +
 		"<th class='text-center hipster-text'>" + stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )" + "</th>" +
@@ -108,7 +108,7 @@ Object.defineProperty(stats, "addHighScore", { value: function(){
 }});
 
 // stats.setHighScores
-Object.defineProperty(stats, "setHighScores", { value: function(scores){
+Object.defineProperty(stats, "setHighScores", { value: function(scores) {
 	stats.scoreArr = JSON.parse(scores);
 
 	$("#highscore-stats").empty();
