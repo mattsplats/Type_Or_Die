@@ -56,5 +56,5 @@ Object.defineProperty(user, "auth", { value: function() {
 
 // user.storeScores
 Object.defineProperty(user, "storeScores", { value: function(highScores) {
-	firebase.database().ref("users/" + user.ID).set({ highScores });
+	firebase.database().ref("users/" + user.ID).update({ highScores });
 }});
