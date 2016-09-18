@@ -104,7 +104,7 @@ Object.defineProperty(stats, "addHighScore", { value: function() {
 		$("#highscore-stats").append(stats.scoreArr[i].html);
 	}
 
-	user.storeScores(JSON.stringify(scoreArr));
+	user.storeScores(JSON.stringify(stats.scoreArr));
 }});
 
 // stats.setHighScores
