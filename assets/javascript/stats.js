@@ -40,7 +40,7 @@ const stats = {
 		// Calls: user.storeScores
 		// Sets: (none)
 
-	setHighScores: function(scores){}
+	setHighScores: function(highScores){}
 		// Shows retrieved high score data in highscore table
 		// Calls: (none)
 		// Sets: scoreArr

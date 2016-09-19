@@ -141,7 +141,7 @@ Object.defineProperty(game, "addWord", { value: function() {
 	if (game.sourceWords.length < game.wordBuffer) { game.sourceWords = data.get(game.currentSource); }
 
 	// Create and output series of spans for each character in the word
-	let html = "<div id='word_" + game.currentWord + "' class='fallingWord'><div id='word_" + game.currentWord + "_wrapper'><h2>";
+	let html = "<div id='word_" + game.currentWord + "' class='falling-word'><div id='word_" + game.currentWord + "_wrapper'><h2>";
 	for (let i = 0; i < word.str.length; i++) {
 		html += "<span id='word_" + game.currentWord + "_letter_" + i + "'>" + word.str[i] + "</span>";
 	}
@@ -150,7 +150,7 @@ Object.defineProperty(game, "addWord", { value: function() {
 
 	// Randomize y position of new word
 	const maxXPos = $("#game-body").width() - $("#word_" + game.currentWord).width();
-	const rand = Math.floor(Math.random() * maxXPos) + 10;
+	const rand = Math.floor(Math.random() * maxXPos) + 15;
 	$("#word_" + game.currentWord).css("left", rand);
 
 	game.activeWords.push(word);
@@ -190,13 +190,12 @@ Object.defineProperty(game, "removeWord", { value: function(word) {
 
 // game.resetWord
 Object.defineProperty(game, "resetWord", { value: function(word, index) {
-	game.missedWords.push(word);
-
 	for (let i = 0; i < game.currentLetter; i++) {
 		$("#word_" + word.number + "_letter_" + i).css("color", "black");
 		if ($("#word_" + word.number + "_letter_" + i).html() == "_") { $("#word_" + word.number + "_letter_" + i).html(" "); }
 	}
 
+	game.missedWords.push(word);
 	game.matchingWords.splice(index, 1);
 }});
 
@@ -224,34 +223,42 @@ Object.defineProperty(game, "completeWord", { value: function(word) {
 	if (game.currentWord == game.length && game.activeWords.length == 0) { game.end(); }
 
 	function blowUpWord() {
-		const constantFactor = 56;  // Explosion size
-		const normalizeFactor = 6;  // Normalizes the explosion size relative to word length
-		const leftOffsetStep = constantFactor * (normalizeFactor / word.str.length);
-
-		const topMaxDist = 90;
-		const animationTime = 400;
-
-		let initOffset = 0;
-		let leftOffset = -((word.str.length - 1) * leftOffsetStep / 2);
+		const absPosOffset = $("#word_" + word.number + "_letter_" + 0).width();  // Offset so letters are in correct initial positions when position: absolute
+		
+		const horizSize = 200;  // Horizontal explosion size
+		const horizRandMult = 30;  // Horizontal randomness
+		function horizOffset(index) { return -(horizSize / 2) + (index * (horizSize / (word.str.length - 1))) }
+		
+		const vertSize = 100;  // Vertical explosion size
+		const vertRandMult = 30;  // Vertical randomness
+		function vertOffset(index) { return Math.sin(index * Math.PI / (word.str.length - 1)) * vertSize * (Math.random() > 0.5 ? 1 : -1)}
+		
+		const explodeTime = 250;  // Looks better if you keep the explode time at least 50% longer than the fade time
+		const fadeTime = 160;
+		
 		let randLeft;
 		let randTop;
 
-		for (var i = 0; i < word.str.length; i++) {
-			// Set all letters to absolute position and offset left to correct initial position
-			$("#word_" + word.number + "_letter_" + i).css("position", "absolute").css("left", initOffset + "px");
-			initOffset += $("#word_" + word.number + "_letter_" + i).width();
+		for (let i = 0; i < word.str.length; i++) {
+			// Remove added dashes
+			if ($("#word_" + word.number + "_letter_" + i).html() == "_") { $("#word_" + word.number + "_letter_" + i).html(" "); }
 
-			// Animate letter transitions to random positions
-			randLeft = Math.floor(Math.random() * (leftOffsetStep + 1)) - (leftOffsetStep / 2);
-			randTop = Math.floor(Math.random() * ((topMaxDist * 2) + 1)) - topMaxDist;
+			// Set all letters to absolute position and offset left to correct initial position
+			$("#word_" + word.number + "_letter_" + i).css("position", "absolute").css("left", (absPosOffset * i) + "px");
+
+			// Set random variation for final letter positions
+			randLeft = Math.random() * horizRandMult - (horizRandMult / 2);
+			randTop = Math.random() * vertRandMult - (vertRandMult / 2);
+
+			// Animate explosion
 			$("#word_" + word.number + "_letter_" + i).animate({
-				left: $("#word_" + word.number + "_letter_" + i).position().left + leftOffset + randLeft,
-				top: $("#word_" + word.number + "_letter_" + i).position().top + randTop,
-			}, animationTime);
-			leftOffset += leftOffsetStep;
+				left: $("#word_" + word.number + "_letter_" + i).position().left + horizOffset(i) + randLeft,
+				top: $("#word_" + word.number + "_letter_" + i).position().top + vertOffset(i) + randTop,
+			}, explodeTime, "easeOutQuad");
 		}
+
 		// Fade out word, then delete
-		$("#word_" + word.number).fadeOut(animationTime / 2, function() { $("#word_" + word.number).remove() });
+		$("#word_" + word.number).fadeOut(fadeTime, "linear", function() { $("#word_" + word.number).remove() });
 	}
 }});
 
@@ -273,8 +280,8 @@ Object.defineProperty(game, "wrongKey", { value: function() {
 
 	// Missed word animation, game.ready == true when the animation completes
 	for (let i = 0; i < game.missedWords.length; i++) {
-		$("#word_" + game.missedWords[i].number + "_wrapper").addClass("wordShake");
-		setTimeout(function(){ $("#word_" + game.missedWords[i].number + "_wrapper").removeClass("wordShake"); game.ready = true; }, animationTime);
+		$("#word_" + game.missedWords[i].number + "_wrapper").addClass("word-shake");
+		setTimeout(function(){ $("#word_" + game.missedWords[i].number + "_wrapper").removeClass("word-shake"); game.ready = true; }, animationTime);
 	}
 }});
 
