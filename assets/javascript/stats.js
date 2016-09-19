@@ -16,7 +16,10 @@ const stats = {
 	startTime: 0,  // Game start time for WPM calc
 	timeOffset: 0,  // Time removed from WPM calc
 	emptyStart: 0,  // Start time when game has no words to match
-	scoreMult: 100,  // Multiplier for score display
+
+	// Constants
+	scorePlusMult: 100,  // Score multiplier for completing a word
+	scoreMinusMult: 25,  // Score multiplier for not completing a word
 
 	// Highscore table vars
 	scoreArr: [],
@@ -53,8 +56,8 @@ Object.defineProperty(stats, "update", { value: function() {
 	if (stats.score < 0) { stats.score = 0; }
 	if (stats.currentStreak > stats.longestStreak) { stats.longestStreak = stats.currentStreak; }
 
-	$("#score").html(stats.score * stats.scoreMult);
-	$("#score-diff").html($("<span>").html((stats.scoreDelta > 0 ? "+" : "") + (stats.scoreDelta != 0 ? stats.scoreDelta * stats.scoreMult : ""))
+	$("#score").html(stats.score);
+	$("#score-diff").html($("<span>").html((stats.scoreDelta > 0 ? "+" : "") + (stats.scoreDelta != 0 ? stats.scoreDelta : ""))
 		.css("color", stats.scoreDelta > 0 ? "green" : "red").fadeIn().fadeOut());
 	$("#wpm").html(stats.wpm.toFixed(1));
 	$("#acc").html(stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )");
@@ -80,7 +83,7 @@ Object.defineProperty(stats, "reset", { value: function() {
 
 // stats.addHighScore
 Object.defineProperty(stats, "addHighScore", { value: function() {
-	const template = "<tr><th class='text-center hipster-text'>" + (stats.score * stats.scoreMult) + "</th>" +
+	const template = "<tr><th class='text-center hipster-text'>" + (stats.score) + "</th>" +
 		"<th class='text-center hipster-text'>" + stats.wpm.toFixed(1) + "</th>" +
 		"<th class='text-center hipster-text'>" + stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )" + "</th>" +
 		"<th class='text-center hipster-text'>" + stats.longestStreak + "</th>" +
