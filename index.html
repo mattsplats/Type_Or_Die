@@ -17,67 +17,68 @@
 <body>
 
 	<div class="container">
-    <h1 class="text-center">Type or Die</h1>
+    <div class="row">
+      <div class="col-lg-12"><h1 class="text-center">Type or Die</h1></div>
+    </div>
 	
-      <!-- Start Main Game Body -->
-  		<div class="row">
-  			<div class="col-lg-12">
-  				<div class="panel panel-primary">
+    <!-- Start Main Game Body -->
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-primary" id="game-panel">
 
-  					<div class="panel-body" id="game-body">
-  						<div id="output" class="flex"><button id="auth" class="btn btn-primary">Sign In to Play!</button></div> <!-- Place game in this div (output)-->
-  					</div>
+					<div class="panel-body" id="game-body">
+						<div id="output" class="flex"><button id="auth" class="btn btn-primary">Sign In to Play!</button></div> <!-- Place game in this div (output)-->
+					</div>
 
-            <div class="panel-heading">
-              <div class="panel-title panel-title-text" id="score-bar">
-                <div>Score: <span id="score">0</span></div>
-                <div style="">WPM: <span id="wpm">0.0</span> &nbsp;&nbsp; Accuracy: <span id="acc">0 / 0 ( 0.0% )</span> &nbsp;&nbsp; Streak: <span id="streak">0</span> &nbsp;&nbsp; Longest: <span id="longest">0</span></div>
-              </div>
-            </div>
-  				</div>
-  			</div> 
-  		</div> <!--End Main Game Body -->
-
-      <!-- Start High Score -->
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title panel-title-text">High Scores:</h3>
-            </div>
-
-            <div class="panel-body">
-              <table class="table table-hover" id="score-table">
-                <thead>
-                  <tr>
-                    <th class="text-center hipster-text">Score:</th>
-                    <th class="text-center hipster-text">WPM:</th>
-                    <th class="text-center hipster-text">Accuracy %:</th>
-                    <th class="text-center hipster-text">Longest Streak:</th>
-                  </tr>
-                </thead>
-                <tbody id="highscore-stats"></tbody>
-              </table>
+          <div class="panel-heading">
+            <div class="panel-title panel-title-text" id="score-bar">
+              <div>Score: <span id="score">0</span> &nbsp; <span id="score-diff"></span></div>
+              <div style="">WPM: <span id="wpm">0.0</span> &nbsp;&nbsp; Accuracy: <span id="acc">0 / 0 ( 0.0% )</span> &nbsp;&nbsp; Streak: <span id="streak">0</span> &nbsp;&nbsp; Longest: <span id="longest">0</span></div>
             </div>
           </div>
-        </div>
-      </div> <!-- End High Score -->
+				</div>
+			</div> 
+		</div> <!--End Main Game Body -->
 
+    <!-- Start High Score -->
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="panel-title panel-title-text">High Scores:</h3>
+          </div>
 
-      <!-- Start Instructions -->
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title panel-title-text">Instructions:</h3>
-            </div>
-  
-            <div class="panel-body">
-              <p id="instructions">Improve your typing skills by playing our game! Random words will generate below, all you have to do is start typing. Capitalization is important as well as spaces for certain words and phrases. Keep track of your Words per Minute (WPM) and try to improve your score!</p>
-            </div>
+          <div class="panel-body">
+            <table class="table table-hover" id="score-table">
+              <thead>
+                <tr>
+                  <th class="text-center hipster-text">Score:</th>
+                  <th class="text-center hipster-text">WPM:</th>
+                  <th class="text-center hipster-text">Accuracy %:</th>
+                  <th class="text-center hipster-text">Longest Streak:</th>
+                </tr>
+              </thead>
+              <tbody id="highscore-stats"></tbody>
+            </table>
           </div>
         </div>
-      </div> <!-- End Instructions -->
+      </div>
+    </div> <!-- End High Score -->
+
+    <!-- Start Instructions -->
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="panel-title panel-title-text">Instructions:</h3>
+          </div>
+
+          <div class="panel-body">
+            <p id="instructions">Improve your typing skills by playing our game! Random words will generate below, all you have to do is start typing. Capitalization is important as well as spaces for certain words and phrases. Keep track of your Words per Minute (WPM) and try to improve your score!</p>
+          </div>
+        </div>
+      </div>
+    </div> <!-- End Instructions -->
 
 	</div> <!-- End Container -->
 

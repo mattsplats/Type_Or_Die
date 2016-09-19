@@ -10,9 +10,9 @@ const stats = {
 	longestStreak: 0,
 
 	// Secondary vars
-	wordsCompleted: 0,
 	hits: 0,
 	misses: 0,
+	scoreDelta: 0,  // Amouent added/removed from score on latest update
 	startTime: 0,  // Game start time for WPM calc
 	timeOffset: 0,  // Time removed from WPM calc
 	emptyStart: 0,  // Start time when game has no words to match
@@ -47,13 +47,15 @@ const stats = {
 // Method definitions
 // stats.update
 Object.defineProperty(stats, "update", { value: function() {
-	stats.wpm = stats.wordsCompleted / ((Date.now() - stats.startTime - stats.timeOffset) / 1000 / 60) || 0;
+	stats.wpm = (stats.hits / 5.1) / ((Date.now() - stats.startTime - stats.timeOffset) / 1000 / 60) || 0;
 	stats.acc = 100 * stats.hits / (stats.hits + stats.misses) || 0;
 
 	if (stats.score < 0) { stats.score = 0; }
 	if (stats.currentStreak > stats.longestStreak) { stats.longestStreak = stats.currentStreak; }
 
 	$("#score").html(stats.score * stats.scoreMult);
+	$("#score-diff").html($("<span>").html((stats.scoreDelta > 0 ? "+" : "") + (stats.scoreDelta != 0 ? stats.scoreDelta * stats.scoreMult : ""))
+		.css("color", stats.scoreDelta > 0 ? "green" : "red").fadeIn().fadeOut());
 	$("#wpm").html(stats.wpm.toFixed(1));
 	$("#acc").html(stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )");
 	$("#streak").html(stats.currentStreak);
@@ -63,6 +65,7 @@ Object.defineProperty(stats, "update", { value: function() {
 // stats.reset
 Object.defineProperty(stats, "reset", { value: function() {
 	stats.score = 0;
+	stats.scoreDelta = 0;
 	stats.wpm = 0;
 	stats.acc = 0;
 	stats.currentStreak = 0;

@@ -17,9 +17,9 @@ const game = {
 	missedWords: [],  // Words that do not match input string (on current keystroke)
 
 	// Constants (safe to modify)
-	length: 5,  // Length of a game in words (game will end when game.length words have been completed/missed)
+	length: 10,  // Length of a game in words (game will end when game.length words have been completed/missed)
 	speedupFactor: 1.02,  // Muliplier for the rate at which new words are added, applies after each added word
-	startingTimeout: 3200,  // Msec before first new word is added
+	startingTimeout: 2000,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
 	maxWords: 5,  // Most words to be shown on screen at one time
 
@@ -52,7 +52,7 @@ const game = {
 	removeWord: function(word){},
 		// Word not completed in time - removes passed word from game, updates game state & stats
 		// Calls: stats.update
-		// Sets: stats.score, activeWords, matchingWords, currentLetter
+		// Sets: stats.score, stats.scoreDelta, activeWords, matchingWords, currentLetter
 
 	resetWord: function(word, index){},
 		// Resets HTML for passed word and removes word from matchingWords @ index
@@ -62,7 +62,7 @@ const game = {
 	completeWord: function(word){},
 		// Word successfully completed - removes passed word from game, updates game state & stats
 		// Calls: stats.update
-		// Sets: stats.score, stats.wordsCompleted, stats.hits, stats.currentStreak, currentLetter, activeWords, matchingWords, stats.emptyStart
+		// Sets: stats.score, stats.scoreDelta, stats.hits, stats.currentStreak, currentLetter, activeWords, matchingWords, stats.emptyStart
 
 	wrongKey: function(){},
 		// Animates any words remaining in matchingWords when current keystroke results in no word matches, updates game state & stats
@@ -80,6 +80,7 @@ const game = {
 // game.init
 Object.defineProperty(game, "init", { value: function() {
 	data.get("all");
+	game.showButtons();
 }});
 
 // game.start
@@ -117,7 +118,7 @@ Object.defineProperty(game, "end", { value: function() {
 		game.over = true;
 		game.ready = false;
 		
-		$("#output").addClass("flex").html("<div class='text-center'><h1>Thanks for playing!</h1></div>");
+		$("#output").addClass("flex").html($("<div>").addClass("text-center").attr("id", "thanks").html("<h1>Thanks for playing!</h1>").fadeIn());
 		game.showButtons();
 		stats.addHighScore();
 	}
@@ -163,6 +164,7 @@ Object.defineProperty(game, "addWord", { value: function() {
 Object.defineProperty(game, "removeWord", { value: function(word) {
 	if (game.activeWords.indexOf(word) != -1) {
 		stats.score--;
+		stats.scoreDelta = -1;
 		stats.update();
 
 		// Remove word from HTML and from activeWords
@@ -174,9 +176,15 @@ Object.defineProperty(game, "removeWord", { value: function(word) {
 			if (game.matchingWords.length == 1) { game.currentLetter = 0; }
 			game.matchingWords.splice(game.matchingWords.indexOf(word), 1);
 		}
-	}
 
-	if (game.currentWord == game.length && game.activeWords.length == 0) { game.end(); }
+		// Flash game panel
+		$("#game-panel").css("box-shadow", "0px 0px 10px 1px red");
+		setTimeout(function(){ $("#game-panel").css("box-shadow", ""); }, 60);
+		setTimeout(function(){ $("#game-panel").css("box-shadow", "0px 0px 10px 1px red"); }, 100);
+		setTimeout(function(){ $("#game-panel").css("box-shadow", ""); }, 150);
+
+		if (game.currentWord == game.length && game.activeWords.length == 0) { game.end(); }
+	}
 }});
 
 // game.resetWord
@@ -194,14 +202,13 @@ Object.defineProperty(game, "resetWord", { value: function(word, index) {
 // game.completeWord
 Object.defineProperty(game, "completeWord", { value: function(word) {
 	// Increment score, update stats, reset game vars
-	const matchArr = word.str.match(/[ -]/g);
-	const wordsInPhrase = (matchArr ? matchArr.length : 0) + 1;
-	
-	stats.score += wordsInPhrase;
-	stats.wordsCompleted += wordsInPhrase;
+	stats.score += word.str.length;
+	stats.scoreDelta = word.str.length;
 	stats.hits += word.str.length;
-	stats.currentStreak += wordsInPhrase;
+	stats.currentStreak++;
 	stats.update();
+
+	// Animation test
 
 	game.currentLetter = 0;
 	game.activeWords.splice(game.activeWords.indexOf(word), 1);
@@ -223,6 +230,7 @@ Object.defineProperty(game, "wrongKey", { value: function() {
 	// Prohibits further input while animation is playing
 	game.ready = false;
 
+	stats.scoreDelta = 0;
 	stats.hits += game.currentLetter;
 	stats.misses++;
 	stats.currentStreak = 0;
@@ -240,11 +248,11 @@ Object.defineProperty(game, "wrongKey", { value: function() {
 
 // game.showButtons
 Object.defineProperty(game, "showButtons", { value: function() {
-	const template = "<div><button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp; " + 
-		"<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button></div>";
+	const template = "<button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp; " + 
+		"<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button>";
 
 	if (!game.over) { $("#output").empty(); }
-	$("#output").addClass("flex").append(template);
+	$("#output").addClass("flex").append($("<div>").html(template).fadeIn());
 
 	$(".startGame").on("click", function(e){
 		if (data.isReady()) {
@@ -253,10 +261,13 @@ Object.defineProperty(game, "showButtons", { value: function() {
 			// Set source to selected word source, get words from that source
 			game.currentSource = $(this).data("type");
 			game.sourceWords = data.get(game.currentSource);
-			game.start();
 
-			$("#output").removeClass("flex");
-			$("#output").empty();
+			$("#thanks").fadeOut();
+			$(".startGame").fadeOut(function() {
+				$("#output").removeClass("flex");
+				$("#output").empty();
+				if (!game.ready) { game.start(); }
+			});
 		}
 	});
 }});

@@ -52,7 +52,9 @@ Object.defineProperty(user, "auth", { value: function() {
 			}
 		});
 
-		game.showButtons();
+		$("#auth").fadeOut(function() {
+			game.showButtons();
+		});
 	}), function(error) { throw error; };
 }});
 

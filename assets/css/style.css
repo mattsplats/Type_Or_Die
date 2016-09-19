@@ -53,6 +53,7 @@ h1 {
 #highscore-stats {
   font-family: 'Amatica SC', cursive;
   font-size: 27px;
+  transition: height 1s ease-out;
 }
 
 #instructions {
@@ -96,7 +97,7 @@ h1 {
   100% {transform: translate3d(0, 0, 0);}
 }
 
-/* Matt's temp classes */
+/* Matt's classes */
 .flex {
   display: flex;
   justify-content: center;
