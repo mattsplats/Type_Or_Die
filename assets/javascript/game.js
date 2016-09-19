@@ -124,9 +124,19 @@ Object.defineProperty(game, "end", { value: function() {
     acc:acc,
     longestStreak:longestStreak,
 });
+database.ref().on("child_added", function(snapshot){	
+	var row = $("<tr>")
+	var userName = 
+	row.append("<td>" + User Name: + "</td>")
+	var wpm = 
+	row.append("<td>" + WPM: + "</td>")
+	var acc = 
+	row.append("<td>" + Accuracy%: + "</td>")
+	var longestStreak = 
+	row.append("<td>" + Longest Streak: + "</td>")
 
+$("#score-table").append(row);
 
-	
 	$("#output").addClass("flex").html("<div class='text-center'><h1>Thanks for playing!</h1></div>");
 	game.showButtons();
 }});
