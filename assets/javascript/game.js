@@ -80,7 +80,7 @@ const game = {
 // game.init
 Object.defineProperty(game, "init", { value: function() {
 	data.get("all");
-	game.showButtons();
+	// game.showButtons();
 }});
 
 // game.start
