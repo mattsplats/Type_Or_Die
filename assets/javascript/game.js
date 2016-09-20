@@ -17,14 +17,14 @@ const game = {
 	missedWords: [],  // Words that do not match input string (on current keystroke)
 
 	// Constants (safe to modify)
-	length: 1000,  // Length of a game in words (game will end when game.length words have been completed/missed)
+	length: 3,  // Length of a game in words (game will end when game.length words have been completed/missed)
 	speedupFactor: 1.02,  // Muliplier for the rate at which new words are added, applies after each added word
 	startingTimeout: 2000,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
 	maxWords: 5,  // Most words to be shown on screen at one time
 
 	// Constants (UNSAFE TO MODIFY)
-	wordLiveTime: 6700,  // Timeout until word is removed
+	wordSpeed: 1000,  // Speed of each word relative to its size, smaller numbers are faster
 	wordBuffer: 10,  // Minimum buffer of source words (will trigger an XHR more if sourceWords.length < wordBuffer)
 
 
@@ -153,39 +153,38 @@ Object.defineProperty(game, "addWord", { value: function() {
 	const rand = Math.floor(Math.random() * maxXPos) + 15;
 	$("#word_" + game.currentWord).css("left", rand);
 
+	// Start animation, with callback to destroy word
+	$("#word_" + game.currentWord).velocity({ translateY: "540px" },
+		{ duration: (word.str.length + 1) * game.wordSpeed, easing: "linear", complete: function() { if (game.activeWords.indexOf(word) != -1) { game.removeWord(word); } } });
+
 	game.activeWords.push(word);
 	game.currentWord++;
-
-	// If word is not completed before falling off screen
-	setTimeout(function(){ game.removeWord(word); }, game.wordLiveTime);
 }});
 
 // game.removeWord
 Object.defineProperty(game, "removeWord", { value: function(word) {
-	if (game.activeWords.indexOf(word) != -1) {
-		stats.score -= word.str.length * stats.scoreMinusMult;
-		stats.scoreDelta = -(word.str.length * stats.scoreMinusMult);
-		stats.currentStreak = 0;
-		stats.update();
+	stats.score -= word.str.length * stats.scoreMinusMult;
+	stats.scoreDelta = -(word.str.length * stats.scoreMinusMult);
+	stats.currentStreak = 0;
+	stats.update();
 
-		// Remove word from HTML and from activeWords
-		$("#word_" + word.number).remove();
-		game.activeWords.splice(game.activeWords.indexOf(word), 1)
+	// Remove word from HTML and from activeWords
+	$("#word_" + word.number).remove();
+	game.activeWords.splice(game.activeWords.indexOf(word), 1)
 
-		// If the word still matches the current input, currentLetter = 0 (so new words will match)
-		if (game.matchingWords.indexOf(word) != -1) {
-			if (game.matchingWords.length == 1) { game.currentLetter = 0; }
-			game.matchingWords.splice(game.matchingWords.indexOf(word), 1);
-		}
-
-		// Flash game panel
-		$("#game-panel").css("box-shadow", "0px 0px 10px 1px red");
-		setTimeout(function(){ $("#game-panel").css("box-shadow", ""); }, 50);
-		setTimeout(function(){ $("#game-panel").css("box-shadow", "0px 0px 10px 1px red"); }, 120);
-		setTimeout(function(){ $("#game-panel").css("box-shadow", ""); }, 170);
-
-		if (game.currentWord == game.length && game.activeWords.length == 0) { game.end(); }
+	// If the word still matches the current input, currentLetter = 0 (so new words will match)
+	if (game.matchingWords.indexOf(word) != -1) {
+		if (game.matchingWords.length == 1) { game.currentLetter = 0; }
+		game.matchingWords.splice(game.matchingWords.indexOf(word), 1);
 	}
+
+	// Flash game panel
+	$("#game-panel").css("box-shadow", "0px 0px 10px 1px red");
+	setTimeout(function(){ $("#game-panel").css("box-shadow", ""); }, 50);
+	setTimeout(function(){ $("#game-panel").css("box-shadow", "0px 0px 10px 1px red"); }, 120);
+	setTimeout(function(){ $("#game-panel").css("box-shadow", ""); }, 170);
+
+	if (game.currentWord == game.length && game.activeWords.length == 0) { game.end(); }
 }});
 
 // game.resetWord
@@ -237,8 +236,11 @@ Object.defineProperty(game, "completeWord", { value: function(word) {
 		const explodeTime = 250;  // Looks better if you keep the explode time at least 50% longer than the fade time
 		const fadeTime = 160;
 		
-		let randLeft;
-		let randTop;
+		let horizRand;
+		let vertRand;
+
+		// Stop all running animations first
+		$("#word_" + word.number).velocity("stop", true);
 
 		for (let i = 0; i < word.str.length; i++) {
 			// Remove added dashes
@@ -248,18 +250,19 @@ Object.defineProperty(game, "completeWord", { value: function(word) {
 			$("#word_" + word.number + "_letter_" + i).css("position", "absolute").css("left", (absPosOffset * i) + "px");
 
 			// Set random variation for final letter positions
-			randLeft = Math.random() * horizRandMult - (horizRandMult / 2);
-			randTop = Math.random() * vertRandMult - (vertRandMult / 2);
+			horizRand = Math.random() * horizRandMult - (horizRandMult / 2);
+			vertRand = Math.random() * vertRandMult - (vertRandMult / 2);
 
 			// Animate explosion
 			$("#word_" + word.number + "_letter_" + i).velocity({
-				left: $("#word_" + word.number + "_letter_" + i).position().left + horizOffset(i) + randLeft,
-				top: $("#word_" + word.number + "_letter_" + i).position().top + vertOffset(i) + randTop,
-			}, explodeTime, "easeOutQuad");
+				translateX: horizOffset(i) + horizRand,
+				translateY: vertOffset(i) + vertRand,
+			}, { duration: explodeTime, easing: "easeOutQuad"});
 		}
 
 		// Fade out word, then delete
-		$("#word_" + word.number).velocity("fadeOut", fadeTime, "linear", function() { $("#word_" + word.number).remove() });
+		$("#word_" + word.number).velocity("fadeOut", { duration: fadeTime, easing: "linear",
+			completion: function() { $("#word_" + word.number).remove() } });
 	}
 }});
 

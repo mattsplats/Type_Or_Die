@@ -69,17 +69,8 @@ h1 {
 /* Matt's animations */
 .falling-word {
   position: absolute;
+  top: -70px;
   font-family: 'Source Code Pro', monospace;
-
-  animation-name: move_down;
-  animation-duration: 7s;
-  animation-timing-function: linear;
-  animation-delay: 0s;
-}
-
-@keyframes move_down {
-  0%   {transform: translate3d(0, -70px, 0);}
-  100% {transform: translate3d(0, 470px, 0);}
 }
 
 .word-shake {

@@ -23,8 +23,13 @@ $(function() {
 		// Prevent spacebar from scrolling the page
 		if (String.fromCharCode(e.which) == " ") { e.preventDefault(); }
 
+		if (e.which == 13) {
+			while (game.matchingWords.length > 0) {
+				game.resetWord(game.matchingWords[0], 0);
+			}
+			game.currentLetter = 0;
 		// If game is ready for input and keystroke is on the allowed list
-		if (game.ready && /./.test(String.fromCharCode(e.which))) {
+		} else if (game.ready && /./.test(String.fromCharCode(e.which))) {
 			game.missedWords = [];  // Keeps an array of all remaining possible matches that miss this cycle
 
 			// If matchingWords is empty, copy all words from activeWords
@@ -49,9 +54,10 @@ $(function() {
 				game.currentLetter++;
 
 				// If word is complete, replace with new word
-				// *NOTE: assumes no two words in activeWords are identical*
 				if (game.currentLetter == game.matchingWords[0].str.length) {
-					game.completeWord(game.matchingWords[0]);
+					for (let i = 0; i < game.matchingWords.length; i++) {
+						game.completeWord(game.matchingWords[i]);
+					}
 					ding.play();
 				}
 			}
@@ -60,6 +66,18 @@ $(function() {
 			}
 		}
 	});
+
+
+	// Backspace event
+	// $(document).on("keyup", function(e) {
+	// 	if (game.ready && e.which == 8) {
+	// 		for (var i = 0; i < game.matchingWords.length; i++) {
+	// 			game.resetWord(game.matchingWords[i], i);
+	// 		}
+	// 	}
+	// 	game.currentLetter = 0;
+	// 	game.missedWords = [];
+	// });
 	
 
 	// Initialize game
