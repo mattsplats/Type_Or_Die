@@ -223,15 +223,16 @@ Object.defineProperty(game, "completeWord", { value: function(word) {
 	if (game.currentWord == game.length && game.activeWords.length == 0) { game.end(); }
 
 	function blowUpWord() {
-		const absPosOffset = $("#word_" + word.number + "_letter_" + 0).width();  // Offset so letters are in correct initial positions when position: absolute
-		
-		const horizSize = 200;  // Horizontal explosion size
-		const horizRandMult = 30;  // Horizontal randomness
+		const absPosOffset = $("#word_" + word.number + "_letter_" + 0).width();
+
+		const horizSize = 120 + (8 * word.str.length);  // Horizontal explosion size
+		const horizRandMult = 0;  // Horizontal randomness
 		function horizOffset(index) { return -(horizSize / 2) + (index * (horizSize / (word.str.length - 1))) }
 		
-		const vertSize = 100;  // Vertical explosion size
-		const vertRandMult = 30;  // Vertical randomness
-		function vertOffset(index) { return Math.sin(index * Math.PI / (word.str.length - 1)) * vertSize * (Math.random() > 0.5 ? 1 : -1)}
+		const vertSize = 60 + (4 * word.str.length);  // Vertical explosion size
+		const vertRandMult = 0;  // Vertical randomness
+		let flip = Math.random() > 0.5 ? 1 : -1;
+		function vertOffset(index) { return Math.sin(index * Math.PI / (word.str.length - 1)) * vertSize * (flip == 1 ? flip = -1 : flip = 1)}
 		
 		const explodeTime = 250;  // Looks better if you keep the explode time at least 50% longer than the fade time
 		const fadeTime = 160;
@@ -242,7 +243,7 @@ Object.defineProperty(game, "completeWord", { value: function(word) {
 		for (let i = 0; i < word.str.length; i++) {
 			// Remove added dashes
 			if ($("#word_" + word.number + "_letter_" + i).html() == "_") { $("#word_" + word.number + "_letter_" + i).html(" "); }
-
+			
 			// Set all letters to absolute position and offset left to correct initial position
 			$("#word_" + word.number + "_letter_" + i).css("position", "absolute").css("left", (absPosOffset * i) + "px");
 
@@ -251,14 +252,14 @@ Object.defineProperty(game, "completeWord", { value: function(word) {
 			randTop = Math.random() * vertRandMult - (vertRandMult / 2);
 
 			// Animate explosion
-			$("#word_" + word.number + "_letter_" + i).animate({
+			$("#word_" + word.number + "_letter_" + i).velocity({
 				left: $("#word_" + word.number + "_letter_" + i).position().left + horizOffset(i) + randLeft,
 				top: $("#word_" + word.number + "_letter_" + i).position().top + vertOffset(i) + randTop,
 			}, explodeTime, "easeOutQuad");
 		}
 
 		// Fade out word, then delete
-		$("#word_" + word.number).fadeOut(fadeTime, "linear", function() { $("#word_" + word.number).remove() });
+		$("#word_" + word.number).velocity("fadeOut", fadeTime, "linear", function() { $("#word_" + word.number).remove() });
 	}
 }});
 
