@@ -16,6 +16,7 @@ $(function() {
 	// User signin popup
 	$("#auth").on('click', user.auth);
 
+	const ding = new Audio("assets/ding.mp3");
 
 	// Main input processing function (on any keypress)
 	$(document).on("keypress", function(e) {
@@ -51,7 +52,6 @@ $(function() {
 				// *NOTE: assumes no two words in activeWords are identical*
 				if (game.currentLetter == game.matchingWords[0].str.length) {
 					game.completeWord(game.matchingWords[0]);
-					const ding = new Audio("assets/ding.mp3");
 					ding.play();
 				}
 			}

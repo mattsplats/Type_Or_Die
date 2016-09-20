@@ -226,11 +226,11 @@ Object.defineProperty(game, "completeWord", { value: function(word) {
 		const absPosOffset = $("#word_" + word.number + "_letter_" + 0).width();
 
 		const horizSize = 120 + (8 * word.str.length);  // Horizontal explosion size
-		const horizRandMult = 0;  // Horizontal randomness
+		const horizRandMult = 40;  // Horizontal randomness
 		function horizOffset(index) { return -(horizSize / 2) + (index * (horizSize / (word.str.length - 1))) }
 		
 		const vertSize = 60 + (4 * word.str.length);  // Vertical explosion size
-		const vertRandMult = 0;  // Vertical randomness
+		const vertRandMult = 24;  // Vertical randomness
 		let flip = Math.random() > 0.5 ? 1 : -1;
 		function vertOffset(index) { return Math.sin(index * Math.PI / (word.str.length - 1)) * vertSize * (flip == 1 ? flip = -1 : flip = 1)}
 		
@@ -288,8 +288,10 @@ Object.defineProperty(game, "wrongKey", { value: function() {
 
 // game.showButtons
 Object.defineProperty(game, "showButtons", { value: function() {
-	const template = "<button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp; " + 
-		"<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button>";
+	const template = "<button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp;\
+		<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button> &nbsp;&nbsp;\
+		<button class='btn btn-default startGame' id='bacon' data-type='bacon'>Bacon Words</button> &nbsp;&nbsp;\
+		<button class='btn btn-default startGame' id='random' data-type='random'>Random Words</button>";
 
 	if (!game.over) { $("#output").empty(); }
 	$("#output").addClass("flex").append($("<div>").html(template).fadeIn());

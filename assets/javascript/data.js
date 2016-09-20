@@ -5,6 +5,8 @@ const data = {
 	// Word lists from APIs
 	hipsterWords: [],
 	latinWords: [],
+	baconWords: [],
+	randomWords: [],
 
 	// Methods
 	isReady: function(){},
@@ -30,10 +32,9 @@ Object.defineProperty(data, "get", { value: function(source) {
 	switch (source) {
 		case "hipster": hipster(); return data.hipsterWords;
 		case "latin": latin(); return data.latinWords;
-		case "all":
-			hipster();
-			latin();
-			return null;
+		case "bacon": bacon(); return data.baconWords;
+		case "random": random(); return data.randomWords;
+		case "all": hipster(); latin(); bacon(); random(); return null;
 	}
 
 	// hipsterjesus.com XHR/processing
@@ -69,8 +70,47 @@ Object.defineProperty(data, "get", { value: function(source) {
 
 	// lorem ipsum XHR/processing
 	function latin() {
-		$.get("http://www.randomtext.me/api/lorem/p-1/100").done(function(response){ 
-			data.latinWords = response.text_out.match(/([^.,\n<>/ ]{3,})/g);
+		$.get("http://www.randomtext.me/api/lorem/p-1/100").done(function(response){
+			// Lowercase all words with a starting uppercase letter (beginning of sentences)
+			const str = response.text_out.replace(/(\b[A-Z][a-z])/g, function(x){ return x.toLowerCase(); });
+
+			// Build initial array of matching words and phrases (checking phrases first)
+			const srcArr = str.match(/([^.,\n<>/ ]{3,})/g);
+
+			// Remove duplicates
+			for (let i = 0; i < srcArr.length; i++) {
+				if (data.latinWords.indexOf(srcArr[i]) == -1 && !/lorem|ipsum/.test(srcArr[i])) {
+					data.latinWords.push(srcArr[i]);
+				}
+			}
 		});
+	}
+
+	// bacon ipsum XHR/processing
+	function bacon() {
+		$.get("https://baconipsum.com/api/", { type: "all-meat", sentences: "5" }).done(function(response){ 
+			// Lowercase all words with a starting uppercase letter (beginning of sentences)
+			const str = response[0].replace(/(\b[A-Z][a-z])/g, function(x){ return x.toLowerCase(); });
+
+			// Build initial array of matching words and phrases (checking phrases first)
+			const srcArr = str.match(/(pork ribs|beef ribs|pork chop|pork belly|beef jerky|corned beef|ham hock|spare ribs|short ribs|short loin|strip steak|filet mignon|ground round|ball tip|[^.,\n/ ]{3,})/g);
+
+			// Remove duplicates and undesired words
+			for (let i = 0; i < srcArr.length; i++) {
+				if (data.baconWords.indexOf(srcArr[i]) == -1 && !/kevin/.test(srcArr[i])) {
+					data.baconWords.push(srcArr[i]);
+				}
+			}
+		});
+	}
+
+	// randomWord XHR/processing
+	function random() {
+		for (var i = 0; i < 50; i++) {
+			$.get("http://www.setgetgo.com/randomword/get.php").done(function(response){ 
+				// Store if not duplicate
+				if (data.randomWords.indexOf(response) == -1) { data.randomWords.push(response); }
+			});
+		}
 	}
 }});
