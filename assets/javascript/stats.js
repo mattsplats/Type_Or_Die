@@ -24,6 +24,7 @@ const stats = {
 	// Highscore table vars
 	scoreArr: [],
 	maxScores: 5,
+	maxLeaderboardScores: 10,
 
 	update: function(){},
 		// Updates stats shown on page
@@ -36,7 +37,7 @@ const stats = {
 		// Sets: all stats except startTime
 
 	addHighScore: function(){},
-		// Adds current stats as new row to highscore table, stores data
+		// Adds current stats as new row to highscore table, stores data, updates leaderboard
 		// Calls: user.storeScores
 		// Sets: (none)
 
@@ -97,20 +98,36 @@ Object.defineProperty(stats, "addHighScore", { value: function() {
 		longestStreak: stats.longestStreak
 	};
 
+	// Add new high score to array and sort
 	stats.scoreArr.push(scoreObj);
 	stats.scoreArr.sort(function(a, b) {
 		if (a.score != b.score) { return b.score - a.score; }
 		else { return b.wpm - a.wpm }
 	});
 
+	// Remove lowest score if we have more than maxScores scores
 	if (stats.scoreArr.length > stats.maxScores) { stats.scoreArr.pop(); }
 
+	// Display new scores
 	$("#highscore-stats").empty();
 	for (let i = 0; i < stats.scoreArr.length; i++) {
 		$("#highscore-stats").append(stats.scoreArr[i].html);
 	}
 
+	// Store score array via stringify
 	user.storeScores(JSON.stringify(stats.scoreArr));
+
+	// Leaderboard update
+	firebase.database().ref("leaderboard").once("value").then(function(snapshot) {
+		let currentBoard = JSON.parse(snapshot) || [];
+		currentBoard.push(scoreObj);
+		currentBoard.sort(function(a, b) {
+			if (a.score != b.score) { return b.score - a.score; }
+			else { return b.wpm - a.wpm }
+		});
+		if (currentBoard.length > stats.maxLeaderboardScores) { currentBoard.pop(); }
+		firebase.database().ref("leaderboard").set(JSON.stringify(finalBoard));
+	});
 }});
 
 // stats.setHighScores

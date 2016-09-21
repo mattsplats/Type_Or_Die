@@ -67,18 +67,33 @@ $(function() {
 		}
 	});
 
+	// let toggle = false;
+	$("#leaderboard").on("click", function() {
+		$("#game-body").css("height", 750);
+		$("#game-body").html("<div class='panel-body'>\
+            <table class='table table-hover' id='score-table'>\
+              <thead>\
+                <tr>\
+                  <th class='text-center hipster-text'>Score:</th>\
+                  <th class='text-center hipster-text'>WPM:</th>\
+                  <th class='text-center hipster-text'>Accuracy %:</th>\
+                  <th class='text-center hipster-text'>Longest Streak:</th>\
+                </tr>\
+              </thead>\
+              <tbody id='leaderboard-stats'></tbody>\
+            </table>\
+          </div>");
 
-	// Backspace event
-	// $(document).on("keyup", function(e) {
-	// 	if (game.ready && e.which == 8) {
-	// 		for (var i = 0; i < game.matchingWords.length; i++) {
-	// 			game.resetWord(game.matchingWords[i], i);
-	// 		}
-	// 	}
-	// 	game.currentLetter = 0;
-	// 	game.missedWords = [];
-	// });
-	
+		firebase.database().ref("leaderboard").once("value").then(function(snapshot) {
+			const leaderboard = snapshot;
+		});
+
+		$("#highscore-stats").empty();
+		for (let i = 0; i < stats.scoreArr.length; i++) {
+			$("#leaderboard-stats").append(leaderboard[i].html);
+		}
+	});
+
 
 	// Initialize game
 	game.init();
