@@ -11,7 +11,7 @@ const user = {
 	// Methods
 	auth: function(){},
 		// User sign-in: gives popup for Google login
-		// Calls: stats.setHighScores, game.showButtons
+		// Calls: stats.setHighScores, game.showGameOptions
 		// Sets: name, email, id
 
 	storeScores: function(scoreArr){}
@@ -53,7 +53,7 @@ Object.defineProperty(user, "auth", { value: function() {
 		});
 
 		$("#auth").fadeOut(function() {
-			game.showButtons();
+			game.showGameOptions();
 		});
 	}), function(error) { throw error; };
 }});
