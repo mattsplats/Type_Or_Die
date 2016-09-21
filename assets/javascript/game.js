@@ -17,14 +17,14 @@ const game = {
 	missedWords: [],  // Words that do not match input string (on current keystroke)
 
 	// Constants (safe to modify)
-	length: 3,  // Length of a game in words (game will end when game.length words have been completed/missed)
+	length: 1,  // Length of a game in words (game will end when game.length words have been completed/missed)
 	speedupFactor: 1.02,  // Muliplier for the rate at which new words are added, applies after each added word
 	startingTimeout: 2000,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
 	maxWords: 5,  // Most words to be shown on screen at one time
 
 	// Constants (UNSAFE TO MODIFY)
-	wordSpeed: 1000,  // Speed of each word relative to its size, smaller numbers are faster
+	wordSpeed: 0,  // Speed of each word relative to its size, smaller numbers are faster
 	wordBuffer: 10,  // Minimum buffer of source words (will trigger an XHR more if sourceWords.length < wordBuffer)
 
 
@@ -41,7 +41,7 @@ const game = {
 
 	end: function(){},
 		// Shows "game over" screen and buttons to play again
-		// Calls: showButtons, stats.addHighScore
+		// Calls: showGameOptions, stats.addHighScore
 		// Sets: ready, over
 
 	addWord: function(){},
@@ -69,7 +69,7 @@ const game = {
 		// Calls: stats.update
 		// Sets: stats.timeOffset, ready, stats.hits, stats.misses, stats.currentStreak, stats.currentLetter
 
-	showButtons: function(){}
+	showGameOptions: function(){}
 		// Shows word list selector buttons, modifies #output div css, adds onClick handler for these buttons
 		// Calls: start
 		// Sets: currentSource, sourceWords, over
@@ -80,7 +80,7 @@ const game = {
 // game.init
 Object.defineProperty(game, "init", { value: function() {
 	data.get("all");
-	game.showButtons();
+	// game.showGameOptions();
 }});
 
 // game.start
@@ -119,7 +119,7 @@ Object.defineProperty(game, "end", { value: function() {
 		game.ready = false;
 		
 		$("#output").addClass("flex").html($("<div>").addClass("text-center").attr("id", "thanks").html("<h1>Thanks for playing!</h1>").fadeIn());
-		game.showButtons();
+		game.showGameOptions();
 		stats.addHighScore();
 	}
 }});
@@ -289,19 +289,29 @@ Object.defineProperty(game, "wrongKey", { value: function() {
 	}
 }});
 
-// game.showButtons
-Object.defineProperty(game, "showButtons", { value: function() {
-	const template = "<button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp;\
+// game.showGameOptions
+Object.defineProperty(game, "showGameOptions", { value: function() {
+	const buttonTemplate = "<button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp;\
 		<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button> &nbsp;&nbsp;\
 		<button class='btn btn-default startGame' id='bacon' data-type='bacon'>Bacon Words</button> &nbsp;&nbsp;\
 		<button class='btn btn-default startGame' id='random' data-type='random'>Random Words</button>";
 
+	const radioTemplate = "<label class='btn btn-primary active'><input type='radio' name='options' id='option1' autocomplete='off' checked> Easy </label>\
+  		<label class='btn btn-primary'><input type='radio' name='options' id='option2' autocomplete='off'> Hard </label>\
+  		<label class='btn btn-primary'><input type='radio' name='options' id='option3' autocomplete='off'> Insane </label>";
+
 	if (!game.over) { $("#output").empty(); }
-	$("#output").addClass("flex").append($("<div>").html(template).fadeIn());
+	$("#output").addClass("flex").append($("<div>").html(buttonTemplate).fadeIn());
+	$("#output").addClass("flex").append($("<div>").html(radioTemplate).fadeIn());
 
 	$(".startGame").on("click", function(e){
 		if (data.isReady()) {
 			game.over = false;
+
+			// Set difficulty
+			if ($("#option1").prop("checked")) { game.wordSpeed = 1200; }
+			else if ($("#option2").prop("checked")) { game.wordSpeed = 900; }
+			else { game.wordSpeed = 600; }
 
 			// Set source to selected word source, get words from that source
 			game.currentSource = $(this).data("type");
