@@ -85,7 +85,7 @@ $(function() {
           </div>");
 
 		firebase.database().ref("leaderboard").once("value").then(function(snapshot) {
-			const leaderboard = snapshot;
+			const leaderboard = snapshot.val();
 		});
 
 		$("#highscore-stats").empty();
