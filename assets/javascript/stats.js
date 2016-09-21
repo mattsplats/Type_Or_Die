@@ -119,14 +119,14 @@ Object.defineProperty(stats, "addHighScore", { value: function() {
 
 	// Leaderboard update
 	firebase.database().ref("leaderboard").once("value").then(function(snapshot) {
-		let currentBoard = JSON.parse(snapshot.val()) || [];
-		currentBoard.push(scoreObj);
-		currentBoard.sort(function(a, b) {
+		let board = JSON.parse(snapshot.val()) || [];
+		board.push(scoreObj);
+		board.sort(function(a, b) {
 			if (a.score != b.score) { return b.score - a.score; }
 			else { return b.wpm - a.wpm }
 		});
-		if (currentBoard.length > stats.maxLeaderboardScores) { currentBoard.pop(); }
-		firebase.database().ref("leaderboard").set(JSON.stringify(finalBoard));
+		if (board.length > stats.maxLeaderboardScores) { board.pop(); }
+		firebase.database().ref("leaderboard").set(JSON.stringify(board));
 	});
 }});
 
