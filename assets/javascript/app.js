@@ -84,14 +84,17 @@ $(function() {
             </table>\
           </div>");
 
+		let leaderboard;
 		firebase.database().ref("leaderboard").once("value").then(function(snapshot) {
-			const leaderboard = JSON.parse(snapshot.val());
-		});
+			leaderboard = JSON.parse(snapshot.val());
+			console.log(leaderboard);
 
-		$("#highscore-stats").empty();
-		for (let i = 0; i < stats.scoreArr.length; i++) {
+		// $("#leaderboard-stats").empty();
+		for (let i = 0; i < leaderboard.length; i++) {
 			$("#leaderboard-stats").append(leaderboard[i].html);
 		}
+
+		});
 	});
 
 
