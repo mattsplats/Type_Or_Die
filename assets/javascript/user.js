@@ -1,4 +1,4 @@
-"use strict"; 
+"use strict";
 
 // Stats processing and storage
 const user = {
@@ -52,9 +52,7 @@ Object.defineProperty(user, "auth", { value: function() {
 			}
 		});
 
-		$("#auth").fadeOut(function() {
-			game.showGameOptions();
-		});
+		$("#auth").fadeOut(function() { game.showGameOptions(); });
 	}), function(error) { throw error; };
 }});
 

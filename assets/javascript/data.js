@@ -24,7 +24,7 @@ const data = {
 // Method definitions
 // data.isReady
 Object.defineProperty(data, "isReady", { value: function() {
-	return (data.hipsterWords.length && data.latinWords.length);
+	return (data.hipsterWords.length && data.latinWords.length && data.baconWords.length && data.randomWords.length);
 }});
 
 // data.get
@@ -106,10 +106,14 @@ Object.defineProperty(data, "get", { value: function(source) {
 
 	// randomWord XHR/processing
 	function random() {
-		for (var i = 0; i < 50; i++) {
+		let counter = 0;
+		getWord();
+
+		function getWord() {
 			$.get("http://www.setgetgo.com/randomword/get.php").done(function(response){ 
-				// Store if not duplicate
 				if (data.randomWords.indexOf(response) == -1) { data.randomWords.push(response); }
+				counter++;
+				if (counter < 50) { getWord(); }
 			});
 		}
 	}

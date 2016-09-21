@@ -17,7 +17,7 @@ const game = {
 	missedWords: [],  // Words that do not match input string (on current keystroke)
 
 	// Difficulty vars
-	length: 50,  // Length of a game in words (game will end when game.length words have been completed/missed)
+	length: 3,  // Length of a game in words (game will end when game.length words have been completed/missed)
 	startingTimeout: 2000,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
 	maxWords: 5,  // Most words to be shown on screen at one time
@@ -41,38 +41,38 @@ const game = {
 		// Sets: currentLetter, currentWord, stats.startTime, ready, over
 
 	end: function(){},
-		// Shows "game over" screen and buttons to play again
-		// Calls: showGameOptions, stats.addHighScore
+		// Sets game over state, sets up for next game, stores new high score
+		// Calls: display.gameOver, chooseOptions, stats.addHighScore
 		// Sets: ready, over
 
 	addWord: function(){},
-		// Places a new falling word on screen, sets a timeout to call removeWord if not completed in wordLiveTime
-		// Calls: data.get
+		// Creates a new word, calls data.get if sourceWords is running low
+		// Calls: data.get, display.addWord
 		// Sets: stats.timeOffset, stats.emptyStart, sourceWords, activeWords, matchingWords, currentWord
 
 	removeWord: function(word){},
 		// Word not completed in time - removes passed word from game, updates game state & stats
-		// Calls: stats.update
+		// Calls: stats.update, display.removeWord
 		// Sets: stats.score, stats.scoreDelta, stats.scoreMultiplier, stats.currentStreak, activeWords, matchingWords, currentLetter
 
 	resetWord: function(word, index){},
-		// Resets HTML for passed word and removes word from matchingWords @ index
-		// Calls: (none)
+		// Resets previously matching word to initial state
+		// Calls: display.resetWord
 		// Sets: missingWords, matchingWords
 
 	completeWord: function(word){},
 		// Word successfully completed - removes passed word from game, updates game state & stats
-		// Calls: stats.update
-		// Sets: stats.score, stats.scoreDelta, stats.scoreMultiplier, stats.hits, stats.currentStreak, activeWords, matchingWords, stats.emptyStart
+		// Calls: stats.update, display.blowUpWord
+		// Sets: stats.score, stats.scoreDelta, stats.scoreMultiplier, stats.hits, stats.currentStreak, activeWords, matchingWords, stats.emptyStart, display.blowUpWord, end
 
 	wrongKey: function(){},
 		// Animates any words remaining in matchingWords when current keystroke results in no word matches, updates game state & stats
-		// Calls: stats.update
+		// Calls: stats.update, display.shakeWord
 		// Sets: stats.timeOffset, stats.scoreDelta, stats.scoreMultiplier, ready, stats.hits, stats.misses, stats.currentStreak, stats.currentLetter
 
-	showGameOptions: function(){}
-		// Shows word list selector buttons, modifies #output div css, adds onClick handler for these buttons
-		// Calls: start
+	chooseOptions: function(){}
+		// Provides option selection for new game, starts new game with chosen options
+		// Calls: display.showOptions, display.startGame
 		// Sets: currentSource, sourceWords, over
 };
 
@@ -81,7 +81,7 @@ const game = {
 // game.init
 Object.defineProperty(game, "init", { value: function() {
 	data.get("all");
-	game.showGameOptions();
+	game.chooseOptions();
 }});
 
 // game.start
@@ -115,14 +115,12 @@ Object.defineProperty(game, "start", { value: function() {
 
 // game.end
 Object.defineProperty(game, "end", { value: function() {
-	if (!game.over) {
-		game.over = true;
-		game.ready = false;
-		
-		$("#output").addClass("flex").html($("<div>").addClass("text-center").attr("id", "thanks").html("<h1>Thanks for playing!</h1>").fadeIn());
-		game.showGameOptions();
-		stats.addHighScore();
-	}
+	game.over = true;
+	game.ready = false;
+	
+	display.gameOver();
+	game.chooseOptions();
+	stats.addHighScore();
 }});
 
 // game.addWord
@@ -133,30 +131,18 @@ Object.defineProperty(game, "addWord", { value: function() {
 		stats.emptyStart = 0;
 	}
 
-	// Create new word object, remove word from sourceWords, get more words if sourceWords is running low
+	// Create new word object, remove word from sourceWords 
 	const word = {
 		str: game.sourceWords[0],
 		number: game.currentWord  // Stores the number used in the div and span IDs at HTML creation time
 	};
 	game.sourceWords.splice(0, 1);
+
+	// Get more words if sourceWords is running low
 	if (game.sourceWords.length < game.wordBuffer) { game.sourceWords = data.get(game.currentSource); }
 
-	// Create and output series of spans for each character in the word
-	let html = "<div id='word_" + game.currentWord + "' class='falling-word'><div id='word_" + game.currentWord + "_wrapper'><h2>";
-	for (let i = 0; i < word.str.length; i++) {
-		html += "<span id='word_" + game.currentWord + "_letter_" + i + "'>" + word.str[i] + "</span>";
-	}
-	html += "</h2></div></div>";
-	$("#output").append(html);
-
-	// Randomize y position of new word
-	const maxXPos = $("#game-body").width() - $("#word_" + game.currentWord).width();
-	const rand = Math.floor(Math.random() * maxXPos) + 15;
-	$("#word_" + game.currentWord).css("left", rand);
-
-	// Start animation, with callback to destroy word
-	$("#word_" + game.currentWord).velocity({ translateY: "540px" },
-		{ duration: (word.str.length + 1) * game.wordSpeed, easing: "linear", complete: function() { if (game.activeWords.indexOf(word) != -1) { game.removeWord(word); } } });
+	// Show word on screen
+	display.addWord(word);
 
 	game.activeWords.push(word);
 	game.currentWord++;
@@ -170,32 +156,23 @@ Object.defineProperty(game, "removeWord", { value: function(word) {
 	stats.currentStreak = 0;
 	stats.update();
 
-	// Remove word from HTML and from activeWords
-	$("#word_" + word.number).remove();
+	// Remove word from activeWords and matchingWords
 	game.activeWords.splice(game.activeWords.indexOf(word), 1)
-
-	// If the word still matches the current input, currentLetter = 0 (so new words will match)
 	if (game.matchingWords.indexOf(word) != -1) {
-		if (game.matchingWords.length == 1) { game.currentLetter = 0; }
+		if (game.matchingWords.length == 1) { game.currentLetter = 0; }  // If the word still matches the current input, currentLetter = 0 (so new words will match)
 		game.matchingWords.splice(game.matchingWords.indexOf(word), 1);
 	}
 
-	// Flash game panel
-	$("#game-panel").css("box-shadow", "0px 0px 10px 1px red");
-	setTimeout(function(){ $("#game-panel").css("box-shadow", ""); }, 50);
-	setTimeout(function(){ $("#game-panel").css("box-shadow", "0px 0px 10px 1px red"); }, 120);
-	setTimeout(function(){ $("#game-panel").css("box-shadow", ""); }, 170);
+	// Remove word from display and trigger associated animations
+	display.removeWord(word);
 
-	if (game.currentWord == game.length && game.activeWords.length == 0) { game.end(); }
+	// If game over conditions hold, trigger game over
+	if (game.currentWord == game.length && game.activeWords.length == 0 && !game.over) { game.end(); }
 }});
 
 // game.resetWord
 Object.defineProperty(game, "resetWord", { value: function(word, index) {
-	for (let i = 0; i < game.currentLetter; i++) {
-		$("#word_" + word.number + "_letter_" + i).css("color", "black");
-		if ($("#word_" + word.number + "_letter_" + i).html() == "_") { $("#word_" + word.number + "_letter_" + i).html(" "); }
-	}
-
+	display.resetWord(word);
 	game.missedWords.push(word);
 	game.matchingWords.splice(index, 1);
 }});
@@ -207,77 +184,24 @@ Object.defineProperty(game, "completeWord", { value: function(word) {
 	stats.scoreDelta = word.str.length * stats.scorePlusMult * stats.scoreMultiplier;
 	stats.hits += word.str.length;
 	stats.currentStreak++;
-	switch (stats.currentStreak) {
-		case stats.doublePoint: stats.scoreMultiplier++; break;
-		case stats.triplePoint: stats.scoreMultiplier++; break;
-		case stats.quadPoint: stats.scoreMultiplier++; break;
-		case stats.quintPoint: stats.scoreMultiplier++; break;
-	}
-	// stats.scoreMultiplier = stats.currentStreak == 50 ? 5 : (stats.currentStreak == 25 ? 4 : (stats.currentStreak == 10 ? 3 : (stats.currentStreak == 5 ? 2 : 1)));
 	stats.update();
 
 	game.activeWords.splice(game.activeWords.indexOf(word), 1);
 	game.matchingWords.splice(game.matchingWords.indexOf(word), 1);
 
 	// "Blow up word" animation
-	blowUpWord();
+	display.blowUpWord(word);
 
 	// Timer check if screen is empty
 	if (game.activeWords.length == 0) {
 		stats.emptyStart = Date.now();
 	}
 
-	if (game.currentWord == game.length && game.activeWords.length == 0) { game.end(); }
-
-	function blowUpWord() {
-		const absPosOffset = $("#word_" + word.number + "_letter_" + 0).width();
-
-		const horizSize = 120 + (8 * word.str.length);  // Horizontal explosion size
-		const horizRandMult = 40;  // Horizontal randomness
-		function horizOffset(index) { return -(horizSize / 2) + (index * (horizSize / (word.str.length - 1))) }
-		
-		const vertSize = 60 + (4 * word.str.length);  // Vertical explosion size
-		const vertRandMult = 24;  // Vertical randomness
-		let flip = Math.random() > 0.5 ? 1 : -1;
-		function vertOffset(index) { return Math.sin(index * Math.PI / (word.str.length - 1)) * vertSize * (flip == 1 ? flip = -1 : flip = 1)}
-		
-		const explodeTime = 250;  // Looks better if you keep the explode time at least 50% longer than the fade time
-		const fadeTime = 160;
-		
-		let horizRand;
-		let vertRand;
-
-		// Stop all running animations first
-		$("#word_" + word.number).velocity("stop", true);
-
-		for (let i = 0; i < word.str.length; i++) {
-			// Remove added dashes
-			if ($("#word_" + word.number + "_letter_" + i).html() == "_") { $("#word_" + word.number + "_letter_" + i).html(" "); }
-			
-			// Set all letters to absolute position and offset left to correct initial position
-			$("#word_" + word.number + "_letter_" + i).css("position", "absolute").css("left", (absPosOffset * i) + "px");
-
-			// Set random variation for final letter positions
-			horizRand = Math.random() * horizRandMult - (horizRandMult / 2);
-			vertRand = Math.random() * vertRandMult - (vertRandMult / 2);
-
-			// Animate explosion
-			$("#word_" + word.number + "_letter_" + i).velocity({
-				translateX: horizOffset(i) + horizRand,
-				translateY: vertOffset(i) + vertRand,
-			}, { duration: explodeTime, easing: "easeOutQuad"});
-		}
-
-		// Fade out word, then delete
-		$("#word_" + word.number).velocity("fadeOut", { duration: fadeTime, easing: "linear",
-			completion: function() { $("#word_" + word.number).remove() } });
-	}
+	if (game.currentWord == game.length && game.activeWords.length == 0 && !game.over) { game.end(); }
 }});
 
 // game.wrongKey
 Object.defineProperty(game, "wrongKey", { value: function() {
-	const animationTime = 150;
-	
 	// Prohibits further input while animation is playing
 	game.ready = false;
 	
@@ -286,33 +210,22 @@ Object.defineProperty(game, "wrongKey", { value: function() {
 	stats.hits += game.currentLetter;
 	stats.misses++;
 	stats.currentStreak = 0;
-	stats.timeOffset += animationTime;  // Removes animation wait time from WPM calculation (so you're not penalized for time spent waiting)
+	stats.timeOffset += game.missTimeout;  // Removes forced wait time from WPM calculation (so you're not penalized for time spent waiting)
 	stats.update();
 
 	game.currentLetter = 0;
 
-	// Missed word animation, game.ready == true after game.missTimeout elapses
+	// Missed word animation
 	for (let i = 0; i < game.missedWords.length; i++) {
-		$("#word_" + game.missedWords[i].number + "_wrapper").addClass("word-shake");
-		setTimeout(function(){ $("#word_" + game.missedWords[i].number + "_wrapper").removeClass("word-shake"); }, animationTime);
-		setTimeout(function(){ game.ready = true; }, game.missTimeout);
+		display.shakeWord(game.missedWords[i]);
 	}
+
+	setTimeout(function(){ game.ready = true; }, game.missTimeout);
 }});
 
-// game.showGameOptions
-Object.defineProperty(game, "showGameOptions", { value: function() {
-	const buttonTemplate = "<button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp;\
-		<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button> &nbsp;&nbsp;\
-		<button class='btn btn-default startGame' id='bacon' data-type='bacon'>Bacon Words</button> &nbsp;&nbsp;\
-		<button class='btn btn-default startGame' id='random' data-type='random'>Random Words</button>";
-
-	const radioTemplate = "<label class='btn btn-primary active'><input type='radio' name='options' id='option1' autocomplete='off' checked> Easy </label>\
-  		<label class='btn btn-primary'><input type='radio' name='options' id='option2' autocomplete='off'> Hard </label>\
-  		<label class='btn btn-primary'><input type='radio' name='options' id='option3' autocomplete='off'> Insane </label>";
-
-	if (!game.over) { $("#output").empty(); }
-	$("#output").addClass("flex").append($("<div>").html(buttonTemplate).fadeIn());
-	$("#output").addClass("flex").append($("<div>").html(radioTemplate).fadeIn());
+// game.chooseOptions
+Object.defineProperty(game, "chooseOptions", { value: function() {
+	display.showOptions();
 
 	$(".startGame").on("click", function(e){
 		if (data.isReady()) {
@@ -327,12 +240,7 @@ Object.defineProperty(game, "showGameOptions", { value: function() {
 			game.currentSource = $(this).data("type");
 			game.sourceWords = data.get(game.currentSource);
 
-			$("#thanks").fadeOut();
-			$(".startGame").fadeOut(function() {
-				$("#output").removeClass("flex");
-				$("#output").empty();
-				if (!game.ready) { game.start(); }
-			});
+			display.startGame();
 		}
 	});
 }});

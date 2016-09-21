@@ -22,9 +22,9 @@ const stats = {
 	scorePlusMult: 100,  // Score multiplier for completing a word
 	scoreMinusMult: 25,  // Score multiplier for not completing a word
 	doublePoint: 3,  // Breakpoints for multiplier increases (i.e. if streak = doublePoint, scoreMultiplier == 2, etc.)
-	triplePoint: 5,
-	quadPoint: 7,
-	quintPoint: 10,
+	triplePoint: 6,
+	quadPoint: 10,
+	quintPoint: 15,
 
 	// Highscore table vars
 	scoreArr: [],
@@ -62,6 +62,13 @@ Object.defineProperty(stats, "update", { value: function() {
 	if (stats.score < 0) { stats.score = 0; }
 	if (stats.currentStreak > stats.longestStreak) { stats.longestStreak = stats.currentStreak; }
 
+	switch (stats.currentStreak) {  // Increases score multiplier if currentStreak has passed breakpoints
+		case stats.doublePoint: stats.scoreMultiplier++; break;
+		case stats.triplePoint: stats.scoreMultiplier++; break;
+		case stats.quadPoint: stats.scoreMultiplier++; break;
+		case stats.quintPoint: stats.scoreMultiplier++; break;
+	}
+
 	$("#score").html(stats.score);
 	$("#score-mult").html("x" + stats.scoreMultiplier);
 	$("#score-diff").html($("<span>").html((stats.scoreDelta > 0 ? "+" : "") + (stats.scoreDelta != 0 ? stats.scoreDelta : ""))
@@ -77,6 +84,7 @@ Object.defineProperty(stats, "update", { value: function() {
 // stats.reset
 Object.defineProperty(stats, "reset", { value: function() {
 	stats.score = 0;
+	stats.scoreMultiplier = 1;
 	stats.scoreDelta = 0;
 	stats.wpm = 0;
 	stats.acc = 0;
@@ -92,11 +100,10 @@ Object.defineProperty(stats, "reset", { value: function() {
 
 // stats.addHighScore
 Object.defineProperty(stats, "addHighScore", { value: function() {
-	const template = "<tr><th class='text-center hipster-text'>" + (stats.score) + "</th>" +
+	const template = "<th class='text-center hipster-text'>" + (stats.score) + "</th>" +
 		"<th class='text-center hipster-text'>" + stats.wpm.toFixed(1) + "</th>" +
 		"<th class='text-center hipster-text'>" + stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )" + "</th>" +
-		"<th class='text-center hipster-text'>" + stats.longestStreak + "</th>" +
-	"</tr>";
+		"<th class='text-center hipster-text'>" + stats.longestStreak + "</th>";
 
 	const scoreObj = {
 		html: template,
@@ -115,27 +122,32 @@ Object.defineProperty(stats, "addHighScore", { value: function() {
 
 	// Remove lowest score if we have more than maxScores scores
 	if (stats.scoreArr.length > stats.maxScores) { stats.scoreArr.pop(); }
+	
+	// Get new index of added score
+	const newScoreNum = stats.scoreArr.indexOf(scoreObj);
 
 	// Display new scores
 	$("#highscore-stats").empty();
 	for (let i = 0; i < stats.scoreArr.length; i++) {
-		$("#highscore-stats").append(stats.scoreArr[i].html);
+		$("#highscore-stats").append($("<tr>").html(stats.scoreArr[i].html).fadeIn( newScoreNum == i ? 400 : 0 ));
 	}
 
-	// Store score array via stringify
-	user.storeScores(JSON.stringify(stats.scoreArr));
+	if (user.email) {
+		// Store score array via stringify
+		user.storeScores(JSON.stringify(stats.scoreArr));
 
-	// Leaderboard update
-	firebase.database().ref("leaderboard").once("value").then(function(snapshot) {
-		let board = JSON.parse(snapshot.val()) || [];
-		board.push(scoreObj);
-		board.sort(function(a, b) {
-			if (a.score != b.score) { return b.score - a.score; }
-			else { return b.wpm - a.wpm }
+		// Leaderboard update
+		firebase.database().ref("leaderboard").once("value").then(function(snapshot) {
+			let board = JSON.parse(snapshot.val()) || [];
+			board.push(scoreObj);
+			board.sort(function(a, b) {
+				if (a.score != b.score) { return b.score - a.score; }
+				else { return b.wpm - a.wpm }
+			});
+			if (board.length > stats.maxLeaderboardScores) { board.pop(); }
+			firebase.database().ref("leaderboard").set(JSON.stringify(board));
 		});
-		if (board.length > stats.maxLeaderboardScores) { board.pop(); }
-		firebase.database().ref("leaderboard").set(JSON.stringify(board));
-	});
+	}
 }});
 
 // stats.setHighScores

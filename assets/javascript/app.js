@@ -72,29 +72,28 @@ $(function() {
 	// let toggle = false;
 	$("#leaderboard").on("click", function() {
 		$("#game-body").css("height", 750);
-		$("#game-body").html("<div class='panel-body'>\
-            <table class='table table-hover' id='score-table'>\
-              <thead>\
-                <tr>\
-                  <th class='text-center hipster-text'>Score:</th>\
-                  <th class='text-center hipster-text'>WPM:</th>\
-                  <th class='text-center hipster-text'>Accuracy %:</th>\
-                  <th class='text-center hipster-text'>Longest Streak:</th>\
-                </tr>\
-              </thead>\
-              <tbody id='leaderboard-stats'></tbody>\
-            </table>\
-          </div>");
 
 		let leaderboard;
 		firebase.database().ref("leaderboard").once("value").then(function(snapshot) {
-			leaderboard = JSON.parse(snapshot.val());
-			console.log(leaderboard);
+			$("#game-body").html($("<div>").addClass("panel-body").html("\
+	          <table class='table table-hover' id='score-table'>\
+	            <thead>\
+	              <tr>\
+	                <th class='text-center hipster-text'>Score:</th>\
+	                <th class='text-center hipster-text'>WPM:</th>\
+	                <th class='text-center hipster-text'>Accuracy %:</th>\
+	                <th class='text-center hipster-text'>Longest Streak:</th>\
+	              </tr>\
+	              </thead>\
+	            <tbody id='leaderboard-stats'></tbody>\
+	          </table>").fadeIn());
 
-		// $("#leaderboard-stats").empty();
-		for (let i = 0; i < leaderboard.length; i++) {
-			$("#leaderboard-stats").append(leaderboard[i].html);
-		}
+			leaderboard = JSON.parse(snapshot.val());
+
+			// $("#leaderboard-stats").empty();
+			for (let i = 0; i < leaderboard.length; i++) {
+				setTimeout(function() { $("#leaderboard-stats").append($("<tr>").html(leaderboard[i].html).fadeIn()) }, i * 80);
+			}
 
 		});
 	});
