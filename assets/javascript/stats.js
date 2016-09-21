@@ -119,7 +119,7 @@ Object.defineProperty(stats, "addHighScore", { value: function() {
 
 	// Leaderboard update
 	firebase.database().ref("leaderboard").once("value").then(function(snapshot) {
-		let currentBoard = JSON.parse(snapshot) || [];
+		let currentBoard = JSON.parse(snapshot.val()) || [];
 		currentBoard.push(scoreObj);
 		currentBoard.sort(function(a, b) {
 			if (a.score != b.score) { return b.score - a.score; }
