@@ -12,6 +12,7 @@ const stats = {
 	// Secondary vars
 	hits: 0,
 	misses: 0,
+	scoreMultiplier: 1,
 	scoreDelta: 0,  // Amouent added/removed from score on latest update
 	startTime: 0,  // Game start time for WPM calc
 	timeOffset: 0,  // Time removed from WPM calc
@@ -20,6 +21,10 @@ const stats = {
 	// Constants
 	scorePlusMult: 100,  // Score multiplier for completing a word
 	scoreMinusMult: 25,  // Score multiplier for not completing a word
+	doublePoint: 3,  // Breakpoints for multiplier increases (i.e. if streak = doublePoint, scoreMultiplier == 2, etc.)
+	triplePoint: 5,
+	quadPoint: 7,
+	quintPoint: 10,
 
 	// Highscore table vars
 	scoreArr: [],
@@ -58,11 +63,14 @@ Object.defineProperty(stats, "update", { value: function() {
 	if (stats.currentStreak > stats.longestStreak) { stats.longestStreak = stats.currentStreak; }
 
 	$("#score").html(stats.score);
+	$("#score-mult").html("x" + stats.scoreMultiplier);
 	$("#score-diff").html($("<span>").html((stats.scoreDelta > 0 ? "+" : "") + (stats.scoreDelta != 0 ? stats.scoreDelta : ""))
-		.css("color", stats.scoreDelta > 0 ? "green" : "red").fadeIn().fadeOut());
+		.css("color", stats.scoreDelta > 0 ? "#22f722" : "red").fadeIn().fadeOut());
 	$("#wpm").html(stats.wpm.toFixed(1));
 	$("#acc").html(stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )");
 	$("#streak").html(stats.currentStreak);
+	// $("#streak").html($("<span>").attr("id", "streakNum").html(stats.currentStreak).css("color", stats.currentStreak == 0 ? "red" : "white")
+	// 	.fadeIn(stats.currentStreak == 0 ? 400 : 0, function() { $("#streakNum").velocity({ color: "white" }); }));
 	$("#longest").html(stats.longestStreak);
 }});
 

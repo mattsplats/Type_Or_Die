@@ -54,12 +54,14 @@ $(function() {
 				game.currentLetter++;
 
 				// If word is complete, replace with new word
-				if (game.currentLetter == game.matchingWords[0].str.length) {
-					for (let i = 0; i < game.matchingWords.length; i++) {
+				for (let i = 0; i < game.matchingWords.length; i++) {
+					if (game.currentLetter == game.matchingWords[i].str.length) {
 						game.completeWord(game.matchingWords[i]);
+						// ding.play();
+						i--;  // Decrement loop counter (the current word has been removed from matchingWords: next word was @ i+1, now @ i)
 					}
-					ding.play();
 				}
+				if (game.matchingWords.length == 0) { game.currentLetter = 0; }
 			}
 			else {
 				game.wrongKey();

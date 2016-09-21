@@ -93,7 +93,7 @@ Object.defineProperty(data, "get", { value: function(source) {
 			const str = response[0].replace(/(\b[A-Z][a-z])/g, function(x){ return x.toLowerCase(); });
 
 			// Build initial array of matching words and phrases (checking phrases first)
-			const srcArr = str.match(/(pork ribs|beef ribs|pork chop|pork belly|beef jerky|corned beef|ham hock|spare ribs|short ribs|short loin|strip steak|filet mignon|ground round|ball tip|[^.,\n/ ]{3,})/g);
+			const srcArr = str.match(/(pork ribs|beef ribs|pork chop|pork loin|pork belly|beef jerky|corned beef|ham hock|spare ribs|short ribs|short loin|strip steak|filet mignon|ground round|ball tip|[^.,\n/ ]{3,})/g);
 
 			// Remove duplicates and undesired words
 			for (let i = 0; i < srcArr.length; i++) {

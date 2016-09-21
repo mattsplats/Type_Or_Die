@@ -50,6 +50,10 @@ h1 {
   justify-content: space-between;
 }
 
+.stats {
+  color: #D8D8D8FF;
+}
+
 #highscore-stats {
   font-family: 'Amatica SC', cursive;
   font-size: 27px;

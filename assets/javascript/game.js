@@ -16,16 +16,17 @@ const game = {
 	matchingWords: [],  // Words still matching input string
 	missedWords: [],  // Words that do not match input string (on current keystroke)
 
-	// Constants (safe to modify)
-	length: 1,  // Length of a game in words (game will end when game.length words have been completed/missed)
-	speedupFactor: 1.02,  // Muliplier for the rate at which new words are added, applies after each added word
+	// Difficulty vars
+	length: 50,  // Length of a game in words (game will end when game.length words have been completed/missed)
 	startingTimeout: 2000,  // Msec before first new word is added
 	minTimeout: 1000,  // Minimum msec between new words being added
 	maxWords: 5,  // Most words to be shown on screen at one time
+	wordSpeed: 1200,  // Speed of each word relative to its size, smaller numbers are faster
 
-	// Constants (UNSAFE TO MODIFY)
-	wordSpeed: 0,  // Speed of each word relative to its size, smaller numbers are faster
+	// Constants
+	speedupFactor: 1.01,  // Muliplier for the rate at which new words are added, applies after each added word
 	wordBuffer: 10,  // Minimum buffer of source words (will trigger an XHR more if sourceWords.length < wordBuffer)
+	missTimeout: 250,  // Msec after which a miss is triggered where new input is not allowed (like iFrames)
 
 
 	// Methods
@@ -52,7 +53,7 @@ const game = {
 	removeWord: function(word){},
 		// Word not completed in time - removes passed word from game, updates game state & stats
 		// Calls: stats.update
-		// Sets: stats.score, stats.scoreDelta, stats.currentStreak, activeWords, matchingWords, currentLetter
+		// Sets: stats.score, stats.scoreDelta, stats.scoreMultiplier, stats.currentStreak, activeWords, matchingWords, currentLetter
 
 	resetWord: function(word, index){},
 		// Resets HTML for passed word and removes word from matchingWords @ index
@@ -62,12 +63,12 @@ const game = {
 	completeWord: function(word){},
 		// Word successfully completed - removes passed word from game, updates game state & stats
 		// Calls: stats.update
-		// Sets: stats.score, stats.scoreDelta, stats.hits, stats.currentStreak, currentLetter, activeWords, matchingWords, stats.emptyStart
+		// Sets: stats.score, stats.scoreDelta, stats.scoreMultiplier, stats.hits, stats.currentStreak, activeWords, matchingWords, stats.emptyStart
 
 	wrongKey: function(){},
 		// Animates any words remaining in matchingWords when current keystroke results in no word matches, updates game state & stats
 		// Calls: stats.update
-		// Sets: stats.timeOffset, ready, stats.hits, stats.misses, stats.currentStreak, stats.currentLetter
+		// Sets: stats.timeOffset, stats.scoreDelta, stats.scoreMultiplier, ready, stats.hits, stats.misses, stats.currentStreak, stats.currentLetter
 
 	showGameOptions: function(){}
 		// Shows word list selector buttons, modifies #output div css, adds onClick handler for these buttons
@@ -80,7 +81,7 @@ const game = {
 // game.init
 Object.defineProperty(game, "init", { value: function() {
 	data.get("all");
-	// game.showGameOptions();
+	game.showGameOptions();
 }});
 
 // game.start
@@ -165,6 +166,7 @@ Object.defineProperty(game, "addWord", { value: function() {
 Object.defineProperty(game, "removeWord", { value: function(word) {
 	stats.score -= word.str.length * stats.scoreMinusMult;
 	stats.scoreDelta = -(word.str.length * stats.scoreMinusMult);
+	if (stats.scoreMultiplier > 1) { stats.scoreMultiplier--; }
 	stats.currentStreak = 0;
 	stats.update();
 
@@ -201,15 +203,21 @@ Object.defineProperty(game, "resetWord", { value: function(word, index) {
 // game.completeWord
 Object.defineProperty(game, "completeWord", { value: function(word) {
 	// Increment score, update stats, reset game vars
-	stats.score += word.str.length * stats.scorePlusMult;
-	stats.scoreDelta = word.str.length * stats.scorePlusMult;
+	stats.score += word.str.length * stats.scorePlusMult * stats.scoreMultiplier;
+	stats.scoreDelta = word.str.length * stats.scorePlusMult * stats.scoreMultiplier;
 	stats.hits += word.str.length;
 	stats.currentStreak++;
+	switch (stats.currentStreak) {
+		case stats.doublePoint: stats.scoreMultiplier++; break;
+		case stats.triplePoint: stats.scoreMultiplier++; break;
+		case stats.quadPoint: stats.scoreMultiplier++; break;
+		case stats.quintPoint: stats.scoreMultiplier++; break;
+	}
+	// stats.scoreMultiplier = stats.currentStreak == 50 ? 5 : (stats.currentStreak == 25 ? 4 : (stats.currentStreak == 10 ? 3 : (stats.currentStreak == 5 ? 2 : 1)));
 	stats.update();
 
-	game.currentLetter = 0;
 	game.activeWords.splice(game.activeWords.indexOf(word), 1);
-	game.matchingWords = [];
+	game.matchingWords.splice(game.matchingWords.indexOf(word), 1);
 
 	// "Blow up word" animation
 	blowUpWord();
@@ -272,8 +280,9 @@ Object.defineProperty(game, "wrongKey", { value: function() {
 	
 	// Prohibits further input while animation is playing
 	game.ready = false;
-
+	
 	stats.scoreDelta = 0;
+	if (stats.scoreMultiplier > 1) { stats.scoreMultiplier--; }
 	stats.hits += game.currentLetter;
 	stats.misses++;
 	stats.currentStreak = 0;
@@ -282,10 +291,11 @@ Object.defineProperty(game, "wrongKey", { value: function() {
 
 	game.currentLetter = 0;
 
-	// Missed word animation, game.ready == true when the animation completes
+	// Missed word animation, game.ready == true after game.missTimeout elapses
 	for (let i = 0; i < game.missedWords.length; i++) {
 		$("#word_" + game.missedWords[i].number + "_wrapper").addClass("word-shake");
-		setTimeout(function(){ $("#word_" + game.missedWords[i].number + "_wrapper").removeClass("word-shake"); game.ready = true; }, animationTime);
+		setTimeout(function(){ $("#word_" + game.missedWords[i].number + "_wrapper").removeClass("word-shake"); }, animationTime);
+		setTimeout(function(){ game.ready = true; }, game.missTimeout);
 	}
 }});
 
