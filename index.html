@@ -26,14 +26,23 @@
 			<div class="col-lg-12">
 				<div class="panel panel-primary" id="game-panel">
 
-					<div class="panel-body" id="game-body">
-						<div id="output" class="flex"><button id="auth" class="btn btn-primary">Sign In to Play!</button></div> <!-- Place game in this div (output)-->
+					<div id="game-body" class="panel-body">
+						<div id="output" class="flex">  <!-- Place game in this div (output)-->
+              <div id="sign-in" class="text-center">
+                <div>
+                  <button id="auth" class="btn btn-primary">Sign In</button> &nbsp;&nbsp;&nbsp; Sign in with Google to save your high scores and try to land a spot on the leaderboard!
+                </div><br/><br/><br/>
+                <div>
+                  <button id="bypass" class="btn btn-primary">Play Anonymously</button> &nbsp;&nbsp;&nbsp; Your high scores will be listed for this session only and will not be saved.
+                </div>
+              </div>
+            </div>
 					</div>
 
           <div class="panel-heading">
             <div class="panel-title panel-title-text" id="score-bar">
-              <div><span class="stats">Score: </span><span id="score">0</span> <span id="score-mult"></span> &nbsp; <span id="score-diff"></span></div>
-              <div style=""><span class="stats">WPM: </span><span id="wpm">0.0</span> &nbsp;&nbsp; <span class="stats">Accuracy: </span><span id="acc">0 / 0 ( 0.0% )</span> &nbsp;&nbsp; <span class="stats">Streak:</span> <span id="streak">0</span> &nbsp;&nbsp; <span class="stats">Longest:</span> <span id="longest">0</span></div>
+              <div><span class="stats">Lives: </span><span id="lives">10</span> &nbsp;&nbsp; <span class="stats">Score: </span><span id="score">0</span> <span id="score-mult"></span> &nbsp; <span id="score-diff"></span></div>
+              <div><span class="stats">WPM: </span><span id="wpm">0.0</span> &nbsp;&nbsp; <span class="stats">Accuracy: </span><span id="acc">0.0%</span> &nbsp;&nbsp; <span class="stats">Streak:</span> <span id="streak">0</span> <span class="stats">Max:</span> <span id="longest">0</span></div>
             </div>
           </div>
 				</div>

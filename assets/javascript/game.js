@@ -18,14 +18,15 @@ const game = {
 	missedWords: [],  // Words that do not match input string (on current keystroke)
 
 	// Difficulty vars
-	length: 1,  // Length of a game in words (game will end when game.length words have been completed/missed)
+	lives: 3,
+	extraLifeAt: 10,  // Number of words completed to get another life
 	startingTimeout: 2100,  // Msec before first new word is added
 	minTimeout: 1200,  // Minimum msec between new words being added
 	maxWords: 6,  // Most words to be shown on screen at one time
 	wordSpeed: 1000,  // Speed of each word relative to its size, smaller numbers are faster
 
 	// Constants
-	speedupFactor: 1.015,  // Muliplier for the rate at which new words are added, applies after each added word
+	speedupFactor: 1.008,  // Muliplier for the rate at which new words are added, applies after each added word
 	wordBuffer: 10,  // Minimum buffer of source words (will trigger an XHR more if sourceWords.length < wordBuffer)
 	missTimeout: 250,  // Msec after which a miss is triggered where new input is not allowed (like iFrames)
 
@@ -54,7 +55,7 @@ const game = {
 	removeWord: function(word){},
 		// Word not completed in time - removes passed word from game, updates game state & stats
 		// Calls: stats.update, display.removeWord
-		// Sets: stats.score, stats.scoreDelta, stats.scoreMultiplier, stats.currentStreak, activeWords, matchingWords, currentLetter
+		// Sets: stats.score, stats.scoreDelta, stats.streakMultiplier, stats.currentStreak, activeWords, matchingWords, currentLetter
 
 	resetWord: function(word, index){},
 		// Resets previously matching word to initial state
@@ -64,17 +65,17 @@ const game = {
 	completeWord: function(word){},
 		// Word successfully completed - removes passed word from game, updates game state & stats
 		// Calls: stats.update, display.blowUpWord
-		// Sets: stats.score, stats.scoreDelta, stats.scoreMultiplier, stats.hits, stats.currentStreak, activeWords, matchingWords, stats.emptyStart, display.blowUpWord, end
+		// Sets: stats.wordsCompleted, lives, stats.score, stats.scoreDelta, stats.streakMultiplier, stats.hits, stats.currentStreak, activeWords, matchingWords, stats.emptyStart, display.blowUpWord, end
 
 	wrongKey: function(){},
 		// Animates any words remaining in matchingWords when current keystroke results in no word matches, updates game state & stats
 		// Calls: stats.update, display.shakeWord
-		// Sets: stats.timeOffset, stats.scoreDelta, stats.scoreMultiplier, ready, stats.hits, stats.misses, stats.currentStreak, stats.currentLetter
+		// Sets: stats.timeOffset, stats.scoreDelta, stats.streakMultiplier, ready, stats.hits, stats.misses, stats.currentStreak, stats.currentLetter
 
 	chooseOptions: function(){}
 		// Provides option selection for new game, starts new game with chosen options
 		// Calls: display.showOptions, display.startGame
-		// Sets: over, currentSource, sourceWords, currentDifficulty, length, startingTimeout, minTimeout, maxWords, wordSpeed, stats.scorePlusMult, stats.scoreMinusMult
+		// Sets: over, currentSource, sourceWords, currentDifficulty, length, startingTimeout, minTimeout, maxWords, wordSpeed, stats.difficultyMultiplier, stats.scoreMinusMult
 };
 
 
@@ -82,10 +83,13 @@ const game = {
 Object.defineProperties(game, {
 	"init": { value: function() {
 		data.get("all");
-		game.chooseOptions();  // Uncomment this to bypass login / authentication step
+		// game.chooseOptions();  // Uncomment this to bypass login / authentication step
 
-		// User signin popup
+		// User sign-in popup
 		$("#auth").on('click', user.auth);
+
+		// Skip sign-in
+		$("#bypass").on('click', display.loginComplete);
 
 		// Main input processing function (on any keypress)
 		$(document).on("keypress", function(e) {
@@ -160,7 +164,7 @@ Object.defineProperties(game, {
 		// Reduces currentTimeout by speedupFactor on each new added word
 		function anotherWord() {
 		    clearTimeout(timer);
-		    if (game.currentWord < game.length) {
+		    if (game.lives > 0) {
 			    if (game.activeWords.length < game.maxWords) {
 			    	game.addWord();
 			    	game.currentTimeout / game.speedupFactor < game.minTimeout ? game.currentTimeout = game.minTimeout : game.currentTimeout /= game.speedupFactor;
@@ -178,10 +182,15 @@ Object.defineProperties(game, {
 	"end": { value: function() {
 		game.over = true;
 		game.ready = false;
+		game.activeWords = [];
+		game.matchingWords = [];
 		
-		display.gameOver();
-		game.chooseOptions();
 		stats.addHighScore();
+		display.gameOver();
+
+		$("#playAgain").on('click', function() {
+			game.chooseOptions();
+		});
 	}},
 
 	"addWord": { value: function() {
@@ -209,9 +218,9 @@ Object.defineProperties(game, {
 	}},
 
 	"removeWord": { value: function(word) {
-		stats.score -= word.str.length * stats.scoreMinusMult;
-		stats.scoreDelta = -(word.str.length * stats.scoreMinusMult);
-		if (stats.scoreMultiplier > 1) { stats.scoreMultiplier--; }
+		game.lives--;
+
+		if (stats.streakMultiplier > 1) { stats.streakMultiplier--; }
 		stats.currentStreak = 0;
 		stats.update();
 
@@ -226,7 +235,7 @@ Object.defineProperties(game, {
 		display.removeWord(word);
 
 		// If game over conditions hold, trigger game over
-		if (game.currentWord === game.length && game.activeWords.length === 0 && !game.over) { game.end(); }
+		if (game.lives <= 0 && !game.over) { game.end(); }
 	}},
 
 	"resetWord": { value: function(word, index) {
@@ -236,9 +245,13 @@ Object.defineProperties(game, {
 	}},
 
 	"completeWord": { value: function(word) {
+		// Add an extra life for every bonusLifeAt words completed
+		stats.wordsCompleted++;
+		if (stats.wordsCompleted % game.extraLifeAt == 0) { game.lives++; }
+
 		// Increment score, update stats, reset game vars
-		stats.score += word.str.length * stats.scorePlusMult * stats.scoreMultiplier;
-		stats.scoreDelta = word.str.length * stats.scorePlusMult * stats.scoreMultiplier;
+		stats.score += word.str.length * stats.difficultyMultiplier * stats.streakMultiplier;
+		stats.scoreDelta = word.str.length * stats.difficultyMultiplier * stats.streakMultiplier;
 		stats.hits += word.str.length;
 		stats.currentStreak++;
 		stats.update();
@@ -254,7 +267,7 @@ Object.defineProperties(game, {
 			stats.emptyStart = Date.now();
 		}
 
-		if (game.currentWord === game.length && game.activeWords.length === 0 && !game.over) { game.end(); }
+		if (game.lives <= 0 && !game.over) { game.end(); }
 	}},
 
 	"wrongKey": { value: function() {
@@ -262,7 +275,7 @@ Object.defineProperties(game, {
 		game.ready = false;
 		
 		stats.scoreDelta = 0;
-		if (stats.scoreMultiplier > 1) { stats.scoreMultiplier--; }
+		if (stats.streakMultiplier > 1) { stats.streakMultiplier--; }
 		stats.hits += game.currentLetter;
 		stats.misses++;
 		stats.currentStreak = 0;
@@ -301,38 +314,35 @@ Object.defineProperties(game, {
 
 		function easy() {
 			game.currentDifficulty = "easy";
-			// game.length = 50;
-			game.startingTimeout = 2500;
-			game.minTimeout = 1500;
-			game.maxWords = 5;
+			game.lives = 10;
+			game.startingTimeout = 3000;
+			game.minTimeout = 1800;
+			game.maxWords = 4;
 			game.wordSpeed = 1500;
 
-			stats.scorePlusMult = 100;
-			stats.scoreMinusMult = 25;
+			stats.difficultyMultiplier = 100;
 		}
 
 		function hard() {
 			game.currentDifficulty = "hard";
-			// game.length = 80;
-			game.startingTimeout = 2100;
-			game.minTimeout = 1200;
-			game.maxWords = 6;
+			game.lives = 5;
+			game.startingTimeout = 2500;
+			game.minTimeout = 1500;
+			game.maxWords = 5;
 			game.wordSpeed = 1000;
 
-			stats.scorePlusMult = 200;
-			stats.scoreMinusMult = 50;
+			stats.difficultyMultiplier = 200;
 		}
 
 		function insane() {
 			game.currentDifficulty = "insane";
-			// game.length = 120;
+			game.lives = 3;
 			game.startingTimeout = 1800;
 			game.minTimeout = 1000;
-			game.maxWords = 7;
-			game.wordSpeed = 600;
+			game.maxWords = 6;
+			game.wordSpeed = 500;
 
-			stats.scorePlusMult = 300;
-			stats.scoreMinusMult = 100;
+			stats.difficultyMultiplier = 300;
 		}
 	}}
 });

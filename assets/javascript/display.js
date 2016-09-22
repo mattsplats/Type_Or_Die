@@ -16,6 +16,9 @@ const display = {
 	gameOver: function() {},
 		// Show game over text
 
+	showOptions: function(){},
+		// Shows word list selector buttons, modifies #output div css
+
 	loginComplete: function() {},
 		// Fades out initial login text/buttons
 		// Calls: game.chooseOptions
@@ -39,9 +42,6 @@ const display = {
 	shakeWord: function(word){},
 		// Play word shake animation
 
-	showOptions: function(){},
-		// Shows word list selector buttons, modifies #output div css
-
 	changeBackground: function(currentSource){},
 		// Change page background
 
@@ -57,8 +57,7 @@ const display = {
 // Method definitions
 Object.defineProperties(display, {
 	"startGame": { value: function() {
-		$("#thanks").fadeOut();
-		$(".startGame").fadeOut(function() {
+		$("#chooseGame").fadeOut(function() {
 			$("#output").removeClass("flex");
 			$("#output").empty();
 			if (!game.ready) { game.start(); }
@@ -68,12 +67,33 @@ Object.defineProperties(display, {
 	}},
 
 	"gameOver": { value: function() {
-		$("#output").addClass("flex").html($("<div>").addClass("text-center").attr("id", "thanks").html("<h1>Thanks for playing!</h1>").fadeIn());
+		const template = "<div><h1>Thanks for playing!</h1></div><br/><br/>\
+			<div><button id='playAgain' class='btn btn-primary'>Play Again!</button></div>";
+
+		$("#output").addClass("flex").html($("<div>").addClass("text-center").attr("id", "thanks").html(template).fadeIn());
 		$("#score-mult").empty();
 	}},
 
+	"showOptions": { value: function() {
+		const template = "<div>\
+				<button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp;\
+				<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button> &nbsp;&nbsp;\
+				<button class='btn btn-default startGame' id='bacon' data-type='bacon'>Bacon Words</button> &nbsp;&nbsp;\
+				<button class='btn btn-default startGame' id='random' data-type='random'>Random Words</button>\
+			</div>\
+			<br/>\
+			<div class='btn-group' data-toggle='buttons'>\
+				<label class='btn btn-success btn-diff active'><input type='radio' name='options' id='easy' autocomplete='off' checked> Easy </label>\
+	  		<label class='btn btn-warning btn-diff'><input type='radio' name='options' id='hard' autocomplete='off'> Hard </label>\
+	  		<label class='btn btn-danger btn-diff'><input type='radio' name='options' id='insane' autocomplete='off'> Insane </label>\
+	  	</div>";
+
+	  $("#thanks").fadeOut();
+		$("#output").addClass("flex").html($("<div>").addClass("text-center").attr("id", "chooseGame").html(template).fadeIn());
+	}},
+
 	"loginComplete": { value: function() {
-		$("#auth").fadeOut(function() { game.chooseOptions(); });
+		$("#sign-in").fadeOut(function() { game.chooseOptions(); });
 	}},
 
 	"addWord": { value: function(word) {
@@ -169,31 +189,13 @@ Object.defineProperties(display, {
 		setTimeout(function(){ $("#word_" + word.number + "_wrapper").removeClass("word-shake"); }, display.shakeTime);
 	}},
 
-	"showOptions": { value: function() {
-		const template = "<div>\
-				<button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp;\
-				<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button> &nbsp;&nbsp;\
-				<button class='btn btn-default startGame' id='bacon' data-type='bacon'>Bacon Words</button> &nbsp;&nbsp;\
-				<button class='btn btn-default startGame' id='random' data-type='random'>Random Words</button>\
-			</div>\
-			<br/>\
-			<div class='btn-group' data-toggle='buttons'>\
-				<label class='btn btn-primary active'><input type='radio' name='options' id='easy' autocomplete='off' checked> Easy </label>\
-	  		<label class='btn btn-primary'><input type='radio' name='options' id='hard' autocomplete='off'> Hard </label>\
-	  		<label class='btn btn-primary'><input type='radio' name='options' id='insane' autocomplete='off'> Insane </label>\
-	  	</div>";
-
-		if (!game.over) { $("#output").empty(); }
-		$("#output").addClass("flex").append($("<div>").addClass("text-center").html(template).fadeIn());
-	}},
-
 	"stats": { value: function() {
+		$("#lives").html(game.lives);
 		$("#score").html(stats.score);
-		$("#score-mult").html("x" + stats.scoreMultiplier);
-		$("#score-diff").html($("<span>").html((stats.scoreDelta > 0 ? "+" : "") + (stats.scoreDelta != 0 ? stats.scoreDelta : ""))
-			.css("color", stats.scoreDelta > 0 ? "#22f722" : "red").fadeIn().fadeOut());
+		$("#score-mult").html(stats.streakMultiplier > 1 ? "x" + stats.streakMultiplier : "");
+		$("#score-diff").html($("<span>").html((stats.scoreDelta > 0 ? ("+" + stats.scoreDelta) : "")).css("color", "#22f722").fadeIn().fadeOut());
 		$("#wpm").html(stats.wpm.toFixed(1));
-		$("#acc").html(stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )");
+		$("#acc").html(stats.acc.toFixed(1) + "%");
 		$("#streak").html(stats.currentStreak);
 		$("#longest").html(stats.longestStreak);
 	}},

@@ -12,16 +12,16 @@ const stats = {
 	// Secondary vars
 	hits: 0,
 	misses: 0,
-	scoreMultiplier: 1,
+	wordsCompleted: 0,
+	streakMultiplier: 1,
 	scoreDelta: 0,  // Amouent added/removed from score on latest update
 	startTime: 0,  // Game start time for WPM calc
 	timeOffset: 0,  // Time removed from WPM calc
 	emptyStart: 0,  // Start time when game has no words to match
 
 	// Constants
-	scorePlusMult: 100,  // Score multiplier for completing a word
-	scoreMinusMult: 25,  // Score multiplier for not completing a word
-	doublePoint: 3,  // Breakpoints for multiplier increases (i.e. if streak = doublePoint, scoreMultiplier = 2, etc.)
+	difficultyMultiplier: 100,  // Score multiplier for completing a word
+	doublePoint: 3,  // Breakpoints for multiplier increases (i.e. if streak = doublePoint, streakMultiplier = 2, etc.)
 	triplePoint: 6,
 	quadPoint: 10,
 	quintPoint: 15,
@@ -69,7 +69,7 @@ Object.defineProperties(stats, {
 			case stats.doublePoint:
 			case stats.triplePoint:
 			case stats.quadPoint:
-			case stats.quintPoint: stats.scoreMultiplier++; break;
+			case stats.quintPoint: stats.streakMultiplier++; break;
 		}
 
 		display.stats();
@@ -77,7 +77,7 @@ Object.defineProperties(stats, {
 
 	"reset": { value: function() {
 		stats.score = 0;
-		stats.scoreMultiplier = 1;
+		stats.streakMultiplier = 1;
 		stats.scoreDelta = 0;
 		stats.wpm = 0;
 		stats.acc = 0;
@@ -86,6 +86,7 @@ Object.defineProperties(stats, {
 
 		stats.hits = 0;
 		stats.misses = 0;
+		stats.wordsCompleted = 0;
 		stats.timeOffset = 0;
 		stats.emptyStart = 0;
 	}},
