@@ -119,6 +119,7 @@ Object.defineProperties(stats, {
 
 			// Leaderboard update
 			firebase.database().ref("leaderboard/" + game.currentDifficulty).once("value").then(function(snapshot) {
+				console.log("leaderboard");
 				let board = JSON.parse(snapshot.val()) || [];
 
 				scoreObj.player = user.name;

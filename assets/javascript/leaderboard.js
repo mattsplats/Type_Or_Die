@@ -32,6 +32,7 @@ Object.defineProperties(leaderboard, {
 	}},
 
 	"show": { value: function(difficulty){
+		console.log("leaderboard/" + difficulty);
 		firebase.database().ref("leaderboard/" + difficulty).once("value").then(function(snapshot) {
 			const heading = "\
 				<th class='text-center hipster-text'>Player:</th>\
@@ -44,7 +45,7 @@ Object.defineProperties(leaderboard, {
 
 			const arr = JSON.parse(snapshot.val());
 
-			$("#highscore-stats").empty();
+			$("#leaderboard-stats").empty();
 
 			for (let i = 0; i < arr.length; i++) {
 				const template = "\
