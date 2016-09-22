@@ -59,9 +59,11 @@ Object.defineProperties(user, {
 	}},
 
 	"storeScores": { value: function() {
-		firebase.database().ref("users/" + user.ID + "/easyScores").update(JSON.stringify(stats.easyScoreArr));
-		firebase.database().ref("users/" + user.ID + "/hardScores").update(JSON.stringify(stats.highScoreArr));
-		firebase.database().ref("users/" + user.ID + "/insaneScores").update(JSON.stringify(stats.insaneScoreArr));
+		firebase.database().ref("users/" + user.ID).update({
+			easyScores: JSON.stringify(stats.easyScoreArr),
+			hardScores: JSON.stringify(stats.hardScoreArr),
+			insaneScores: JSON.stringify(stats.insaneScoreArr)
+		});
 	}},
 });
 
