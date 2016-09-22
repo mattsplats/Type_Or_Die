@@ -64,3 +64,5 @@ Object.defineProperties(user, {
 		firebase.database().ref("users/" + user.ID + "/insaneScores").update(JSON.stringify(stats.insaneScoreArr));
 	}},
 });
+
+Object.seal(user);

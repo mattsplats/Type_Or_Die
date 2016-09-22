@@ -82,7 +82,7 @@ const game = {
 Object.defineProperties(game, {
 	"init": { value: function() {
 		data.get("all");
-		game.chooseOptions();  // Uncomment this to bypass login / authentication step
+		// game.chooseOptions();  // Uncomment this to bypass login / authentication step
 
 		// User signin popup
 		$("#auth").on('click', user.auth);
@@ -90,9 +90,9 @@ Object.defineProperties(game, {
 		// Main input processing function (on any keypress)
 		$(document).on("keypress", function(e) {
 			// Prevent spacebar from scrolling the page
-			if (String.fromCharCode(e.which) == " ") { e.preventDefault(); }
+			if (String.fromCharCode(e.which) === " ") { e.preventDefault(); }
 
-			if (e.which == 13) {
+			if (e.which === 13) {
 				while (game.matchingWords.length > 0) {
 					game.resetWord(game.matchingWords[0], 0);
 				}
@@ -102,14 +102,14 @@ Object.defineProperties(game, {
 				game.missedWords = [];  // Keeps an array of all remaining possible matches that miss this cycle
 
 				// If matchingWords is empty, copy all words from activeWords
-				if (game.matchingWords.length == 0) { game.matchingWords = game.activeWords.slice(); }
+				if (game.matchingWords.length === 0) { game.matchingWords = game.activeWords.slice(); }
 
 				// Check all remaining words in checkingWords for matches
 				for (let i = 0; i < game.matchingWords.length; i++) {
 					const word = game.matchingWords[i];
 
 					// If the latest keystroke matches the current letter, make it red, and replace spaces with underlines
-					if (word.str[game.currentLetter] == String.fromCharCode(e.which)) {
+					if (word.str[game.currentLetter] === String.fromCharCode(e.which)) {
 						display.updateWord(word);
 					} else {
 						game.resetWord(word, i);
@@ -123,13 +123,13 @@ Object.defineProperties(game, {
 
 					// If word is complete, replace with new word
 					for (let i = 0; i < game.matchingWords.length; i++) {
-						if (game.currentLetter == game.matchingWords[i].str.length) {
+						if (game.currentLetter === game.matchingWords[i].str.length) {
 							game.completeWord(game.matchingWords[i]);
 							audio.play("completeWord");
 							i--;  // Decrement loop counter (the current word has been removed from matchingWords: next word was @ i+1, now @ i)
 						}
 					}
-					if (game.matchingWords.length == 0) { game.currentLetter = 0; }
+					if (game.matchingWords.length === 0) { game.currentLetter = 0; }
 				}
 				else {
 					game.wrongKey();
@@ -218,7 +218,7 @@ Object.defineProperties(game, {
 		// Remove word from activeWords and matchingWords
 		game.activeWords.splice(game.activeWords.indexOf(word), 1)
 		if (game.matchingWords.indexOf(word) != -1) {
-			if (game.matchingWords.length == 1) { game.currentLetter = 0; }  // If the word still matches the current input, currentLetter = 0 (so new words will match)
+			if (game.matchingWords.length === 1) { game.currentLetter = 0; }  // If the word still matches the current input, currentLetter = 0 (so new words will match)
 			game.matchingWords.splice(game.matchingWords.indexOf(word), 1);
 		}
 
@@ -226,7 +226,7 @@ Object.defineProperties(game, {
 		display.removeWord(word);
 
 		// If game over conditions hold, trigger game over
-		if (game.currentWord == game.length && game.activeWords.length == 0 && !game.over) { game.end(); }
+		if (game.currentWord === game.length && game.activeWords.length === 0 && !game.over) { game.end(); }
 	}},
 
 	"resetWord": { value: function(word, index) {
@@ -250,11 +250,11 @@ Object.defineProperties(game, {
 		display.blowUpWord(word);
 
 		// Timer check if screen is empty
-		if (game.activeWords.length == 0) {
+		if (game.activeWords.length === 0) {
 			stats.emptyStart = Date.now();
 		}
 
-		if (game.currentWord == game.length && game.activeWords.length == 0 && !game.over) { game.end(); }
+		if (game.currentWord === game.length && game.activeWords.length === 0 && !game.over) { game.end(); }
 	}},
 
 	"wrongKey": { value: function() {
@@ -336,3 +336,5 @@ Object.defineProperties(game, {
 		}
 	}}
 });
+
+Object.seal(game);

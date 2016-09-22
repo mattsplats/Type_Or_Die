@@ -60,3 +60,5 @@ Object.defineProperties(leaderboard, {
 		});
 	}}
 });
+
+Object.seal(leaderboard);

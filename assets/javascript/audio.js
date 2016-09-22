@@ -26,3 +26,5 @@ Object.defineProperties(audio, {
 		}
 	}},
 });
+
+Object.seal(audio);

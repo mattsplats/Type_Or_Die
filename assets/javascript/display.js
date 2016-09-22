@@ -50,7 +50,7 @@ const display = {
 
 	highScores: function(arr, index){}
 		// Shows high score table data, where index is the array index of the most recently added score
-		// row[index] will be faded in; if (index == null) every row will fade in
+		// row[index] will be faded in; if (index === null) every row will fade in
 };
 
 
@@ -110,13 +110,13 @@ Object.defineProperties(display, {
 
 	"updateWord": { value: function(word) {
 		$("#word_" + word.number + "_letter_" + game.currentLetter).css("color", "red");
-		if (word.str[game.currentLetter] == " ") { $("#word_" + word.number + "_letter_" + game.currentLetter).html("_"); }
+		if (word.str[game.currentLetter] === " ") { $("#word_" + word.number + "_letter_" + game.currentLetter).html("_"); }
 	}},
 
 	"resetWord": { value: function(word) {
 		for (let i = 0; i < game.currentLetter; i++) {
 			$("#word_" + word.number + "_letter_" + i).css("color", "black");
-			if ($("#word_" + word.number + "_letter_" + i).html() == "_") { $("#word_" + word.number + "_letter_" + i).html(" "); }
+			if ($("#word_" + word.number + "_letter_" + i).html() === "_") { $("#word_" + word.number + "_letter_" + i).html(" "); }
 		}
 	}},
 
@@ -143,7 +143,7 @@ Object.defineProperties(display, {
 
 		for (let i = 0; i < word.str.length; i++) {
 			// Remove added dashes
-			if ($("#word_" + word.number + "_letter_" + i).html() == "_") { $("#word_" + word.number + "_letter_" + i).html(" "); }
+			if ($("#word_" + word.number + "_letter_" + i).html() === "_") { $("#word_" + word.number + "_letter_" + i).html(" "); }
 			
 			// Set all letters to absolute position and offset left to correct initial position
 			$("#word_" + word.number + "_letter_" + i).css("position", "absolute").css("left", (absPosOffset * i) + "px");
@@ -192,8 +192,8 @@ Object.defineProperties(display, {
 		$("#wpm").html(stats.wpm.toFixed(1));
 		$("#acc").html(stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )");
 		$("#streak").html(stats.currentStreak);
-		// $("#streak").html($("<span>").attr("id", "streakNum").html(stats.currentStreak).css("color", stats.currentStreak == 0 ? "red" : "white")
-		// 	.fadeIn(stats.currentStreak == 0 ? 400 : 0, function() { $("#streakNum").velocity({ color: "white" }); }));
+		// $("#streak").html($("<span>").attr("id", "streakNum").html(stats.currentStreak).css("color", stats.currentStreak === 0 ? "red" : "white")
+		// 	.fadeIn(stats.currentStreak === 0 ? 400 : 0, function() { $("#streakNum").velocity({ color: "white" }); }));
 		$("#longest").html(stats.longestStreak);
 	}},
 
@@ -208,10 +208,12 @@ Object.defineProperties(display, {
 				<th class='text-center hipster-text'>" + arr[i].source + "</th>";
 
 			if (index !== null) {
-				$("#highscore-stats").append($("<tr>").html(template).fadeIn( index == i ? 400 : 0 ));
+				$("#highscore-stats").append($("<tr>").html(template).fadeIn( index === i ? 400 : 0 ));
 			} else {
 				setTimeout(function() { $("#highscore-stats").append($("<tr>").html(template).fadeIn()) }, i * display.hiScoreTime);
 			}
 		}
 	}}
 });
+
+Object.seal(display);

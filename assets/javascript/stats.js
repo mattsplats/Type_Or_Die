@@ -21,7 +21,7 @@ const stats = {
 	// Constants
 	scorePlusMult: 100,  // Score multiplier for completing a word
 	scoreMinusMult: 25,  // Score multiplier for not completing a word
-	doublePoint: 3,  // Breakpoints for multiplier increases (i.e. if streak = doublePoint, scoreMultiplier == 2, etc.)
+	doublePoint: 3,  // Breakpoints for multiplier increases (i.e. if streak = doublePoint, scoreMultiplier = 2, etc.)
 	triplePoint: 6,
 	quadPoint: 10,
 	quintPoint: 15,
@@ -84,7 +84,6 @@ Object.defineProperties(stats, {
 		stats.currentStreak = 0;
 		stats.longestStreak = 0;
 
-		stats.wordsCompleted = 0;
 		stats.hits = 0;
 		stats.misses = 0;
 		stats.timeOffset = 0;
@@ -146,3 +145,5 @@ Object.defineProperties(stats, {
 		}
 	}}
 });
+
+Object.seal(stats);

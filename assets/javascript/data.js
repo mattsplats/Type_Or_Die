@@ -10,12 +10,12 @@ const data = {
 
 	// Methods
 	isReady: function(){},
-		// Returns boolean ready state of word lists (true == all lists populated, game can start)
+		// Returns boolean ready state of word lists (true === all lists populated, game can start)
 		// Calls: (none)
 		// Sets: (none)
 
 	get: function(source){},
-		// Returns word list from requested source (if source == all, updates all lists and returns null)
+		// Returns word list from requested source (if source === all, updates all lists and returns null)
 		// Calls: (none)
 		// Sets: any or all data.Words properties
 };
@@ -50,7 +50,7 @@ Object.defineProperties(data, {
 					.replace(/(3 wolf moon|lyft|etsy|kickstarter|helvetica|thundercats|williamsburg|brooklyn|iceland|austin|pabst|master cleanse|echo park|marfa|portland|knausgaard|godard|la croix|four loko|pok pok|edison)/g, function(x){
 						let y = x[0].toUpperCase();
 						for (let i = 1; i < x.length; i++) {
-							x[i - 1] == " " ? y += x[i].toUpperCase() : y += x[i];
+							x[i - 1] === " " ? y += x[i].toUpperCase() : y += x[i];
 						}
 						return y;
 					});
@@ -60,7 +60,7 @@ Object.defineProperties(data, {
 
 				// Remove duplicates and undesired words
 				for (let i = 0; i < srcArr.length; i++) {
-					if (data.hipsterWords.indexOf(srcArr[i]) == -1 && !/cornhole|fap|hell|IPhone/.test(srcArr[i])) {
+					if (data.hipsterWords.indexOf(srcArr[i]) === -1 && !/cornhole|fap|hell|IPhone/.test(srcArr[i])) {
 						data.hipsterWords.push(srcArr[i]);
 					}
 				}
@@ -78,7 +78,7 @@ Object.defineProperties(data, {
 
 				// Remove duplicates
 				for (let i = 0; i < srcArr.length; i++) {
-					if (data.latinWords.indexOf(srcArr[i]) == -1 && !/lorem|ipsum/.test(srcArr[i])) {
+					if (data.latinWords.indexOf(srcArr[i]) === -1 && !/lorem|ipsum/.test(srcArr[i])) {
 						data.latinWords.push(srcArr[i]);
 					}
 				}
@@ -96,7 +96,7 @@ Object.defineProperties(data, {
 
 				// Remove duplicates and undesired words
 				for (let i = 0; i < srcArr.length; i++) {
-					if (data.baconWords.indexOf(srcArr[i]) == -1 && !/kevin/.test(srcArr[i])) {
+					if (data.baconWords.indexOf(srcArr[i]) === -1 && !/kevin/.test(srcArr[i])) {
 						data.baconWords.push(srcArr[i]);
 					}
 				}
@@ -110,7 +110,7 @@ Object.defineProperties(data, {
 
 			function getWord() {
 				$.get("http://www.setgetgo.com/randomword/get.php").done(function(response){ 
-					if (data.randomWords.indexOf(response) == -1) { data.randomWords.push(response); }
+					if (data.randomWords.indexOf(response) === -1) { data.randomWords.push(response); }
 					counter++;
 					if (counter < 50) { getWord(); }
 				});
@@ -118,3 +118,5 @@ Object.defineProperties(data, {
 		}
 	}}
 });
+
+Object.seal(data);
