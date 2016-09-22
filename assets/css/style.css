@@ -50,14 +50,21 @@ h1 {
   justify-content: space-between;
 }
 
+#score-mult {
+  font-style: italic;
+}
+
 .stats {
   color: #d8d8d8;
 }
 
-#highscore-stats {
+#score-table {
   font-family: 'Amatica SC', cursive;
   font-size: 27px;
-  transition: height 1s ease-out;
+}
+
+#leaderboard-panel {
+  height: 699px;
 }
 
 #instructions {

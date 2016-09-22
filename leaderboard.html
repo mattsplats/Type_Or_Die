@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title>Type or Die: Game</title>
+	<title>Type or Die: Leaderboard</title>
 
 	<!-- Bootstrap CDN-->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -20,25 +20,6 @@
     <div class="row">
       <div class="col-lg-12"><h1 class="text-center">Type or Die</h1></div>
     </div>
-	
-    <!-- Start Main Game Body -->
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="panel panel-primary" id="game-panel">
-
-					<div class="panel-body" id="game-body">
-						<div id="output" class="flex"><button id="auth" class="btn btn-primary">Sign In to Play!</button></div> <!-- Place game in this div (output)-->
-					</div>
-
-          <div class="panel-heading">
-            <div class="panel-title panel-title-text" id="score-bar">
-              <div><span class="stats">Score: </span><span id="score">0</span> <span id="score-mult">x1</span> &nbsp; <span id="score-diff"></span></div>
-              <div style=""><span class="stats">WPM: </span><span id="wpm">0.0</span> &nbsp;&nbsp; <span class="stats">Accuracy: </span><span id="acc">0 / 0 ( 0.0% )</span> &nbsp;&nbsp; <span class="stats">Streak:</span> <span id="streak">0</span> &nbsp;&nbsp; <span class="stats">Longest:</span> <span id="longest">0</span></div>
-            </div>
-          </div>
-				</div>
-			</div> 
-		</div> <!--End Main Game Body -->
 
     <!-- Start High Score -->
     <div class="row">
@@ -48,17 +29,10 @@
             <h3 class="panel-title panel-title-text">High Scores:</h3>
           </div>
 
-          <div class="panel-body">
+          <div class="panel-body" id="leaderboard-panel">
             <table class="table table-hover" id="score-table">
-              <thead>
-                <tr>
-                  <th class="text-center hipster-text">Score:</th>
-                  <th class="text-center hipster-text">WPM:</th>
-                  <th class="text-center hipster-text">Accuracy %:</th>
-                  <th class="text-center hipster-text">Longest Streak:</th>
-                </tr>
-              </thead>
-              <tbody id="highscore-stats"></tbody>
+              <thead id="leaderboard-heading"></thead>
+              <tbody id="leaderboard-stats"></tbody>
             </table>
           </div>
         </div>
@@ -77,12 +51,7 @@
   <script src="assets/javascript/velocity.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 	<script src="https://www.gstatic.com/firebasejs/3.3.2/firebase.js"></script>
-  <script src="assets/javascript/game.js"></script>
-  <script src="assets/javascript/display.js"></script>
-  <script src="assets/javascript/audio.js"></script>
-  <script src="assets/javascript/data.js"></script>
-  <script src="assets/javascript/stats.js"></script>
-  <script src="assets/javascript/user.js"></script>
+  <script src="assets/javascript/leaderboard.js"></script>
 	<script src="assets/javascript/app.js"></script>
 </body>
 </html>

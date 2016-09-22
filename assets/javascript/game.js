@@ -17,21 +17,21 @@ const game = {
 	missedWords: [],  // Words that do not match input string (on current keystroke)
 
 	// Difficulty vars
-	length: 3,  // Length of a game in words (game will end when game.length words have been completed/missed)
-	startingTimeout: 2000,  // Msec before first new word is added
-	minTimeout: 1000,  // Minimum msec between new words being added
+	length: 10,  // Length of a game in words (game will end when game.length words have been completed/missed)
+	startingTimeout: 2100,  // Msec before first new word is added
+	minTimeout: 1200,  // Minimum msec between new words being added
 	maxWords: 5,  // Most words to be shown on screen at one time
-	wordSpeed: 1200,  // Speed of each word relative to its size, smaller numbers are faster
+	wordSpeed: 1000,  // Speed of each word relative to its size, smaller numbers are faster
 
 	// Constants
-	speedupFactor: 1.01,  // Muliplier for the rate at which new words are added, applies after each added word
+	speedupFactor: 1.015,  // Muliplier for the rate at which new words are added, applies after each added word
 	wordBuffer: 10,  // Minimum buffer of source words (will trigger an XHR more if sourceWords.length < wordBuffer)
 	missTimeout: 250,  // Msec after which a miss is triggered where new input is not allowed (like iFrames)
 
 
 	// Methods
 	init: function(){},
-		// Initializes game - makes all necessary queries for data (XHR or Firebase db)
+		// Initializes game - makes all necessary queries for data (XHR or Firebase db) and creates main event listeners
 		// Calls: data.get
 		// Sets: (none)
 	
@@ -73,7 +73,7 @@ const game = {
 	chooseOptions: function(){}
 		// Provides option selection for new game, starts new game with chosen options
 		// Calls: display.showOptions, display.startGame
-		// Sets: currentSource, sourceWords, over
+		// Sets: currentSource, sourceWords, over, startingTimeout, minTimeout, maxWords, wordSpeed, stats.scorePlusMult, stats.scoreMinusMult
 };
 
 
@@ -81,7 +81,60 @@ const game = {
 Object.defineProperties(game, {
 	"init": { value: function() {
 		data.get("all");
-		game.chooseOptions();
+		game.chooseOptions();  // Uncomment this to bypass login / authentication step
+
+		// User signin popup
+		$("#auth").on('click', user.auth);
+
+		// Main input processing function (on any keypress)
+		$(document).on("keypress", function(e) {
+			// Prevent spacebar from scrolling the page
+			if (String.fromCharCode(e.which) == " ") { e.preventDefault(); }
+
+			if (e.which == 13) {
+				while (game.matchingWords.length > 0) {
+					game.resetWord(game.matchingWords[0], 0);
+				}
+				game.currentLetter = 0;
+			// If game is ready for input and keystroke is on the allowed list
+			} else if (game.ready && /./.test(String.fromCharCode(e.which))) {
+				game.missedWords = [];  // Keeps an array of all remaining possible matches that miss this cycle
+
+				// If matchingWords is empty, copy all words from activeWords
+				if (game.matchingWords.length == 0) { game.matchingWords = game.activeWords.slice(); }
+
+				// Check all remaining words in checkingWords for matches
+				for (let i = 0; i < game.matchingWords.length; i++) {
+					const word = game.matchingWords[i];
+
+					// If the latest keystroke matches the current letter, make it red, and replace spaces with underlines
+					if (word.str[game.currentLetter] == String.fromCharCode(e.which)) {
+						display.updateWord(word);
+					} else {
+						game.resetWord(word, i);
+						i--;  // Decrement loop counter (the current word has been removed from matchingWords: next word was @ i+1, now @ i)
+					}
+				}
+
+				// If a match is found, increment currentLetter
+				if (game.matchingWords.length > 0) {
+					game.currentLetter++;
+
+					// If word is complete, replace with new word
+					for (let i = 0; i < game.matchingWords.length; i++) {
+						if (game.currentLetter == game.matchingWords[i].str.length) {
+							game.completeWord(game.matchingWords[i]);
+							audio.play("completeWord");
+							i--;  // Decrement loop counter (the current word has been removed from matchingWords: next word was @ i+1, now @ i)
+						}
+					}
+					if (game.matchingWords.length == 0) { game.currentLetter = 0; }
+				}
+				else {
+					game.wrongKey();
+				}
+			}
+		});
 	}},
 
 	"start": { value: function() {
@@ -224,9 +277,9 @@ Object.defineProperties(game, {
 				game.over = false;
 
 				// Set difficulty
-				if ($("#option1").prop("checked")) { game.wordSpeed = 1200; }
-				else if ($("#option2").prop("checked")) { game.wordSpeed = 900; }
-				else { game.wordSpeed = 600; }
+				if ($("#easy").prop("checked")) { easy(); }
+				else if ($("#hard").prop("checked")) { hard(); }
+				else { insane(); }
 
 				// Set source to selected word source, get words from that source
 				game.currentSource = $(this).data("type");
@@ -235,5 +288,35 @@ Object.defineProperties(game, {
 				display.startGame();
 			}
 		});
+
+		function easy() {
+			game.startingTimeout = 2500;
+			game.minTimeout = 1500;
+			game.maxWords = 4;
+			game.wordSpeed = 1500;
+
+			stats.scorePlusMult = 100;
+			stats.scoreMinusMult = 25;
+		}
+
+		function hard() {
+			game.startingTimeout = 2100;
+			game.minTimeout = 1200;
+			game.maxWords = 5;
+			game.wordSpeed = 1000;
+
+			stats.scorePlusMult = 200;
+			stats.scoreMinusMult = 50;
+		}
+
+		function insane() {
+			game.startingTimeout = 1800;
+			game.minTimeout = 1000;
+			game.maxWords = 6;
+			game.wordSpeed = 600;
+
+			stats.scorePlusMult = 300;
+			stats.scoreMinusMult = 100;
+		}
 	}}
 });

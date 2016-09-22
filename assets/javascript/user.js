@@ -52,7 +52,7 @@ Object.defineProperties(user, {
 				}
 			});
 
-			$("#auth").fadeOut(function() { game.showGameOptions(); });
+			display.loginComplete();
 		}), function(error) { throw error; };
 	}},
 

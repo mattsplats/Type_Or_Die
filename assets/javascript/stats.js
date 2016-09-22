@@ -62,7 +62,8 @@ Object.defineProperties(stats, {
 		if (stats.score < 0) { stats.score = 0; }
 		if (stats.currentStreak > stats.longestStreak) { stats.longestStreak = stats.currentStreak; }
 
-		switch (stats.currentStreak) {  // Increases score multiplier if currentStreak has passed breakpoints
+		// Increases score multiplier if currentStreak has passed breakpoints
+		switch (stats.currentStreak) {
 			case stats.doublePoint:
 			case stats.triplePoint:
 			case stats.quadPoint:

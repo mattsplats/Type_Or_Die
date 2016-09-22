@@ -1,63 +1,56 @@
 "use strict";
 
-// Updates to display
+// All visible changes to the page
 const display = {
 	// Animation properties
 	shakeTime: 150,  // Duration of shake animation
 	hiScoreTime: 80,  // Timeout delay for each new shown high score row
+	flashOn: true,  // Screen flash on word miss
 
 
 	// Methods
 	startGame: function() {},
 		// Fades out game options and starts game
 		// Calls: game.start
-		// Sets: none
 
 	gameOver: function() {},
 		// Show game over text
-		// Calls: none
-		// Sets: none
+
+	loginComplete: function() {},
+		// Fades out initial login text/buttons
+		// Calls: game.chooseOptions
 
 	addWord: function(word){},
 		// Places a new falling word on screen, sets a timeout to call removeWord if not completed in game.wordSpeed
-		// Calls: none
-		// Sets: none
+		// Calls: game.removeWord
 
 	removeWord: function(word){},
 		// Removes falling word from screen, triggers game-body flash animation
-		// Calls: none
-		// Sets: none
+
+	updateWord: function(word){},
+		// Changes letter color to red and space to underscore
 
 	resetWord: function(word){},
 		// Resets word HTML to starting state
-		// Calls: none
-		// Sets: none
 
 	blowUpWord: function(word){},
 		// Play word explosion animation
-		// Calls: none
-		// Sets: none
 
 	shakeWord: function(word){},
 		// Play word shake animation
-		// Calls: none
-		// Sets: none
 
 	showOptions: function(){},
 		// Shows word list selector buttons, modifies #output div css
-		// Calls: none
-		// Sets: none
+
+	changeBackground: function(currentSource){},
+		// Change page background
 
 	stats: function(){},
 		// Shows current game stats below game
-		// Calls: none
-		// Sets: none
 
 	highScores: function(){}
 		// Shows high score table data
-		// Calls: none
-		// Sets: none
-}
+};
 
 
 // Method definitions
@@ -73,6 +66,10 @@ Object.defineProperties(display, {
 
 	"gameOver": { value: function() {
 		$("#output").addClass("flex").html($("<div>").addClass("text-center").attr("id", "thanks").html("<h1>Thanks for playing!</h1>").fadeIn());
+	}},
+
+	"loginComplete": { value: function() {
+		$("#auth").fadeOut(function() { game.chooseOptions(); });
 	}},
 
 	"addWord": { value: function(word) {
@@ -99,10 +96,17 @@ Object.defineProperties(display, {
 		$("#word_" + word.number).remove();
 
 		// Flash game panel
-		$("#game-panel").css("box-shadow", "0px 0px 10px 1px red");
-		setTimeout(function(){ $("#game-panel").css("box-shadow", ""); }, 50);
-		setTimeout(function(){ $("#game-panel").css("box-shadow", "0px 0px 10px 1px red"); }, 120);
-		setTimeout(function(){ $("#game-panel").css("box-shadow", ""); }, 170);
+		if (display.flashOn) {
+			$("#game-panel").css("box-shadow", "0px 0px 10px 1px red");
+			setTimeout(function(){ $("#game-panel").css("box-shadow", ""); }, 50);
+			setTimeout(function(){ $("#game-panel").css("box-shadow", "0px 0px 10px 1px red"); }, 120);
+			setTimeout(function(){ $("#game-panel").css("box-shadow", ""); }, 170);
+		}
+	}},
+
+	"updateWord": { value: function(word) {
+		$("#word_" + word.number + "_letter_" + game.currentLetter).css("color", "red");
+		if (word.str[game.currentLetter] == " ") { $("#word_" + word.number + "_letter_" + game.currentLetter).html("_"); }
 	}},
 
 	"resetWord": { value: function(word) {
@@ -167,9 +171,9 @@ Object.defineProperties(display, {
 			<button class='btn btn-default startGame' id='bacon' data-type='bacon'>Bacon Words</button> &nbsp;&nbsp;\
 			<button class='btn btn-default startGame' id='random' data-type='random'>Random Words</button>";
 
-		const radioTemplate = "<label class='btn btn-primary active'><input type='radio' name='options' id='option1' autocomplete='off' checked> Easy </label>\
-	  		<label class='btn btn-primary'><input type='radio' name='options' id='option2' autocomplete='off'> Hard </label>\
-	  		<label class='btn btn-primary'><input type='radio' name='options' id='option3' autocomplete='off'> Insane </label>";
+		const radioTemplate = "<label class='btn btn-primary active'><input type='radio' name='options' id='easy' autocomplete='off' checked> Easy </label>\
+	  		<label class='btn btn-primary'><input type='radio' name='options' id='hard' autocomplete='off'> Hard </label>\
+	  		<label class='btn btn-primary'><input type='radio' name='options' id='insane' autocomplete='off'> Insane </label>";
 
 		if (!game.over) { $("#output").empty(); }
 		$("#output").addClass("flex").append($("<div>").html(buttonTemplate).fadeIn());
