@@ -48,8 +48,9 @@ const display = {
 	stats: function(){},
 		// Shows current game stats below game
 
-	highScores: function(){}
-		// Shows high score table data
+	highScores: function(arr, index){}
+		// Shows high score table data, where index is the array index of the most recently added score
+		// row[index] will be faded in; if (index == null) every row will fade in
 };
 
 
@@ -61,11 +62,14 @@ Object.defineProperties(display, {
 			$("#output").removeClass("flex");
 			$("#output").empty();
 			if (!game.ready) { game.start(); }
+			$("#score-bar").css("visibility", "visible");
+			$("#" + game.currentDifficulty + "-list").click();
 		});
 	}},
 
 	"gameOver": { value: function() {
 		$("#output").addClass("flex").html($("<div>").addClass("text-center").attr("id", "thanks").html("<h1>Thanks for playing!</h1>").fadeIn());
+		$("#score-mult").empty();
 	}},
 
 	"loginComplete": { value: function() {
@@ -193,15 +197,20 @@ Object.defineProperties(display, {
 		$("#longest").html(stats.longestStreak);
 	}},
 
-	"highScores": { value: function(newScoreNum) {
+	"highScores": { value: function(arr, index) {
 		$("#highscore-stats").empty();
-		if (newScoreNum !== null) {
-			for (let i = 0; i < stats.scoreArr.length; i++) {
-				$("#highscore-stats").append($("<tr>").html(stats.scoreArr[i].html).fadeIn( newScoreNum == i ? 400 : 0 ));
-			}
-		} else {
-			for (let i = 0; i < stats.scoreArr.length; i++) {
-				setTimeout(function() { $("#highscore-stats").append($("<tr>").html(stats.scoreArr[i].html).fadeIn()) }, i * display.hiScoreTime);
+		
+		for (let i = 0; i < arr.length; i++) {
+			const template = "<th class='text-center hipster-text'>" + (arr[i].score) + "</th>\
+				<th class='text-center hipster-text'>" + arr[i].wpm.toFixed(1) + "</th>\
+				<th class='text-center hipster-text'>" + arr[i].hits + " / " + (arr[i].hits + arr[i].misses) + " ( " + arr[i].acc.toFixed(1) + "% )</th>\
+				<th class='text-center hipster-text'>" + arr[i].longestStreak + "</th>\
+				<th class='text-center hipster-text'>" + arr[i].source + "</th>";
+
+			if (index !== null) {
+				$("#highscore-stats").append($("<tr>").html(template).fadeIn( index == i ? 400 : 0 ));
+			} else {
+				setTimeout(function() { $("#highscore-stats").append($("<tr>").html(template).fadeIn()) }, i * display.hiScoreTime);
 			}
 		}
 	}}

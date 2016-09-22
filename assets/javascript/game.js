@@ -7,6 +7,7 @@ const game = {
 	currentWord: 0,  // Used only to give a unique identifier to each word
 	currentTimeout: 0,  // Time to next word
 	currentSource: "",  // Currently selected word source
+	currentDifficulty: "hard",  // Current game difficulty
 	ready: false,
 	over: false,
 
@@ -17,10 +18,10 @@ const game = {
 	missedWords: [],  // Words that do not match input string (on current keystroke)
 
 	// Difficulty vars
-	length: 10,  // Length of a game in words (game will end when game.length words have been completed/missed)
+	length: 1,  // Length of a game in words (game will end when game.length words have been completed/missed)
 	startingTimeout: 2100,  // Msec before first new word is added
 	minTimeout: 1200,  // Minimum msec between new words being added
-	maxWords: 5,  // Most words to be shown on screen at one time
+	maxWords: 6,  // Most words to be shown on screen at one time
 	wordSpeed: 1000,  // Speed of each word relative to its size, smaller numbers are faster
 
 	// Constants
@@ -73,7 +74,7 @@ const game = {
 	chooseOptions: function(){}
 		// Provides option selection for new game, starts new game with chosen options
 		// Calls: display.showOptions, display.startGame
-		// Sets: currentSource, sourceWords, over, startingTimeout, minTimeout, maxWords, wordSpeed, stats.scorePlusMult, stats.scoreMinusMult
+		// Sets: over, currentSource, sourceWords, currentDifficulty, length, startingTimeout, minTimeout, maxWords, wordSpeed, stats.scorePlusMult, stats.scoreMinusMult
 };
 
 
@@ -133,6 +134,15 @@ Object.defineProperties(game, {
 				else {
 					game.wrongKey();
 				}
+			}
+		});
+
+		// High score radio button event
+		$("input[type=radio][name=scoreList]").on('change', function() {
+			switch($(this).val()) {
+				case "easy": display.highScores(stats.easyScoreArr, -1);  break;
+				case "hard": display.highScores(stats.hardScoreArr, -1);  break;
+				case "insane": display.highScores(stats.insaneScoreArr, -1);  break;
 			}
 		});
 	}},
@@ -276,23 +286,25 @@ Object.defineProperties(game, {
 			if (data.isReady()) {
 				game.over = false;
 
+				// Set source to selected word source, get words from that source
+				game.currentSource = $(this).data("type");
+				game.sourceWords = data.get(game.currentSource);
+
 				// Set difficulty
 				if ($("#easy").prop("checked")) { easy(); }
 				else if ($("#hard").prop("checked")) { hard(); }
 				else { insane(); }
-
-				// Set source to selected word source, get words from that source
-				game.currentSource = $(this).data("type");
-				game.sourceWords = data.get(game.currentSource);
 
 				display.startGame();
 			}
 		});
 
 		function easy() {
+			game.currentDifficulty = "easy";
+			// game.length = 50;
 			game.startingTimeout = 2500;
 			game.minTimeout = 1500;
-			game.maxWords = 4;
+			game.maxWords = 5;
 			game.wordSpeed = 1500;
 
 			stats.scorePlusMult = 100;
@@ -300,9 +312,11 @@ Object.defineProperties(game, {
 		}
 
 		function hard() {
+			game.currentDifficulty = "hard";
+			// game.length = 80;
 			game.startingTimeout = 2100;
 			game.minTimeout = 1200;
-			game.maxWords = 5;
+			game.maxWords = 6;
 			game.wordSpeed = 1000;
 
 			stats.scorePlusMult = 200;
@@ -310,9 +324,11 @@ Object.defineProperties(game, {
 		}
 
 		function insane() {
+			game.currentDifficulty = "insane";
+			// game.length = 120;
 			game.startingTimeout = 1800;
 			game.minTimeout = 1000;
-			game.maxWords = 6;
+			game.maxWords = 7;
 			game.wordSpeed = 600;
 
 			stats.scorePlusMult = 300;

@@ -27,7 +27,9 @@ const stats = {
 	quintPoint: 15,
 
 	// Highscore table vars
-	scoreArr: [],
+	easyScoreArr: [],
+	hardScoreArr: [],
+	insaneScoreArr: [],
 	maxScores: 5,
 	maxLeaderboardScores: 10,
 
@@ -42,14 +44,14 @@ const stats = {
 		// Sets: all stats except startTime
 
 	addHighScore: function(){},
-		// Adds current stats as new row to highscore table, stores data, updates leaderboard
+		// Adds current stats as new row to highscore table for given difficulty, stores data, updates leaderboard
 		// Calls: user.storeScores
 		// Sets: (none)
 
-	setHighScores: function(highScores){}
-		// Shows retrieved high score data in highscore table
+	setHighScores: function(scoreArr, difficulty){}
+		// Sets retrieved high score data
 		// Calls: (none)
-		// Sets: scoreArr
+		// Sets: appropriate scoreArr
 };
 
 
@@ -90,52 +92,57 @@ Object.defineProperties(stats, {
 	}},
 
 	"addHighScore": { value: function() {
-		const template = "<th class='text-center hipster-text'>" + (stats.score) + "</th>" +
-			"<th class='text-center hipster-text'>" + stats.wpm.toFixed(1) + "</th>" +
-			"<th class='text-center hipster-text'>" + stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )" + "</th>" +
-			"<th class='text-center hipster-text'>" + stats.longestStreak + "</th>";
-
-		const scoreObj = {
-			html: template,
-			score: stats.score,
-			wpm: stats.wpm,
-			acc: stats.acc,
-			longestStreak: stats.longestStreak
-		};
-
-		// Add new high score to array and sort
-		stats.scoreArr.push(scoreObj);
-		stats.scoreArr.sort(function(a, b) {
-			if (a.score != b.score) { return b.score - a.score; }
-			else { return b.wpm - a.wpm }
-		});
-
-		// Remove lowest score if we have more than maxScores scores
-		if (stats.scoreArr.length > stats.maxScores) { stats.scoreArr.pop(); }
-
-		// Display new scores (uses index of added high score)
-		display.highScores(stats.scoreArr.indexOf(scoreObj));
+		// Update appropriate scores and display
+		updateScores();
 
 		if (user.email) {
-			// Store score array via stringify
-			user.storeScores(JSON.stringify(stats.scoreArr));
+			// Store all user score arrays
+			user.storeScores();
 
 			// Leaderboard update
-			firebase.database().ref("leaderboard").once("value").then(function(snapshot) {
+			firebase.database().ref("leaderboard/" + game.currentDifficulty).once("value").then(function(snapshot) {
 				let board = JSON.parse(snapshot.val()) || [];
+				scoreObj.player = user.name;
 				board.push(scoreObj);
 				board.sort(function(a, b) {
 					if (a.score != b.score) { return b.score - a.score; }
 					else { return b.wpm - a.wpm }
 				});
 				if (board.length > stats.maxLeaderboardScores) { board.pop(); }
-				firebase.database().ref("leaderboard").set(JSON.stringify(board));
+				firebase.database().ref("leaderboard/" + game.currentDifficulty).set(JSON.stringify(board));
 			});
 		}
-	}},
 
-	"setHighScores": { value: function(highScores) {
-		stats.scoreArr = JSON.parse(highScores);
-		display.highScores(null);
+		function updateScores() {
+			const scoreObj = {
+				score: stats.score,
+				wpm: stats.wpm,
+				acc: stats.acc,
+				hits: stats.hits,
+				misses: stats.misses,
+				longestStreak: stats.longestStreak,
+				source: game.currentSource
+			};
+
+			let arr;
+			switch (game.currentDifficulty) {
+				case "easy": arr = stats.easyScoreArr;  break;
+				case "hard": arr = stats.hardScoreArr;  break;
+				case "insane": arr = stats.insaneScoreArr;  break;
+			}
+
+			// Add new high score to array and sort
+			arr.push(scoreObj);
+			arr.sort(function(a, b) {
+				if (a.score != b.score) { return b.score - a.score; }
+				else { return b.wpm - a.wpm }
+			});
+
+			// Remove lowest score if we have more than maxScores scores
+			if (arr.length > stats.maxScores) { arr.pop(); }
+
+			// Display new scores (uses index of added high score)
+			display.highScores(arr, arr.indexOf(scoreObj));
+		}
 	}}
 });

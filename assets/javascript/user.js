@@ -11,13 +11,11 @@ const user = {
 	// Methods
 	auth: function(){},
 		// User sign-in: gives popup for Google login
-		// Calls: stats.setHighScores, game.showGameOptions
-		// Sets: name, email, id
+		// Calls: game.chooseOptions
+		// Sets: name, email, id, stats.easyScores, stats.hardScores, stats.insaneScores
 
-	storeScores: function(scoreArr){}
-		// Updates stats shown on page
-		// Calls: stats.setHighScores
-		// Sets: (none)
+	storeScores: function(){}
+		// Updates high scores arrays in Firebase DB
 };
 
 
@@ -40,23 +38,29 @@ Object.defineProperties(user, {
 
 			firebase.database().ref("users").once("value").then(function(snapshot) {
 				const isNewUser = !snapshot.child(user.ID).exists();
-				const hasScores = snapshot.child(user.ID + "/highScores").exists();
 
 				if (isNewUser) {
 					firebase.database().ref("users/" + user.ID).set({
 						name: user.name,
 						email: user.email
 					});
-				} else if (hasScores) {
-					stats.setHighScores(snapshot.child(user.ID + "/highScores").val());
 				}
+
+				if (snapshot.child(user.ID + "/easyScores").exists()) {
+					stats.easyScoreArr = snapshot.child(user.ID + "/easyScores").val();
+					display.highScores(stats.easyScoreArr, -1);
+				}
+				if (snapshot.child(user.ID + "/hardScores").exists()) { stats.hardScoreArr = snapshot.child(user.ID + "/hardScores").val(); }
+				if (snapshot.child(user.ID + "/insaneScores").exists()) { stats.insaneScoreArr = snapshot.child(user.ID + "/insaneScores").val(); }
 			});
 
 			display.loginComplete();
 		}), function(error) { throw error; };
 	}},
 
-	"storeScores": { value: function(highScores) {
-		firebase.database().ref("users/" + user.ID).update({ highScores });
+	"storeScores": { value: function() {
+		firebase.database().ref("users/" + user.ID + "/easyScores").update(JSON.stringify(stats.easyScoreArr));
+		firebase.database().ref("users/" + user.ID + "/hardScores").update(JSON.stringify(stats.highScoreArr));
+		firebase.database().ref("users/" + user.ID + "/insaneScores").update(JSON.stringify(stats.insaneScoreArr));
 	}},
 });
