@@ -47,7 +47,7 @@ Object.defineProperties(user, {
 				}
 
 				if (snapshot.child(user.ID + "/easyScores").exists()) {
-					stats.easyScoreArr = snapshot.child(user.ID + "/easyScores").val();
+					stats.easyScoreArr = JSON.parse(snapshot.child(user.ID + "/easyScores").val());
 					display.highScores(stats.easyScoreArr, -1);
 				}
 				if (snapshot.child(user.ID + "/hardScores").exists()) { stats.hardScoreArr = snapshot.child(user.ID + "/hardScores").val(); }
