@@ -3,8 +3,9 @@
 // Stats processing and storage
 const user = {
 	// User info
-	name: null,
-	email: null,
+	name: "",
+	email: "",
+	photoURL: "",
 	ID: null,  // Generated from email address, unique user ID in Firebase db
 
 
@@ -34,6 +35,7 @@ Object.defineProperties(user, {
 		auth.signInWithPopup(provider).then(function(result) {
 			user.name = result.user.displayName;
 			user.email = result.user.email;
+			user.photoURL = result.user.photoURL;
 			user.ID = user.email.match(/(.*)\./)[1];
 
 			firebase.database().ref("users").once("value").then(function(snapshot) {

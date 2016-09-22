@@ -82,7 +82,7 @@ const game = {
 Object.defineProperties(game, {
 	"init": { value: function() {
 		data.get("all");
-		// game.chooseOptions();  // Uncomment this to bypass login / authentication step
+		game.chooseOptions();  // Uncomment this to bypass login / authentication step
 
 		// User signin popup
 		$("#auth").on('click', user.auth);

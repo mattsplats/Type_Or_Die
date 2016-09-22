@@ -170,18 +170,21 @@ Object.defineProperties(display, {
 	}},
 
 	"showOptions": { value: function() {
-		const buttonTemplate = "<button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp;\
-			<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button> &nbsp;&nbsp;\
-			<button class='btn btn-default startGame' id='bacon' data-type='bacon'>Bacon Words</button> &nbsp;&nbsp;\
-			<button class='btn btn-default startGame' id='random' data-type='random'>Random Words</button>";
-
-		const radioTemplate = "<label class='btn btn-primary active'><input type='radio' name='options' id='easy' autocomplete='off' checked> Easy </label>\
+		const template = "<div>\
+				<button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp;\
+				<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button> &nbsp;&nbsp;\
+				<button class='btn btn-default startGame' id='bacon' data-type='bacon'>Bacon Words</button> &nbsp;&nbsp;\
+				<button class='btn btn-default startGame' id='random' data-type='random'>Random Words</button>\
+			</div>\
+			<br/>\
+			<div class='btn-group' data-toggle='buttons'>\
+				<label class='btn btn-primary active'><input type='radio' name='options' id='easy' autocomplete='off' checked> Easy </label>\
 	  		<label class='btn btn-primary'><input type='radio' name='options' id='hard' autocomplete='off'> Hard </label>\
-	  		<label class='btn btn-primary'><input type='radio' name='options' id='insane' autocomplete='off'> Insane </label>";
+	  		<label class='btn btn-primary'><input type='radio' name='options' id='insane' autocomplete='off'> Insane </label>\
+	  	</div>";
 
 		if (!game.over) { $("#output").empty(); }
-		$("#output").addClass("flex").append($("<div>").html(buttonTemplate).fadeIn());
-		$("#output").addClass("flex").append($("<div>").html(radioTemplate).fadeIn());
+		$("#output").addClass("flex").append($("<div>").addClass("text-center").html(template).fadeIn());
 	}},
 
 	"stats": { value: function() {
@@ -192,8 +195,6 @@ Object.defineProperties(display, {
 		$("#wpm").html(stats.wpm.toFixed(1));
 		$("#acc").html(stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )");
 		$("#streak").html(stats.currentStreak);
-		// $("#streak").html($("<span>").attr("id", "streakNum").html(stats.currentStreak).css("color", stats.currentStreak === 0 ? "red" : "white")
-		// 	.fadeIn(stats.currentStreak === 0 ? 400 : 0, function() { $("#streakNum").velocity({ color: "white" }); }));
 		$("#longest").html(stats.longestStreak);
 	}},
 
