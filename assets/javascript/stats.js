@@ -54,108 +54,87 @@ const stats = {
 
 
 // Method definitions
-// stats.update
-Object.defineProperty(stats, "update", { value: function() {
-	stats.wpm = (stats.hits / 5.1) / ((Date.now() - stats.startTime - stats.timeOffset) / 1000 / 60) || 0;
-	stats.acc = 100 * stats.hits / (stats.hits + stats.misses) || 0;
+Object.defineProperties(stats, {
+	"update": { value: function() {
+		stats.wpm = (stats.hits / 5.1) / ((Date.now() - stats.startTime - stats.timeOffset) / 1000 / 60) || 0;
+		stats.acc = 100 * stats.hits / (stats.hits + stats.misses) || 0;
 
-	if (stats.score < 0) { stats.score = 0; }
-	if (stats.currentStreak > stats.longestStreak) { stats.longestStreak = stats.currentStreak; }
+		if (stats.score < 0) { stats.score = 0; }
+		if (stats.currentStreak > stats.longestStreak) { stats.longestStreak = stats.currentStreak; }
 
-	switch (stats.currentStreak) {  // Increases score multiplier if currentStreak has passed breakpoints
-		case stats.doublePoint: stats.scoreMultiplier++; break;
-		case stats.triplePoint: stats.scoreMultiplier++; break;
-		case stats.quadPoint: stats.scoreMultiplier++; break;
-		case stats.quintPoint: stats.scoreMultiplier++; break;
-	}
+		switch (stats.currentStreak) {  // Increases score multiplier if currentStreak has passed breakpoints
+			case stats.doublePoint:
+			case stats.triplePoint:
+			case stats.quadPoint:
+			case stats.quintPoint: stats.scoreMultiplier++; break;
+		}
 
-	$("#score").html(stats.score);
-	$("#score-mult").html("x" + stats.scoreMultiplier);
-	$("#score-diff").html($("<span>").html((stats.scoreDelta > 0 ? "+" : "") + (stats.scoreDelta != 0 ? stats.scoreDelta : ""))
-		.css("color", stats.scoreDelta > 0 ? "#22f722" : "red").fadeIn().fadeOut());
-	$("#wpm").html(stats.wpm.toFixed(1));
-	$("#acc").html(stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )");
-	$("#streak").html(stats.currentStreak);
-	// $("#streak").html($("<span>").attr("id", "streakNum").html(stats.currentStreak).css("color", stats.currentStreak == 0 ? "red" : "white")
-	// 	.fadeIn(stats.currentStreak == 0 ? 400 : 0, function() { $("#streakNum").velocity({ color: "white" }); }));
-	$("#longest").html(stats.longestStreak);
-}});
+		display.stats();
+	}},
 
-// stats.reset
-Object.defineProperty(stats, "reset", { value: function() {
-	stats.score = 0;
-	stats.scoreMultiplier = 1;
-	stats.scoreDelta = 0;
-	stats.wpm = 0;
-	stats.acc = 0;
-	stats.currentStreak = 0;
-	stats.longestStreak = 0;
+	"reset": { value: function() {
+		stats.score = 0;
+		stats.scoreMultiplier = 1;
+		stats.scoreDelta = 0;
+		stats.wpm = 0;
+		stats.acc = 0;
+		stats.currentStreak = 0;
+		stats.longestStreak = 0;
 
-	stats.wordsCompleted = 0;
-	stats.hits = 0;
-	stats.misses = 0;
-	stats.timeOffset = 0;
-	stats.emptyStart = 0;
-}});
+		stats.wordsCompleted = 0;
+		stats.hits = 0;
+		stats.misses = 0;
+		stats.timeOffset = 0;
+		stats.emptyStart = 0;
+	}},
 
-// stats.addHighScore
-Object.defineProperty(stats, "addHighScore", { value: function() {
-	const template = "<th class='text-center hipster-text'>" + (stats.score) + "</th>" +
-		"<th class='text-center hipster-text'>" + stats.wpm.toFixed(1) + "</th>" +
-		"<th class='text-center hipster-text'>" + stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )" + "</th>" +
-		"<th class='text-center hipster-text'>" + stats.longestStreak + "</th>";
+	"addHighScore": { value: function() {
+		const template = "<th class='text-center hipster-text'>" + (stats.score) + "</th>" +
+			"<th class='text-center hipster-text'>" + stats.wpm.toFixed(1) + "</th>" +
+			"<th class='text-center hipster-text'>" + stats.hits + " / " + (stats.hits + stats.misses) + " ( " + stats.acc.toFixed(1) + "% )" + "</th>" +
+			"<th class='text-center hipster-text'>" + stats.longestStreak + "</th>";
 
-	const scoreObj = {
-		html: template,
-		score: stats.score,
-		wpm: stats.wpm,
-		acc: stats.acc,
-		longestStreak: stats.longestStreak
-	};
+		const scoreObj = {
+			html: template,
+			score: stats.score,
+			wpm: stats.wpm,
+			acc: stats.acc,
+			longestStreak: stats.longestStreak
+		};
 
-	// Add new high score to array and sort
-	stats.scoreArr.push(scoreObj);
-	stats.scoreArr.sort(function(a, b) {
-		if (a.score != b.score) { return b.score - a.score; }
-		else { return b.wpm - a.wpm }
-	});
-
-	// Remove lowest score if we have more than maxScores scores
-	if (stats.scoreArr.length > stats.maxScores) { stats.scoreArr.pop(); }
-	
-	// Get new index of added score
-	const newScoreNum = stats.scoreArr.indexOf(scoreObj);
-
-	// Display new scores
-	$("#highscore-stats").empty();
-	for (let i = 0; i < stats.scoreArr.length; i++) {
-		$("#highscore-stats").append($("<tr>").html(stats.scoreArr[i].html).fadeIn( newScoreNum == i ? 400 : 0 ));
-	}
-
-	if (user.email) {
-		// Store score array via stringify
-		user.storeScores(JSON.stringify(stats.scoreArr));
-
-		// Leaderboard update
-		firebase.database().ref("leaderboard").once("value").then(function(snapshot) {
-			let board = JSON.parse(snapshot.val()) || [];
-			board.push(scoreObj);
-			board.sort(function(a, b) {
-				if (a.score != b.score) { return b.score - a.score; }
-				else { return b.wpm - a.wpm }
-			});
-			if (board.length > stats.maxLeaderboardScores) { board.pop(); }
-			firebase.database().ref("leaderboard").set(JSON.stringify(board));
+		// Add new high score to array and sort
+		stats.scoreArr.push(scoreObj);
+		stats.scoreArr.sort(function(a, b) {
+			if (a.score != b.score) { return b.score - a.score; }
+			else { return b.wpm - a.wpm }
 		});
-	}
-}});
 
-// stats.setHighScores
-Object.defineProperty(stats, "setHighScores", { value: function(highScores) {
-	stats.scoreArr = JSON.parse(highScores);
+		// Remove lowest score if we have more than maxScores scores
+		if (stats.scoreArr.length > stats.maxScores) { stats.scoreArr.pop(); }
 
-	$("#highscore-stats").empty();
-	for (let i = 0; i < stats.scoreArr.length; i++) {
-		$("#highscore-stats").append(stats.scoreArr[i].html);
-	}
-}});
+		// Display new scores (uses index of added high score)
+		display.highScores(stats.scoreArr.indexOf(scoreObj));
+
+		if (user.email) {
+			// Store score array via stringify
+			user.storeScores(JSON.stringify(stats.scoreArr));
+
+			// Leaderboard update
+			firebase.database().ref("leaderboard").once("value").then(function(snapshot) {
+				let board = JSON.parse(snapshot.val()) || [];
+				board.push(scoreObj);
+				board.sort(function(a, b) {
+					if (a.score != b.score) { return b.score - a.score; }
+					else { return b.wpm - a.wpm }
+				});
+				if (board.length > stats.maxLeaderboardScores) { board.pop(); }
+				firebase.database().ref("leaderboard").set(JSON.stringify(board));
+			});
+		}
+	}},
+
+	"setHighScores": { value: function(highScores) {
+		stats.scoreArr = JSON.parse(highScores);
+		display.highScores(null);
+	}}
+});

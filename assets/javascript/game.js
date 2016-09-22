@@ -78,169 +78,162 @@ const game = {
 
 
 // Method definitions
-// game.init
-Object.defineProperty(game, "init", { value: function() {
-	data.get("all");
-	game.chooseOptions();
-}});
+Object.defineProperties(game, {
+	"init": { value: function() {
+		data.get("all");
+		game.chooseOptions();
+	}},
 
-// game.start
-Object.defineProperty(game, "start", { value: function() {
-	// Game state & stats reset for new game
-	game.currentLetter = 0;
-	game.currentWord = 0;
-	stats.reset();
-	
-	let timer = setTimeout(anotherWord, 0);
-	game.currentTimeout = game.startingTimeout;
+	"start": { value: function() {
+		// Game state & stats reset for new game
+		game.currentLetter = 0;
+		game.currentWord = 0;
+		stats.reset();
+		
+		let timer = setTimeout(anotherWord, 0);
+		game.currentTimeout = game.startingTimeout;
 
-	// Adds new word every time timer's callback function executes
-	// Reduces currentTimeout by speedupFactor on each new added word
-	function anotherWord() {
-	    clearTimeout(timer);
-	    if (game.currentWord < game.length) {
-		    if (game.activeWords.length < game.maxWords) {
-		    	game.addWord();
-		    	game.currentTimeout / game.speedupFactor < game.minTimeout ? game.currentTimeout = game.minTimeout : game.currentTimeout /= game.speedupFactor;
-		    }
-		    timer = setTimeout(anotherWord, game.currentTimeout);
+		// Adds new word every time timer's callback function executes
+		// Reduces currentTimeout by speedupFactor on each new added word
+		function anotherWord() {
+		    clearTimeout(timer);
+		    if (game.currentWord < game.length) {
+			    if (game.activeWords.length < game.maxWords) {
+			    	game.addWord();
+			    	game.currentTimeout / game.speedupFactor < game.minTimeout ? game.currentTimeout = game.minTimeout : game.currentTimeout /= game.speedupFactor;
+			    }
+			    timer = setTimeout(anotherWord, game.currentTimeout);
+			}
 		}
-	}
 
-	stats.startTime = Date.now();
-	stats.update();
-	game.over = false;
-	game.ready = true;
-}});
+		stats.startTime = Date.now();
+		stats.update();
+		game.over = false;
+		game.ready = true;
+	}},
 
-// game.end
-Object.defineProperty(game, "end", { value: function() {
-	game.over = true;
-	game.ready = false;
-	
-	display.gameOver();
-	game.chooseOptions();
-	stats.addHighScore();
-}});
+	"end": { value: function() {
+		game.over = true;
+		game.ready = false;
+		
+		display.gameOver();
+		game.chooseOptions();
+		stats.addHighScore();
+	}},
 
-// game.addWord
-Object.defineProperty(game, "addWord", { value: function() {
-	// If no words were available to type, add the lost time to timeOffset
-	if (stats.emptyStart > 0) {
-		stats.timeOffset += Date.now() - stats.emptyStart;
-		stats.emptyStart = 0;
-	}
+	"addWord": { value: function() {
+		// If no words were available to type, add the lost time to timeOffset
+		if (stats.emptyStart > 0) {
+			stats.timeOffset += Date.now() - stats.emptyStart;
+			stats.emptyStart = 0;
+		}
 
-	// Create new word object, remove word from sourceWords 
-	const word = {
-		str: game.sourceWords[0],
-		number: game.currentWord  // Stores the number used in the div and span IDs at HTML creation time
-	};
-	game.sourceWords.splice(0, 1);
+		// Create new word object, remove word from sourceWords 
+		const word = {
+			str: game.sourceWords[0],
+			number: game.currentWord  // Stores the number used in the div and span IDs at HTML creation time
+		};
+		game.sourceWords.splice(0, 1);
 
-	// Get more words if sourceWords is running low
-	if (game.sourceWords.length < game.wordBuffer) { game.sourceWords = data.get(game.currentSource); }
+		// Get more words if sourceWords is running low
+		if (game.sourceWords.length < game.wordBuffer) { game.sourceWords = data.get(game.currentSource); }
 
-	// Show word on screen
-	display.addWord(word);
+		// Show word on screen
+		display.addWord(word);
 
-	game.activeWords.push(word);
-	game.currentWord++;
-}});
+		game.activeWords.push(word);
+		game.currentWord++;
+	}},
 
-// game.removeWord
-Object.defineProperty(game, "removeWord", { value: function(word) {
-	stats.score -= word.str.length * stats.scoreMinusMult;
-	stats.scoreDelta = -(word.str.length * stats.scoreMinusMult);
-	if (stats.scoreMultiplier > 1) { stats.scoreMultiplier--; }
-	stats.currentStreak = 0;
-	stats.update();
+	"removeWord": { value: function(word) {
+		stats.score -= word.str.length * stats.scoreMinusMult;
+		stats.scoreDelta = -(word.str.length * stats.scoreMinusMult);
+		if (stats.scoreMultiplier > 1) { stats.scoreMultiplier--; }
+		stats.currentStreak = 0;
+		stats.update();
 
-	// Remove word from activeWords and matchingWords
-	game.activeWords.splice(game.activeWords.indexOf(word), 1)
-	if (game.matchingWords.indexOf(word) != -1) {
-		if (game.matchingWords.length == 1) { game.currentLetter = 0; }  // If the word still matches the current input, currentLetter = 0 (so new words will match)
+		// Remove word from activeWords and matchingWords
+		game.activeWords.splice(game.activeWords.indexOf(word), 1)
+		if (game.matchingWords.indexOf(word) != -1) {
+			if (game.matchingWords.length == 1) { game.currentLetter = 0; }  // If the word still matches the current input, currentLetter = 0 (so new words will match)
+			game.matchingWords.splice(game.matchingWords.indexOf(word), 1);
+		}
+
+		// Remove word from display and trigger associated animations
+		display.removeWord(word);
+
+		// If game over conditions hold, trigger game over
+		if (game.currentWord == game.length && game.activeWords.length == 0 && !game.over) { game.end(); }
+	}},
+
+	"resetWord": { value: function(word, index) {
+		display.resetWord(word);
+		game.missedWords.push(word);
+		game.matchingWords.splice(index, 1);
+	}},
+
+	"completeWord": { value: function(word) {
+		// Increment score, update stats, reset game vars
+		stats.score += word.str.length * stats.scorePlusMult * stats.scoreMultiplier;
+		stats.scoreDelta = word.str.length * stats.scorePlusMult * stats.scoreMultiplier;
+		stats.hits += word.str.length;
+		stats.currentStreak++;
+		stats.update();
+
+		game.activeWords.splice(game.activeWords.indexOf(word), 1);
 		game.matchingWords.splice(game.matchingWords.indexOf(word), 1);
-	}
 
-	// Remove word from display and trigger associated animations
-	display.removeWord(word);
+		// "Blow up word" animation
+		display.blowUpWord(word);
 
-	// If game over conditions hold, trigger game over
-	if (game.currentWord == game.length && game.activeWords.length == 0 && !game.over) { game.end(); }
-}});
-
-// game.resetWord
-Object.defineProperty(game, "resetWord", { value: function(word, index) {
-	display.resetWord(word);
-	game.missedWords.push(word);
-	game.matchingWords.splice(index, 1);
-}});
-
-// game.completeWord
-Object.defineProperty(game, "completeWord", { value: function(word) {
-	// Increment score, update stats, reset game vars
-	stats.score += word.str.length * stats.scorePlusMult * stats.scoreMultiplier;
-	stats.scoreDelta = word.str.length * stats.scorePlusMult * stats.scoreMultiplier;
-	stats.hits += word.str.length;
-	stats.currentStreak++;
-	stats.update();
-
-	game.activeWords.splice(game.activeWords.indexOf(word), 1);
-	game.matchingWords.splice(game.matchingWords.indexOf(word), 1);
-
-	// "Blow up word" animation
-	display.blowUpWord(word);
-
-	// Timer check if screen is empty
-	if (game.activeWords.length == 0) {
-		stats.emptyStart = Date.now();
-	}
-
-	if (game.currentWord == game.length && game.activeWords.length == 0 && !game.over) { game.end(); }
-}});
-
-// game.wrongKey
-Object.defineProperty(game, "wrongKey", { value: function() {
-	// Prohibits further input while animation is playing
-	game.ready = false;
-	
-	stats.scoreDelta = 0;
-	if (stats.scoreMultiplier > 1) { stats.scoreMultiplier--; }
-	stats.hits += game.currentLetter;
-	stats.misses++;
-	stats.currentStreak = 0;
-	stats.timeOffset += game.missTimeout;  // Removes forced wait time from WPM calculation (so you're not penalized for time spent waiting)
-	stats.update();
-
-	game.currentLetter = 0;
-
-	// Missed word animation
-	for (let i = 0; i < game.missedWords.length; i++) {
-		display.shakeWord(game.missedWords[i]);
-	}
-
-	setTimeout(function(){ game.ready = true; }, game.missTimeout);
-}});
-
-// game.chooseOptions
-Object.defineProperty(game, "chooseOptions", { value: function() {
-	display.showOptions();
-
-	$(".startGame").on("click", function(e){
-		if (data.isReady()) {
-			game.over = false;
-
-			// Set difficulty
-			if ($("#option1").prop("checked")) { game.wordSpeed = 1200; }
-			else if ($("#option2").prop("checked")) { game.wordSpeed = 900; }
-			else { game.wordSpeed = 600; }
-
-			// Set source to selected word source, get words from that source
-			game.currentSource = $(this).data("type");
-			game.sourceWords = data.get(game.currentSource);
-
-			display.startGame();
+		// Timer check if screen is empty
+		if (game.activeWords.length == 0) {
+			stats.emptyStart = Date.now();
 		}
-	});
-}});
+
+		if (game.currentWord == game.length && game.activeWords.length == 0 && !game.over) { game.end(); }
+	}},
+
+	"wrongKey": { value: function() {
+		// Prohibits further input while animation is playing
+		game.ready = false;
+		
+		stats.scoreDelta = 0;
+		if (stats.scoreMultiplier > 1) { stats.scoreMultiplier--; }
+		stats.hits += game.currentLetter;
+		stats.misses++;
+		stats.currentStreak = 0;
+		stats.timeOffset += game.missTimeout;  // Removes forced wait time from WPM calculation (so you're not penalized for time spent waiting)
+		stats.update();
+
+		game.currentLetter = 0;
+
+		// Missed word animation
+		for (let i = 0; i < game.missedWords.length; i++) {
+			display.shakeWord(game.missedWords[i]);
+		}
+
+		setTimeout(function(){ game.ready = true; }, game.missTimeout);
+	}},
+
+	"chooseOptions": { value: function() {
+		display.showOptions();
+
+		$(".startGame").on("click", function(e){
+			if (data.isReady()) {
+				game.over = false;
+
+				// Set difficulty
+				if ($("#option1").prop("checked")) { game.wordSpeed = 1200; }
+				else if ($("#option2").prop("checked")) { game.wordSpeed = 900; }
+				else { game.wordSpeed = 600; }
+
+				// Set source to selected word source, get words from that source
+				game.currentSource = $(this).data("type");
+				game.sourceWords = data.get(game.currentSource);
+
+				display.startGame();
+			}
+		});
+	}}
+});
