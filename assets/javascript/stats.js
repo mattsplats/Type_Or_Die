@@ -119,7 +119,6 @@ Object.defineProperties(stats, {
 
 			// Leaderboard update
 			firebase.database().ref("leaderboard/" + game.currentDifficulty).once("value").then(function(snapshot) {
-				console.log("leaderboard");
 				let board = JSON.parse(snapshot.val()) || [];
 
 				scoreObj.player = user.name;
@@ -132,7 +131,7 @@ Object.defineProperties(stats, {
 		function updateArr(arr, obj, max) {
 			arr.push(obj);
 			arr.sort(function(a, b) {
-				if (a.score != b.score) { return b.score - a.score; }
+				if (a.score !== b.score) { return b.score - a.score; }
 				else { return b.wpm - a.wpm }
 			});
 			if (arr.length > max) { arr.pop(); }

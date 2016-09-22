@@ -32,7 +32,6 @@ Object.defineProperties(leaderboard, {
 	}},
 
 	"show": { value: function(difficulty){
-		console.log("leaderboard/" + difficulty);
 		firebase.database().ref("leaderboard/" + difficulty).once("value").then(function(snapshot) {
 			const heading = "\
 				<th class='text-center hipster-text'>Player:</th>\
