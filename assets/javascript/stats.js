@@ -91,8 +91,27 @@ Object.defineProperties(stats, {
 	}},
 
 	"addHighScore": { value: function() {
-		// Update appropriate scores and display
-		updateScores();
+		const scoreObj = {
+			score: stats.score,
+			wpm: stats.wpm,
+			acc: stats.acc,
+			hits: stats.hits,
+			misses: stats.misses,
+			longestStreak: stats.longestStreak,
+			source: game.currentSource
+		};
+
+		let scoreArr;
+		switch (game.currentDifficulty) {
+			case "easy": scoreArr = stats.easyScoreArr;  break;
+			case "hard": scoreArr = stats.hardScoreArr;  break;
+			case "insane": scoreArr = stats.insaneScoreArr;  break;
+		}
+
+		updateArr(scoreArr, scoreObj, stats.maxScores);
+
+		// Display new scores (uses index of added high score)
+		display.highScores(scoreArr, scoreArr.indexOf(scoreObj));
 
 		if (user.email) {
 			// Store all user score arrays
@@ -101,47 +120,21 @@ Object.defineProperties(stats, {
 			// Leaderboard update
 			firebase.database().ref("leaderboard/" + game.currentDifficulty).once("value").then(function(snapshot) {
 				let board = JSON.parse(snapshot.val()) || [];
+
 				scoreObj.player = user.name;
-				board.push(scoreObj);
-				board.sort(function(a, b) {
-					if (a.score != b.score) { return b.score - a.score; }
-					else { return b.wpm - a.wpm }
-				});
-				if (board.length > stats.maxLeaderboardScores) { board.pop(); }
+				updateArr(board, scoreObj, stats.maxLeaderboardScores);
 				firebase.database().ref("leaderboard/" + game.currentDifficulty).set(JSON.stringify(board));
 			});
 		}
 
-		function updateScores() {
-			const scoreObj = {
-				score: stats.score,
-				wpm: stats.wpm,
-				acc: stats.acc,
-				hits: stats.hits,
-				misses: stats.misses,
-				longestStreak: stats.longestStreak,
-				source: game.currentSource
-			};
-
-			let arr;
-			switch (game.currentDifficulty) {
-				case "easy": arr = stats.easyScoreArr;  break;
-				case "hard": arr = stats.hardScoreArr;  break;
-				case "insane": arr = stats.insaneScoreArr;  break;
-			}
-
-			// Add new high score to array and sort
-			arr.push(scoreObj);
+		// Updates array with new score (adds in correct array position)
+		function updateArr(arr, obj, max) {
+			arr.push(obj);
 			arr.sort(function(a, b) {
 				if (a.score != b.score) { return b.score - a.score; }
 				else { return b.wpm - a.wpm }
 			});
-
-			// Remove lowest score if we have more than maxScores scores
-			if (arr.length > stats.maxScores) { arr.pop(); }
-
-			// Display new scores (uses index of added high score)
-			display.highScores(arr, arr.indexOf(scoreObj));
+			if (arr.length > max) { arr.pop(); }
 		}
 	}}
 });
