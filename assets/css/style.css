@@ -45,6 +45,7 @@ b {
 }
 
 #user-img > img {
+  margin: 0 !important;
   height: 50px;
 }
 
