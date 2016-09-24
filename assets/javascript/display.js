@@ -118,6 +118,8 @@ Object.defineProperties(display, {
 
 	"loginComplete": { value: function() {
 		$("#sign-in").fadeOut(function() { game.chooseOptions(); });
+		$("#user-id").html(user.name || "");
+		if (user.photoURL) { $("#user-img").append($("<img>").attr("src", user.photoURL); }
 	}},
 
 	"changeTheme": { value: function(){
