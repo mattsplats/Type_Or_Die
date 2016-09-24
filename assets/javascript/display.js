@@ -79,10 +79,10 @@ Object.defineProperties(display, {
 			</div>\
 			<br/><br/>\
 			<div class='over-text'>\
-				<h3>Final Score: " + stats.score + "</h3><br/>\
-				<h3>You Lasted: " + mins + " min, " + secs + " sec</h3><br/>\
-				<h3>Accuracy: " + stats.hits + " correct / " + (stats.hits + stats.misses) + " total ( " + stats.acc.toFixed(1) + "% )</h3><br/>\
-				<h3>Longest Word Completed: " + (stats.longestWord || "(none)") + "</h3>\
+				<h3>Final Score: &nbsp;" + stats.score + "</h3><br/>\
+				<h3>You Lasted: &nbsp;" + mins + " min, " + secs + " sec</h3><br/>\
+				<h3>Accuracy: &nbsp;" + stats.hits + " correct / " + (stats.hits + stats.misses) + " total ( " + stats.acc.toFixed(1) + "% )</h3><br/>\
+				<h3>Longest Word Completed: &nbsp;<i>" + (stats.longestWord || "(none)") + "</i></h3>\
 			</div>\
 			<br/><br/>\
 			<div>\
