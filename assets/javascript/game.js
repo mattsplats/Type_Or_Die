@@ -221,6 +221,7 @@ Object.defineProperties(game, {
 		game.lives--;
 		if (game.lives > 0) { audio.play("remove"); }
 
+		stats.scoreDelta = 0;
 		if (stats.streakMultiplier > 1) { stats.streakMultiplier--; }
 		stats.currentStreak = 0;
 		stats.update();

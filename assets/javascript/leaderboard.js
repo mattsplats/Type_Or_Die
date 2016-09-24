@@ -19,7 +19,6 @@ const leaderboard = {
 Object.defineProperties(leaderboard, {
 	"init": { value: function() {
 		leaderboard.show("easy");
-		$("#title").css("color", "black");
 		
 		// Leaderboard radio button event
 		$("input[type=radio][name=scoreList]").on('change', function() {
