@@ -44,8 +44,15 @@ b {
   color: white;
 }
 
+#user-img {
+  height: 50px !important;
+}
+
 #user-img > img {
   height: 30px;
+  position: absolute;
+  top: -30px;
+  left: -15px;
 }
 
 .panel {
