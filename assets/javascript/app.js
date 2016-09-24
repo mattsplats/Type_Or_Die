@@ -1,5 +1,11 @@
 "use strict";
 
+$(document.body).prepend($("<div>").addClass("bg").css("background-image", "url(assets/images/default.jpg)"));
+$(document.body).prepend($("<div>").addClass("bg").css("background-image", "url(assets/images/bacon.jpg)"));
+$(document.body).prepend($("<div>").addClass("bg").css("background-image", "url(assets/images/hipster.jpg)"));
+$(document.body).prepend($("<div>").addClass("bg").css("background-image", "url(assets/images/insane.jpg)"));
+$(".bg").remove();
+
 // On page load
 $(function() {
 	// Initialize Firebase
