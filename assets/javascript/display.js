@@ -67,26 +67,30 @@ Object.defineProperties(display, {
 	}},
 
 	"gameOver": { value: function() {
-		const template = "<div><h1>Thanks for playing!</h1></div><br/><br/>\
-			<div><button id='playAgain' class='btn btn-primary'>Play Again!</button></div>";
+		const template = "\
+			<div>\
+				<h1>Thanks for playing!</h1>\
+			</div>\
+			<br/><br/>\
+			<div>\
+				<button id='playAgain' class='btn btn-primary'>Play Again!</button>\
+			</div>";
 
 		$("#output").addClass("flex").html($("<div>").addClass("text-center").attr("id", "thanks").html(template).fadeIn());
 		$("#score-mult").empty();
 	}},
 
 	"showOptions": { value: function() {
-		const template = "<div>\
-				<button class='btn btn-default startGame' id='hipster' data-type='hipster'>Hipster Words</button> &nbsp;&nbsp;\
-				<button class='btn btn-default startGame' id='latin' data-type='latin'>Latin Words</button> &nbsp;&nbsp;\
-				<button class='btn btn-default startGame' id='bacon' data-type='bacon'>Bacon Words</button> &nbsp;&nbsp;\
-				<button class='btn btn-default startGame' id='random' data-type='random'>Random Words</button>\
-			</div>\
-			<br/>\
+		const template = "\
 			<div class='btn-group' data-toggle='buttons'>\
 				<label class='btn btn-success btn-diff active'><input type='radio' name='options' id='easy' autocomplete='off' checked> Easy </label>\
 	  		<label class='btn btn-warning btn-diff'><input type='radio' name='options' id='hard' autocomplete='off'> Hard </label>\
 	  		<label class='btn btn-danger btn-diff'><input type='radio' name='options' id='insane' autocomplete='off'> Insane </label>\
-	  	</div>";
+	  	</div>\
+	  	<br/><br/>\
+	  	<div>\
+	  		<button id='startGame' class='btn btn-primary'>Start</button>\
+	  	<div>";
 
 	  $("#thanks").fadeOut();
 		$("#output").addClass("flex").html($("<div>").addClass("text-center").attr("id", "chooseGame").html(template).fadeIn());
@@ -204,11 +208,11 @@ Object.defineProperties(display, {
 		$("#highscore-stats").empty();
 		
 		for (let i = 0; i < arr.length; i++) {
-			const template = "<th class='text-center hipster-text'>" + (arr[i].score) + "</th>\
+			const template = "\
+				<th class='text-center hipster-text'>" + (arr[i].score) + "</th>\
 				<th class='text-center hipster-text'>" + arr[i].wpm.toFixed(1) + "</th>\
 				<th class='text-center hipster-text'>" + arr[i].hits + " / " + (arr[i].hits + arr[i].misses) + " ( " + arr[i].acc.toFixed(1) + "% )</th>\
-				<th class='text-center hipster-text'>" + arr[i].longestStreak + "</th>\
-				<th class='text-center hipster-text'>" + arr[i].source + "</th>";
+				<th class='text-center hipster-text'>" + arr[i].longestStreak + "</th>";
 
 			if (index !== null) {
 				$("#highscore-stats").append($("<tr>").html(template).fadeIn( index === i ? 400 : 0 ));

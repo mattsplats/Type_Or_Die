@@ -98,8 +98,7 @@ Object.defineProperties(stats, {
 			acc: stats.acc,
 			hits: stats.hits,
 			misses: stats.misses,
-			longestStreak: stats.longestStreak,
-			source: game.currentSource
+			longestStreak: stats.longestStreak
 		};
 
 		let scoreArr;

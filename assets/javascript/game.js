@@ -7,7 +7,7 @@ const game = {
 	currentWord: 0,  // Used only to give a unique identifier to each word
 	currentTimeout: 0,  // Time to next word
 	currentSource: "",  // Currently selected word source
-	currentDifficulty: "hard",  // Current game difficulty
+	currentDifficulty: "easy",  // Current game difficulty
 	ready: false,
 	over: false,
 
@@ -83,13 +83,14 @@ const game = {
 Object.defineProperties(game, {
 	"init": { value: function() {
 		data.get("all");
-		// game.chooseOptions();  // Uncomment this to bypass login / authentication step
 
 		// User sign-in popup
 		$("#auth").on('click', user.auth);
 
 		// Skip sign-in
 		$("#bypass").on('click', display.loginComplete);
+
+		// audio.play("complete");
 
 		// Main input processing function (on any keypress)
 		$(document).on("keypress", function(e) {
@@ -124,12 +125,12 @@ Object.defineProperties(game, {
 				// If a match is found, increment currentLetter
 				if (game.matchingWords.length > 0) {
 					game.currentLetter++;
+					audio.play("hit");
 
 					// If word is complete, replace with new word
 					for (let i = 0; i < game.matchingWords.length; i++) {
 						if (game.currentLetter === game.matchingWords[i].str.length) {
 							game.completeWord(game.matchingWords[i]);
-							audio.play("completeWord");
 							i--;  // Decrement loop counter (the current word has been removed from matchingWords: next word was @ i+1, now @ i)
 						}
 					}
@@ -143,11 +144,7 @@ Object.defineProperties(game, {
 
 		// High score radio button event
 		$("input[type=radio][name=scoreList]").on('change', function() {
-			switch($(this).val()) {
-				case "easy": display.highScores(stats.easyScoreArr, -1);  break;
-				case "hard": display.highScores(stats.hardScoreArr, -1);  break;
-				case "insane": display.highScores(stats.insaneScoreArr, -1);  break;
-			}
+			display.highScores(stats[$(this).val() + "ScoreArr"], -1);
 		});
 	}},
 
@@ -180,6 +177,8 @@ Object.defineProperties(game, {
 	}},
 
 	"end": { value: function() {
+		audio.play("over");
+
 		game.over = true;
 		game.ready = false;
 		game.activeWords = [];
@@ -219,6 +218,7 @@ Object.defineProperties(game, {
 
 	"removeWord": { value: function(word) {
 		game.lives--;
+		if (game.lives > 0) { audio.play("remove"); }
 
 		if (stats.streakMultiplier > 1) { stats.streakMultiplier--; }
 		stats.currentStreak = 0;
@@ -245,6 +245,8 @@ Object.defineProperties(game, {
 	}},
 
 	"completeWord": { value: function(word) {
+		audio.play("complete");
+
 		// Add an extra life for every bonusLifeAt words completed
 		stats.wordsCompleted++;
 		if (stats.wordsCompleted % game.extraLifeAt == 0) { game.lives++; }
@@ -295,26 +297,34 @@ Object.defineProperties(game, {
 	"chooseOptions": { value: function() {
 		display.showOptions();
 
-		$(".startGame").on("click", function(e){
-			if (data.isReady()) {
+		easy();
+		audio.play("intro");
+
+		$("input[type=radio][name=options]").on('change', function() {
+			audio.pause("intro");
+
+			if ($("#easy").prop("checked")) { easy(); }
+			else if ($("#hard").prop("checked")) { hard(); }
+			else { insane(); }
+
+			audio.play("intro");
+		});
+
+		$("#startGame").on("click", function(e){
+			if (true) {
 				game.over = false;
 
-				// Set source to selected word source, get words from that source
-				game.currentSource = $(this).data("type");
+				// Set source to difficulty word source, get words from that source
 				game.sourceWords = data.get(game.currentSource);
-
-				// Set difficulty
-				if ($("#easy").prop("checked")) { easy(); }
-				else if ($("#hard").prop("checked")) { hard(); }
-				else { insane(); }
 
 				display.startGame();
 			}
 		});
 
 		function easy() {
+			game.currentSource = "bacon";
 			game.currentDifficulty = "easy";
-			game.lives = 10;
+			game.lives = 5;
 			game.startingTimeout = 3000;
 			game.minTimeout = 1800;
 			game.maxWords = 4;
@@ -324,6 +334,7 @@ Object.defineProperties(game, {
 		}
 
 		function hard() {
+			game.currentSource = "hipster";
 			game.currentDifficulty = "hard";
 			game.lives = 5;
 			game.startingTimeout = 2500;
@@ -335,12 +346,13 @@ Object.defineProperties(game, {
 		}
 
 		function insane() {
+			game.currentSource = "random";
 			game.currentDifficulty = "insane";
-			game.lives = 3;
-			game.startingTimeout = 1800;
+			game.lives = 5;
+			game.startingTimeout = 2100;
 			game.minTimeout = 1000;
 			game.maxWords = 6;
-			game.wordSpeed = 500;
+			game.wordSpeed = 600;
 
 			stats.difficultyMultiplier = 300;
 		}

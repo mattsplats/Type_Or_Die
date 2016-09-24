@@ -9,6 +9,10 @@ body {
   background-image: url(../images/brickwall.png);
 }
 
+h3 {
+  display: inline;
+}
+
 .btn-diff {
   background-color: #337ab7;
   background-image: none;
@@ -43,6 +47,25 @@ h1 {
 .panel-title-text {
   font-family: 'Chewy', cursive;
   font-size: 22px;
+}
+
+.btn {
+  font-family: 'Chewy', cursive;
+}
+
+.btn-primary {
+  font-size: 24px;
+  /*color: white;*/
+}
+
+.btn-group > .btn {
+  width: 90px;
+  font-size: 18px;
+}
+
+.btn-score {
+  float: right;
+  margin-top: -4px;
 }
 
 #game-body {
@@ -114,4 +137,10 @@ h1 {
   align-content: center;
   flex-wrap: wrap;
   height: 470px;
+}
+
+@media screen and (max-width: 991px) {
+  .panel-title-text {
+    font-size: 19px;
+  }
 }
