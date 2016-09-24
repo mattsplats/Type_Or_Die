@@ -84,13 +84,15 @@ Object.defineProperties(game, {
 	"init": { value: function() {
 		data.get("all");
 
+		$.get("https://shrouded-plains-88008.herokuapp.com/assets/images/bacon.jpg");
+		$.get("https://shrouded-plains-88008.herokuapp.com/assets/images/hipster.jpg");
+		$.get("https://shrouded-plains-88008.herokuapp.com/assets/images/insane.jpg");
+
 		// User sign-in popup
 		$("#auth").on('click', user.auth);
 
 		// Skip sign-in
 		$("#bypass").on('click', display.loginComplete);
-
-		// audio.play("complete");
 
 		// Main input processing function (on any keypress)
 		$(document).on("keypress", function(e) {

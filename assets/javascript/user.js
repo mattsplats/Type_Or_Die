@@ -44,7 +44,8 @@ Object.defineProperties(user, {
 				if (isNewUser) {
 					firebase.database().ref("users/" + user.ID).set({
 						name: user.name,
-						email: user.email
+						email: user.email,
+						photoURL: user.photoURL
 					});
 				}
 
