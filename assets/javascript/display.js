@@ -70,13 +70,23 @@ Object.defineProperties(display, {
 	}},
 
 	"gameOver": { value: function() {
+		const mins = Math.floor(Math.floor(stats.duration) / 60);
+		const secs = Math.floor(stats.duration) % 60;
+
 		const template = "\
 			<div>\
 				<h1>GAME OVER</h1>\
 			</div>\
 			<br/><br/>\
+			<div class='over-text'>\
+				<h3>Final Score: " + stats.score + "</h3><br/>\
+				<h3>You Lasted: " + mins + " min, " + secs + " sec</h3><br/>\
+				<h3>Accuracy: " + stats.hits + " correct / " + (stats.hits + stats.misses) + " total ( " + stats.acc.toFixed(1) + "% )</h3><br/>\
+				<h3>Longest Word Completed: " + (stats.longestWord || "(none)") + "</h3>\
+			</div>\
+			<br/><br/>\
 			<div>\
-				<button id='playAgain' class='btn btn-primary'>Play Again!</button>\
+				<button id='playAgain' class='btn btn-primary'>Play Again?</button>\
 			</div>";
 
 		$("#output").addClass("flex").html($("<div>").addClass("text-center").attr("id", "thanks").html(template).fadeIn());
@@ -137,6 +147,8 @@ Object.defineProperties(display, {
 				$(document.body).prepend($("<div>").attr("id", "bg").css("background-image", "url(assets/images/insane.jpg)"));
 				break;
 		}
+
+		$("#title").css("color", "black");
 	}},
 
 	"addWord": { value: function(word) {

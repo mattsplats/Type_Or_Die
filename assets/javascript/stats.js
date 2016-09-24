@@ -18,6 +18,8 @@ const stats = {
 	startTime: 0,  // Game start time for WPM calc
 	timeOffset: 0,  // Time removed from WPM calc
 	emptyStart: 0,  // Start time when game has no words to match
+	longestWord: "",
+	duration: 0,
 
 	// Constants
 	difficultyMultiplier: 100,  // Score multiplier for completing a word

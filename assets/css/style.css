@@ -13,7 +13,7 @@ body {
 h1 {
   font-family: 'Bungee Shade', cursive;
   font-size: 70px;
-  color: white;
+  color: black;
 }
 
 h3 {
@@ -23,6 +23,12 @@ h3 {
 b {
   font-family: 'Chewy', cursive;
   font-size: 20px;
+}
+
+#title {
+  font-family: 'Bungee Shade', cursive;
+  font-size: 70px;
+  color: white;
 }
 
 .navbar {
@@ -155,6 +161,11 @@ b {
 #score-table {
   font-family: 'Amatica SC', cursive;
   font-size: 29px;
+}
+
+.over-text {
+  font-family: 'Chewy', cursive !important;
+  font-size: 24px !important;
 }
 
 #leaderboard-panel {

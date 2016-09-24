@@ -184,6 +184,7 @@ Object.defineProperties(game, {
 		game.activeWords = [];
 		game.matchingWords = [];
 		
+		stats.duration = (Date.now() - stats.startTime) / 1000;
 		stats.addHighScore();
 		display.gameOver();
 
@@ -256,6 +257,7 @@ Object.defineProperties(game, {
 		stats.scoreDelta = word.str.length * stats.difficultyMultiplier * stats.streakMultiplier;
 		stats.hits += word.str.length;
 		stats.currentStreak++;
+		if (word.str.length > stats.longestWord.length) { stats.longestWord = word.str; }
 		stats.update();
 
 		game.activeWords.splice(game.activeWords.indexOf(word), 1);
