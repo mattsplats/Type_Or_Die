@@ -34,7 +34,7 @@ const audio = {
 		// Sets: property for targeted Audio object
 
 	pause: function(state){},
-	// Stop audio for given game state
+		// Stop audio for given game state
 };
 
 

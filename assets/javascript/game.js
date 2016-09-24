@@ -249,7 +249,7 @@ Object.defineProperties(game, {
 
 		// Add an extra life for every bonusLifeAt words completed
 		stats.wordsCompleted++;
-		if (stats.wordsCompleted % game.extraLifeAt == 0) { game.lives++; }
+		if (stats.wordsCompleted % game.extraLifeAt == 0 && game.lives < 10) { game.lives++; }
 
 		// Increment score, update stats, reset game vars
 		stats.score += word.str.length * stats.difficultyMultiplier * stats.streakMultiplier;
@@ -298,6 +298,7 @@ Object.defineProperties(game, {
 		display.showOptions();
 
 		easy();
+		display.changeTheme();
 		audio.play("intro");
 
 		$("input[type=radio][name=options]").on('change', function() {
@@ -306,7 +307,8 @@ Object.defineProperties(game, {
 			if ($("#easy").prop("checked")) { easy(); }
 			else if ($("#hard").prop("checked")) { hard(); }
 			else { insane(); }
-
+			
+			display.changeTheme();
 			audio.play("intro");
 		});
 

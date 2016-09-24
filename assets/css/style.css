@@ -5,43 +5,56 @@ html {
 
 body {
   /* Margin bottom by footer height */
-  margin-bottom: 60px;
-  background-image: url(../images/brickwall.png);
+  margin-bottom: 48px;
+  background: #dddddd url(../images/brickwall.png);
+}
+
+h1 {
+  font-family: 'Bungee Shade', cursive;
+  font-size: 70px;
 }
 
 h3 {
   display: inline;
 }
 
-.btn-diff {
-  background-color: #337ab7;
-  background-image: none;
-  border-color: #245580;
+b {
+  font-family: 'Chewy', cursive;
+  font-size: 20px;
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  background-color: #525252;
+.panel {
+  background-color: rgba(230, 230, 230, 0.6);
+}
+
+.panel-primary > .panel-heading, .btn-primary {
+  background-image: linear-gradient(to bottom,#404ec1 0,#4460a0 100%);
+  border-color: #4460a0;
+}
+
+.btn-primary:focus, .btn-primary:hover {
+  background-image: linear-gradient(to bottom,#5663C6 0,#4C6CB2 100%);
+  background-color: inherit;
+  background-position: inherit;
+}
+
+.panel-info {
+  border-color: #6498b3;
+}
+
+.panel-info > .panel-heading {
+  background-image: linear-gradient(to bottom,#86bcd8 0,#5475a9 100%);
+  border-color: #4093b5;
+  color: white;
+}
+
+.table > thead {
+  border-bottom: 3px double gray;
 }
 
 #start {
   font-family: 'Chewy', cursive;  
   font-size: 25px;
-}
-
-h1 {
-	font-family: 'Bungee Shade', cursive;
-  font-size: 70px;
-}
-
-.footer-text {
-	color: white;
-	text-align: left;
-	margin-top: 20px;
 }
 
 .panel-title-text {
@@ -55,7 +68,6 @@ h1 {
 
 .btn-primary {
   font-size: 24px;
-  /*color: white;*/
 }
 
 .btn-group > .btn {
@@ -66,6 +78,12 @@ h1 {
 .btn-score {
   float: right;
   margin-top: -4px;
+}
+
+.btn-diff {
+  background-color: #337ab7;
+  background-image: none;
+  border-color: #245580;
 }
 
 #game-body {
@@ -102,12 +120,38 @@ h1 {
   font-size: 25px;
 }
 
-.hipster-text {
+.hiscore-text {
   font-family: 'Amatica SC', cursive;
   font-size: 30px;
 }
 
-/* Matt's animations */
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 48px;
+  background-color: #525252;
+}
+
+.footer-text {
+  margin-top: 12px;
+  color: white;
+  text-align: left;
+  font-family: 'Chewy', cursive;
+  font-size: 18px;
+  font-style: italic;
+}
+
+/* Matt's classes */
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  flex-wrap: wrap;
+  height: 470px;
+}
 .falling-word {
   position: absolute;
   top: -70px;
@@ -129,14 +173,55 @@ h1 {
   100% {transform: translate3d(0, 0, 0);}
 }
 
-/* Matt's classes */
-.flex {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-  flex-wrap: wrap;
-  height: 470px;
+.fade-in {
+  animation-name: fade_in;
+  animation-duration: 0.8s;
+  animation-timing-function: ease;
+}
+
+.fade-in-later {
+  animation-name: fade_in_later;
+  animation-duration: 1.0s;
+  animation-timing-function: ease;
+}
+
+@keyframes fade_in {
+  0%   {opacity: 0; transform: rotate3d(0, 1, 0, 90deg);}
+  100% {opacity: 1; transform: rotate3d(0, 1, 0, 0deg);}
+}
+
+@keyframes fade_in_later {
+  0%   {opacity: 0; transform: rotate3d(0, 1, 0, 90deg);}
+  20%  {opacity: 0; transform: rotate3d(0, 1, 0, 90deg);}
+  100% {opacity: 1; transform: rotate3d(0, 1, 0, 0deg);}
+}
+
+#sign-in {
+  animation-name: sign_in;
+  animation-duration: 1.5s;
+  animation-timing-function: ease;
+}
+
+@keyframes sign_in {
+  0%   {opacity: 0;}
+  30%  {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+#bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  opacity: 0.6;
+
+  animation-name: bg_fade_in;
+  animation-duration: 1.5s;
+  animation-timing-function: ease;
+}
+
+@keyframes bg_fade_in {
+  0%   {opacity: 0.1;}
+  100% {opacity: 0.6;}
 }
 
 @media screen and (max-width: 991px) {

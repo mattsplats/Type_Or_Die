@@ -9,19 +9,22 @@ const display = {
 
 
 	// Methods
-	startGame: function() {},
+	startGame: function(){},
 		// Fades out game options and starts game
 		// Calls: game.start
 
-	gameOver: function() {},
+	gameOver: function(){},
 		// Show game over text
 
 	showOptions: function(){},
 		// Shows word list selector buttons, modifies #output div css
 
-	loginComplete: function() {},
+	loginComplete: function(){},
 		// Fades out initial login text/buttons
 		// Calls: game.chooseOptions
+
+	changeTheme: function(){},
+		// Modifies background and other display properties based on selected game difficulty
 
 	addWord: function(word){},
 		// Places a new falling word on screen, sets a timeout to call removeWord if not completed in game.wordSpeed
@@ -98,6 +101,24 @@ Object.defineProperties(display, {
 
 	"loginComplete": { value: function() {
 		$("#sign-in").fadeOut(function() { game.chooseOptions(); });
+	}},
+
+	"changeTheme": { value: function(){
+		$(document.body).css("background-image", "none");
+		switch (game.currentDifficulty) {
+			case "easy":
+				if ($("#bg").length) { $("#bg").remove(); }
+				$(document.body).prepend($("<div>").attr("id", "bg").css("background-image", "url(assets/images/bacon.jpg)"));
+				break;
+			case "hard":
+				if ($("#bg").length) { $("#bg").remove(); }
+				$(document.body).prepend($("<div>").attr("id", "bg").css("background-image", "url(assets/images/hipster.jpg)"));
+				break;
+			case "insane":
+				if ($("#bg").length) { $("#bg").remove(); }
+				$(document.body).prepend($("<div>").attr("id", "bg").css("background-image", "url(assets/images/insane.jpg)"));
+				break;
+		}
 	}},
 
 	"addWord": { value: function(word) {
@@ -209,10 +230,10 @@ Object.defineProperties(display, {
 		
 		for (let i = 0; i < arr.length; i++) {
 			const template = "\
-				<th class='text-center hipster-text'>" + (arr[i].score) + "</th>\
-				<th class='text-center hipster-text'>" + arr[i].wpm.toFixed(1) + "</th>\
-				<th class='text-center hipster-text'>" + arr[i].hits + " / " + (arr[i].hits + arr[i].misses) + " ( " + arr[i].acc.toFixed(1) + "% )</th>\
-				<th class='text-center hipster-text'>" + arr[i].longestStreak + "</th>";
+				<th class='text-center hiscore-text'>" + (arr[i].score) + "</th>\
+				<th class='text-center hiscore-text'>" + arr[i].wpm.toFixed(1) + "</th>\
+				<th class='text-center hiscore-text'>" + arr[i].hits + " / " + (arr[i].hits + arr[i].misses) + " ( " + arr[i].acc.toFixed(1) + "% )</th>\
+				<th class='text-center hiscore-text'>" + arr[i].longestStreak + "</th>";
 
 			if (index !== null) {
 				$("#highscore-stats").append($("<tr>").html(template).fadeIn( index === i ? 400 : 0 ));

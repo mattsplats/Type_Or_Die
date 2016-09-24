@@ -33,7 +33,7 @@ Object.defineProperties(data, {
 			case "latin": latin(); return data.latinWords;
 			case "bacon": bacon(); return data.baconWords;
 			case "random": random(); return data.randomWords;
-			case "all": hipster(); latin(); bacon(); return null;
+			// case "all": hipster(); latin(); bacon(); return null;
 		}
 
 		// hipsterjesus.com XHR/processing
