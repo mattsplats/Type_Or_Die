@@ -72,7 +72,7 @@ Object.defineProperties(display, {
 	"gameOver": { value: function() {
 		const template = "\
 			<div>\
-				<h1>Thanks for playing!</h1>\
+				<h1>GAME OVER</h1>\
 			</div>\
 			<br/><br/>\
 			<div>\
@@ -113,7 +113,7 @@ Object.defineProperties(display, {
 	"changeTheme": { value: function(){
 		const info = {
 			easy: "Take it easy with a savory helping of meaty deliciousness. &nbsp;Delicious words, that is.",
-			hard: "Retro-futurism at its finest? &nbsp;Meh, at least you can #humblebrag about your high score.",
+			hard: "Retro at its finest? &nbsp;Meh, at least you can #humblebrag about your high score.",
 			insane: "Words straight from the depths of hell. &nbsp;If you like that sort of thing, we won't judge."
 		};
 

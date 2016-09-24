@@ -1,0 +1,25 @@
+.icons{
+display: inline-block;
+line-height:10px;
+padding:20px;
+}
+
+.profileImg {
+
+  border:1px solid black;
+}
+
+#jTron {
+border: 1px solid white;
+  margin-top: 20px;
+  background-color: #f5f5f5;
+}
+#headerone{
+border: 1px solid white;
+}
+
+
+.icon {
+
+  margin:10px;
+}

@@ -16,9 +16,22 @@
 </head>
 <body>
 
+  <!-- Start Navbar -->
+  <nav id="nav" class="navbar navbar-inverse navbar-static-top">
+    <div class="container">
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="index.html">Game</a></li>
+          <li class="active"><a href="leaderboard.html">Leaderboard <span class="sr-only">(current)</span></a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav> <!-- End Navbar -->
+
 	<div class="container">
     <div class="row">
-      <div class="col-lg-12"><h1 class="text-center">Type or Die</h1></div>
+      <div class="col-lg-12"><h1 class="text-center">Type or <span id="red-intro">Die</span></h1></div>
     </div>
 
     <!-- Start High Score -->
@@ -53,9 +66,9 @@
 	</div> <!-- End Container -->
 
 	<footer class="footer">
-  	<div class="container">
-  		<p class="text-center footer-text">&copy; Copyright 2016 Andres Daniel Matt</p>
-  	</div>
+    <div class="container">
+      <p class="text-center footer-text">Copyright 2016 by Daniel Arnost, Matt Davis, and Andres Saenz</p>
+    </div>
   </footer>
 
 	<script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>

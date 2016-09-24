@@ -4,9 +4,10 @@ html {
 }
 
 body {
+  background: #444444 url(../images/default.jpg) no-repeat center top;
+  color: black;
   /* Margin bottom by footer height */
   margin-bottom: 48px;
-  background: #444444 url(../images/default.jpg) no-repeat center top;
 }
 
 h1 {
@@ -24,19 +25,22 @@ b {
   font-size: 20px;
 }
 
-.panel {
-  background-color: rgba(230, 230, 230, 0.7);
+.navbar {
+  margin-bottom: 0;
 }
 
-.panel-primary > .panel-heading, .btn-primary {
+.navbar-inverse .navbar-nav > li > a {
+  font-family: 'Chewy', cursive;
+  font-size: 1.4em;
+}
+
+.panel {
+  background-color: rgba(220, 220, 220, 0.8);
+}
+
+.panel-primary > .panel-heading, .btn-primary, {
   background-image: linear-gradient(to bottom,#404ec1 0,#4460a0 100%);
   border-color: #4460a0;
-}
-
-.btn-primary:focus, .btn-primary:hover {
-  background-image: linear-gradient(to bottom,#5663C6 0,#4C6CB2 100%);
-  background-color: inherit;
-  background-position: inherit;
 }
 
 .panel-info {
@@ -65,6 +69,12 @@ b {
 
 .btn-primary {
   font-size: 24px;
+}
+
+.btn-primary:focus, .btn-primary:hover {
+  background-image: linear-gradient(to bottom,#5663C6 0,#4C6CB2 100%);
+  background-color: inherit;
+  background-position: inherit;
 }
 
 .btn-group > .btn {
@@ -151,6 +161,10 @@ b {
   height: 699px;
 }
 
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+  border-top: 1px solid gray;
+}
+
 .table > thead {
   border-bottom: 3px double gray;
 }
@@ -171,7 +185,9 @@ b {
   width: 100%;
   /* Set the fixed height of the footer here */
   height: 48px;
-  background-color: #525252;
+  background-image: linear-gradient(to bottom,#3c3c3c 0,#222 100%);
+  background-color: #222;
+  border-color: #080808;
 }
 
 .footer-text {
