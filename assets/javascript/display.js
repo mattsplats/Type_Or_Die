@@ -85,12 +85,19 @@ Object.defineProperties(display, {
 
 	"showOptions": { value: function() {
 		const template = "\
-			<div class='btn-group' data-toggle='buttons'>\
+			<div>\
+				<div id='big-source'><span id='source-text'>bacon</span>\
+					<div id='small-source'>Word source:</div>\
+				</div>\
+			</div>\
+			<div>\
+	  		<div id='source-info'>Take it easy with a savory helping of meaty deliciousness. &nbsp;Delicious words, that is.</div>\
+	  	</div><br/><br/>\
+			<div class='btn-group btn-group-main' data-toggle='buttons'>\
 				<label class='btn btn-success btn-diff active'><input type='radio' name='options' id='easy' autocomplete='off' checked> Easy </label>\
 	  		<label class='btn btn-warning btn-diff'><input type='radio' name='options' id='hard' autocomplete='off'> Hard </label>\
 	  		<label class='btn btn-danger btn-diff'><input type='radio' name='options' id='insane' autocomplete='off'> Insane </label>\
-	  	</div>\
-	  	<br/><br/>\
+	  	</div><br/></br>\
 	  	<div>\
 	  		<button id='startGame' class='btn btn-primary'>Start</button>\
 	  	<div>";
@@ -104,7 +111,18 @@ Object.defineProperties(display, {
 	}},
 
 	"changeTheme": { value: function(){
-		$(document.body).css("background-image", "none");
+		const info = {
+			easy: "Take it easy with a savory helping of meaty deliciousness. &nbsp;Delicious words, that is.",
+			hard: "Retro-futurism at its finest? &nbsp;Meh, at least you can #humblebrag about your high score.",
+			insane: "Words straight from the depths of hell. &nbsp;If you like that sort of thing, we won't judge."
+		};
+
+		if ($("#bg").length) {
+			$("#source-text").velocity({ opacity: 0 }, { complete: function() { $("#source-text").html(game.currentSource).velocity({ opacity: 1 }) }});
+			$("#source-info").velocity({ opacity: 0 }, { complete: function() { $("#source-info").html(info[game.currentDifficulty]).velocity({ opacity: 1 }) }});
+		}
+
+		$(document.body).css("background-image", "none").velocity({ backgroundColor: "#cccccc"}, {duration: 800});
 		switch (game.currentDifficulty) {
 			case "easy":
 				if ($("#bg").length) { $("#bg").remove(); }
@@ -175,7 +193,7 @@ Object.defineProperties(display, {
 		const vertSize = 60 + (4 * word.str.length);  // Vertical explosion size
 		const vertRandMult = 24;  // Vertical randomness
 		let flip = Math.random() > 0.5 ? 1 : -1;
-		function vertOffset(index) { return Math.sin(index * Math.PI / (word.str.length - 1)) * vertSize * (flip == 1 ? flip = -1 : flip = 1)}
+		function vertOffset(index) { return Math.sin(index * Math.PI / (word.str.length - 1)) * vertSize * (flip *= -1)}
 		
 		const explodeTime = 250;  // Looks better if you keep the explode time at least 50% longer than the fade time
 		const fadeTime = 160;

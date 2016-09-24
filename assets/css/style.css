@@ -6,12 +6,13 @@ html {
 body {
   /* Margin bottom by footer height */
   margin-bottom: 48px;
-  background: #dddddd url(../images/brickwall.png);
+  background: #444444 url(../images/default.jpg) no-repeat center top;
 }
 
 h1 {
   font-family: 'Bungee Shade', cursive;
   font-size: 70px;
+  color: white;
 }
 
 h3 {
@@ -24,7 +25,7 @@ b {
 }
 
 .panel {
-  background-color: rgba(230, 230, 230, 0.6);
+  background-color: rgba(230, 230, 230, 0.7);
 }
 
 .panel-primary > .panel-heading, .btn-primary {
@@ -46,10 +47,6 @@ b {
   background-image: linear-gradient(to bottom,#86bcd8 0,#5475a9 100%);
   border-color: #4093b5;
   color: white;
-}
-
-.table > thead {
-  border-bottom: 3px double gray;
 }
 
 #start {
@@ -75,9 +72,14 @@ b {
   font-size: 18px;
 }
 
+.btn-group-main > .btn {
+  width: 125px;
+  font-size: 22px;
+}
+
 .btn-score {
   float: right;
-  margin-top: -4px;
+  margin-top: -5px;
 }
 
 .btn-diff {
@@ -90,6 +92,40 @@ b {
   height: 500px;
   position: relative;
   overflow: hidden;
+}
+
+#big-source {
+  width: 270px;
+  margin: 0px auto 20px auto;
+  position: relative;
+  border-bottom: 2px dotted black;
+  border-top: 6px;
+
+  font-family: 'Kaushan Script', cursive;
+  font-size: 60px;
+  line-height: 1.1;
+}
+
+#small-source {
+  position: absolute;
+  left: -106px;
+  top: 22px;
+
+  font-family: 'Amatica SC', cursive;
+  font-size: 30px;
+  font-style: italic;
+  font-weight: bold;
+}
+
+#source-info {
+  font-family: 'Chewy', cursive;
+  font-size: 22px;
+  font-style: italic;
+}
+
+#startGame {
+  width: 160px;
+  font-size: 30px;
 }
 
 #score-bar {
@@ -108,11 +144,15 @@ b {
 
 #score-table {
   font-family: 'Amatica SC', cursive;
-  font-size: 27px;
+  font-size: 29px;
 }
 
 #leaderboard-panel {
   height: 699px;
+}
+
+.table > thead {
+  border-bottom: 3px double gray;
 }
 
 #instructions {
@@ -137,7 +177,7 @@ b {
 .footer-text {
   margin-top: 12px;
   color: white;
-  text-align: left;
+  text-align: center;
   font-family: 'Chewy', cursive;
   font-size: 18px;
   font-style: italic;
@@ -175,14 +215,14 @@ b {
 
 .fade-in {
   animation-name: fade_in;
-  animation-duration: 0.8s;
-  animation-timing-function: ease;
+  animation-duration: 1s;
+  animation-timing-function: ease-out;
 }
 
 .fade-in-later {
   animation-name: fade_in_later;
-  animation-duration: 1.0s;
-  animation-timing-function: ease;
+  animation-duration: 1.3s;
+  animation-timing-function: ease-out;
 }
 
 @keyframes fade_in {
@@ -196,15 +236,28 @@ b {
   100% {opacity: 1; transform: rotate3d(0, 1, 0, 0deg);}
 }
 
+#red-intro {
+  animation-name: red_intro;
+  animation-duration: 2.5s;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes red_intro {
+  0%   {opacity: 0; color: white;}
+  20%  {opacity: 0; color: white;}
+  40%  {opacity: 1; color: red;}
+  100% {opacity: 1; color: white;}
+}
+
 #sign-in {
   animation-name: sign_in;
-  animation-duration: 1.5s;
+  animation-duration: 2.4s;
   animation-timing-function: ease;
 }
 
 @keyframes sign_in {
   0%   {opacity: 0;}
-  30%  {opacity: 0;}
+  50%  {opacity: 0;}
   100% {opacity: 1;}
 }
 
@@ -220,7 +273,7 @@ b {
 }
 
 @keyframes bg_fade_in {
-  0%   {opacity: 0.1;}
+  0%   {opacity: 0.25;}
   100% {opacity: 0.6;}
 }
 

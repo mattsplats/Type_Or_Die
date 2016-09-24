@@ -33,7 +33,7 @@ Object.defineProperties(data, {
 			case "latin": latin(); return data.latinWords;
 			case "bacon": bacon(); return data.baconWords;
 			case "random": random(); return data.randomWords;
-			// case "all": hipster(); latin(); bacon(); return null;
+			case "all": hipster(); bacon(); random(); return null;
 		}
 
 		// hipsterjesus.com XHR/processing
@@ -112,7 +112,7 @@ Object.defineProperties(data, {
 				$.get("http://www.setgetgo.com/randomword/get.php").done(function(response){ 
 					if (data.randomWords.indexOf(response) === -1) { data.randomWords.push(response); }
 					counter++;
-					if (counter < 2) { getWord(); }
+					if (counter < 50) { getWord(); }
 				});
 			}
 		}
