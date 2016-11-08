@@ -4,7 +4,7 @@ html {
 }
 
 body {
-  background: #444444 url(../images/default.jpg) no-repeat center top;
+  background: #444444 url(../images/default.jpg) no-repeat center top / cover;
   color: black;
   /* Margin bottom by footer height */
   margin-bottom: 48px;
