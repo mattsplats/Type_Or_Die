@@ -28,7 +28,7 @@ const game = {
 	// Constants
 	speedupFactor: 1.008,  // Muliplier for the rate at which new words are added, applies after each added word
 	wordBuffer: 10,  // Minimum buffer of source words (will trigger an XHR more if sourceWords.length < wordBuffer)
-	missTimeout: 250,  // Msec after which a miss is triggered where new input is not allowed (like iFrames)
+	missTimeout: 180,  // Msec after which a miss is triggered where new input is not allowed (like iFrames)
 
 
 	// Methods
