@@ -45,9 +45,6 @@ const display = {
 	shakeWord: function(word){},
 		// Play word shake animation
 
-	changeBackground: function(currentSource){},
-		// Change page background
-
 	stats: function(){},
 		// Shows current game stats below game
 
